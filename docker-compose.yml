@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: ravaaweb
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8081:80"
+    networks:
+      - network_app
+
+networks:
+  network_app:
+    external: true
