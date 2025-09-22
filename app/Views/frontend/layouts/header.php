@@ -49,7 +49,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="<?= base_url('/about') ?>">
               <i class="fas fa-info-circle me-1"></i> About
             </a>
           </li>
