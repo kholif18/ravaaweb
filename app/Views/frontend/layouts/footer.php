@@ -38,5 +38,16 @@
 
   <!-- Bootstrap JS -->
   <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar-glass');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+  </script>
 </body>
 </html>

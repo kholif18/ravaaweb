@@ -7,7 +7,7 @@ class Home extends BaseController
     public function index()
     {
         return view('frontend/home', [
-            'title' => 'Toko Online - Promo & Produk Terbaru'
+            'title' => 'Ravaa Creative - Promo & Produk Terbaru'
         ]);
     }
 }

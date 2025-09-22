@@ -13,23 +13,59 @@
   <link rel="stylesheet" href="<?= base_url('assets/css/ravaa.css') ?>">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <!-- Navbar Glassmorphism -->
+  <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="<?= base_url() ?>">TokoOnline</a>
+      <a class="navbar-brand" href="<?= base_url() ?>">
+        <i class="fas fa-store me-2"></i>Ravaa Creative
+      </a>
+      
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
               data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+      
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="<?= base_url() ?>">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-search"></i></a></li>
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="<?= base_url() ?>">
+              <i class="fas fa-home me-1"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/shop') ?>">
+              <i class="fas fa-shopping-bag me-1"></i> Shop
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-th me-1"></i> Kategori
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Print</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-paint-brush me-2"></i> Design</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-pen me-2"></i> ATK</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-tshirt me-2"></i> Sablon</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fas fa-info-circle me-1"></i> About
+            </a>
+          </li>
         </ul>
+        
+        <div class="d-flex align-items-center">
+          <div class="search-container">
+            <input type="text" class="search-box" placeholder="Cari produk...">
+            <i class="fas fa-search position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
+
+  <!-- Add space for fixed navbar -->
+  <div style="height: 80px;"></div>
 
   <main class="container-fluid p-0">
