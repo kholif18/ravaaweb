@@ -166,8 +166,8 @@
               <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="contact-details">
-              <h4>Alamat</h4>
-              <p>Jl. Merdeka No. 123<br>Jakarta Pusat 10110</p>
+              <h5>Alamat</h5>
+              <p>Gedong, Ds. Ngluyu, Kec. Ngluyu<br>Kabupaten Nganjuk (64452)</p>
             </div>
           </div>
           
@@ -176,8 +176,8 @@
               <i class="fas fa-phone"></i>
             </div>
             <div class="contact-details">
-              <h4>Telepon</h4>
-              <p>(021) 1234-5678<br>0812-3456-7890</p>
+              <h5>Telepon</h5>
+              <p>0822-3337-7661</p>
             </div>
           </div>
           
@@ -186,8 +186,8 @@
               <i class="fas fa-envelope"></i>
             </div>
             <div class="contact-details">
-              <h4>Email</h4>
-              <p>info@tokokami.com<br>cs@tokokami.com</p>
+              <h5>Email</h5>
+              <p>ravaacreative@gmail.com</p>
             </div>
           </div>
           
@@ -196,8 +196,8 @@
               <i class="fas fa-clock"></i>
             </div>
             <div class="contact-details">
-              <h4>Jam Operasional</h4>
-              <p>Senin - Jumat: 08.00 - 21.00<br>Sabtu - Minggu: 09.00 - 18.00</p>
+              <h5>Jam Operasional</h5>
+              <p>Senin - Jumat: <br> <strong>14.00 - 20.30 WIB</strong><br>Sabtu - Minggu: <br><strong> 09.00 - 20.00 WIB</strong></p>
             </div>
           </div>
         </div>
@@ -215,7 +215,15 @@
           
           <!-- Actual Google Maps Embed Code (Uncomment and replace with your actual embed code) -->
           
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.25972554651173!2d111.95915741726891!3d-7.4480304330623195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78314e57a1625b%3A0xc3489dfdef9e5eee!2sRavaa%20Creative!5e0!3m2!1sen!2sid!4v1758549933036!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.25972554651173!2d111.95915741726891!3d-7.4480304330623195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78314e57a1625b%3A0xc3489dfdef9e5eee!2sRavaa%20Creative!5e0!3m2!1sen!2sid!4v1758549933036!5m2!1sen!2sid" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
         </div>
       </div>
     </div>

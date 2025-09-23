@@ -1,0 +1,12 @@
+.sidebar {
+  position: fixed;
+  top: 56px; /* tinggi navbar */
+  left: 0;
+  height: 100%;
+  width: 16.666%; /* sama dengan col-md-2 */
+  /* overflow-y: auto; */
+}
+
+.content {
+  margin-left: 16.666%;
+}

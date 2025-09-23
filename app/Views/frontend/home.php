@@ -23,7 +23,7 @@
           <div class="banner-content">
             <h2 class="banner-title">Promo Bulan Ini</h2>
             <p class="banner-subtitle">Diskon hingga 50% untuk produk terlaris!</p>
-            <a href="#" class="btn btn-banner">Belanja Sekarang</a>
+            <a href="<?= base_url('/shop') ?>" class="btn btn-banner">Belanja Sekarang</a>
           </div>
         </div>
       </div>
@@ -34,7 +34,7 @@
           <div class="banner-content">
             <h2 class="banner-title">Produk Baru</h2>
             <p class="banner-subtitle">Diluncurkan dengan fitur terbaik!</p>
-            <a href="#" class="btn btn-banner">Cek Sekarang</a>
+            <a href="<?= base_url('/shop') ?>" class="btn btn-banner">Cek Sekarang</a>
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
           <div class="banner-content">
             <h2 class="banner-title">Gratis Ongkir</h2>
             <p class="banner-subtitle">Untuk pembelian di atas Rp200.000!</p>
-            <a href="#" class="btn btn-banner">Beli Sekarang</a>
+            <a href="<?= base_url('/shop') ?>" class="btn btn-banner">Beli Sekarang</a>
           </div>
         </div>
       </div>
@@ -100,25 +100,27 @@
     <div class="row g-4">
       <!-- Produk 1 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Smartphone" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Smartphone Pro Max</h6>
-            <p class="product-price">Rp12.999.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Smartphone" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Smartphone Pro Max</h6>
+              <p class="product-price">Rp12.999.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
       <!-- Produk 2 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Laptop" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Laptop Gaming X1</h6>
-            <p class="product-price">Rp25.500.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Laptop" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Laptop Gaming X1</h6>
+              <p class="product-price">Rp25.500.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
       <!-- Produk 3 -->
       <div class="col-6 col-md-3">
@@ -127,64 +129,68 @@
           <div class="p-3">
             <h6 class="product-title">Smartwatch Fit</h6>
             <p class="product-price">Rp2.199.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
           </div>
         </div>
       </div>
       <!-- Produk 4 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Speaker" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Speaker Bluetooth</h6>
-            <p class="product-price">Rp899.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Speaker" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Speaker Bluetooth</h6>
+              <p class="product-price">Rp899.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
       <!-- Produk 5 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Smartphone" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Smartphone Pro Max</h6>
-            <p class="product-price">Rp12.999.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Smartphone" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Smartphone Pro Max</h6>
+              <p class="product-price">Rp12.999.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
       <!-- Produk 6 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Laptop" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Laptop Gaming X1</h6>
-            <p class="product-price">Rp25.500.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Laptop" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Laptop Gaming X1</h6>
+              <p class="product-price">Rp25.500.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
       <!-- Produk 7 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Smartwatch" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Smartwatch Fit</h6>
-            <p class="product-price">Rp2.199.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Smartwatch" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Smartwatch Fit</h6>
+              <p class="product-price">Rp2.199.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
       <!-- Produk 8 -->
       <div class="col-6 col-md-3">
-        <div class="product-card">
-          <img src="assets/img/product_1.png" alt="Speaker" class="img-fluid product-img">
-          <div class="p-3">
-            <h6 class="product-title">Speaker Bluetooth</h6>
-            <p class="product-price">Rp899.000</p>
-            <button class="btn btn-sm btn-outline-success w-100"><i class="fab fa-whatsapp"></i> Pesan Sekarang</button>
+        <a href="<?= site_url('/detail') ?>" class="text-decoration-none text-dark">
+          <div class="product-card">
+            <img src="assets/img/product_1.png" alt="Speaker" class="img-fluid product-img">
+            <div class="p-3">
+              <h6 class="product-title">Speaker Bluetooth</h6>
+              <p class="product-price">Rp899.000</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
     </div>
   </div>

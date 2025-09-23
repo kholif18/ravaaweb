@@ -37,17 +37,6 @@
               <i class="fas fa-shopping-bag me-1"></i> Shop
             </a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-th me-1"></i> Kategori
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Print</a></li>
-              <li><a class="dropdown-item" href="#"><i class="fas fa-paint-brush me-2"></i> Design</a></li>
-              <li><a class="dropdown-item" href="#"><i class="fas fa-pen me-2"></i> ATK</a></li>
-              <li><a class="dropdown-item" href="#"><i class="fas fa-tshirt me-2"></i> Sablon</a></li>
-            </ul>
-          </li>
           <li class="nav-item">
             <a class="nav-link" href="<?= base_url('/about') ?>">
               <i class="fas fa-info-circle me-1"></i> About

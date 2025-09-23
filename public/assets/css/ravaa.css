@@ -159,16 +159,6 @@ body {
         width: 100%;
       }
     }
-    
-    /* .banner {
-      height: 300px;
-      background-size: cover;
-      background-position: center;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    } */
 
     .banner-content {
       position: absolute;
@@ -1072,7 +1062,7 @@ body {
     transform: translateX(-50%);
     width: 80px;
     height: 4px;
-    background: linear-gradient(45deg, #3498db, #9b59b6);
+    background: #3498db;
     border-radius: 2px;
   }
   
@@ -1309,7 +1299,7 @@ body {
   .contact-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(45deg, #3498db, #9b59b6);
+    background: #3498db;
     border-radius: 50%;
     display: flex;
     align-items: center;
