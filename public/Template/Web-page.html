@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software House - Ravaa Creative | Jasa Pembuatan Website & Aplikasi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f72585;
+            --accent: #4cc9f0;
+            --tech-blue: #3a86ff;
+            --tech-dark: #1a1a2e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            z-index: 1001;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        /* Desktop Navigation */
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .desktop-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .desktop-nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 5px 0;
+            position: relative;
+        }
+
+        .desktop-nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        .desktop-nav ul li a.active {
+            color: var(--primary);
+        }
+
+        .desktop-nav ul li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .desktop-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            width: 250px;
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.3rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Navigation Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            z-index: 1001;
+            padding: 5px;
+        }
+
+        /* Mobile Navigation Overlay */
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Mobile Navigation Menu */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 320px;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            transition: right 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-nav.active {
+            right: 0;
+        }
+
+        .mobile-nav-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-nav-header .logo {
+            font-size: 1.5rem;
+        }
+
+        .mobile-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .mobile-nav-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .mobile-nav-menu {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .mobile-nav-menu li {
+            margin-bottom: 15px;
+        }
+
+        .mobile-nav-menu li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: block;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .mobile-nav-menu li a.active {
+            color: var(--primary);
+        }
+
+        .mobile-nav-menu li a:hover {
+            color: var(--primary);
+            padding-left: 10px;
+        }
+
+        .mobile-actions {
+            padding: 20px;
+            border-top: 1px solid var(--light-gray);
+            background-color: var(--light);
+        }
+
+        .mobile-search {
+            margin-bottom: 20px;
+        }
+
+        .mobile-search input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            font-size: 1rem;
+        }
+
+        .mobile-search i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .mobile-cart {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+
+        .mobile-cart-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mobile-cart-text h4 {
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .mobile-cart-text p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .mobile-contact {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .mobile-contact p {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: var(--tech-blue);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #2a75ff;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--tech-blue);
+            color: var(--tech-blue);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--tech-blue);
+            color: white;
+        }
+
+        .btn-tech {
+            background-color: var(--tech-blue);
+        }
+
+        /* Hero Section */
+        .hero-tech {
+            background: linear-gradient(135deg, var(--tech-dark) 0%, #16213e 100%);
+            color: white;
+            padding: 100px 0 80px;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-tech::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(58, 134, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(76, 201, 240, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(247, 37, 133, 0.05) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-tech h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #4cc9f0, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-tech p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: rgba(58, 134, 255, 0.2);
+            color: #4cc9f0;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: white;
+        }
+
+        .breadcrumb i {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 80px 0;
+            background-color: var(--light);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 4px;
+            background-color: var(--tech-blue);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 60px;
+            font-size: 1.1rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border-top: 4px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-top-color: var(--tech-blue);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: var(--tech-blue);
+            font-size: 2rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--tech-dark);
+        }
+
+        .service-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .service-features {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .service-features h4 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+
+        .service-features ul {
+            list-style: none;
+        }
+
+        .service-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+        }
+
+        .service-features li:last-child {
+            border-bottom: none;
+        }
+
+        .service-features li i {
+            color: var(--tech-blue);
+            font-size: 0.9rem;
+        }
+
+        /* Tech Stack */
+        .tech-stack-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 25px 15px;
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .tech-item:hover {
+            transform: translateY(-5px);
+            background-color: white;
+            box-shadow: var(--box-shadow);
+        }
+
+        .tech-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .tech-icon.html {
+            color: #e34f26;
+        }
+
+        .tech-icon.css {
+            color: #1572b6;
+        }
+
+        .tech-icon.js {
+            color: #f7df1e;
+        }
+
+        .tech-icon.react {
+            color: #61dafb;
+        }
+
+        .tech-icon.node {
+            color: #339933;
+        }
+
+        .tech-icon.php {
+            color: #777bb4;
+        }
+
+        .tech-icon.laravel {
+            color: #ff2d20;
+        }
+
+        .tech-icon.flutter {
+            color: #02569b;
+        }
+
+        .tech-item h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .tech-item p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Development Process */
+        .process-section {
+            padding: 80px 0;
+            background-color: var(--light);
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--light-gray);
+            z-index: 1;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 30px;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--tech-blue) 0%, #4cc9f0 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 20px rgba(58, 134, 255, 0.2);
+        }
+
+        .process-step h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--tech-dark);
+        }
+
+        .process-step p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        /* Portfolio Tech */
+        .portfolio-tech-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .portfolio-tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .portfolio-tech-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .portfolio-tech-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .portfolio-tech-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .portfolio-tech-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .portfolio-tech-item:hover .portfolio-tech-image img {
+            transform: scale(1.05);
+        }
+
+        .portfolio-tech-category {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--tech-blue);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .portfolio-tech-info {
+            padding: 25px;
+        }
+
+        .portfolio-tech-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--tech-dark);
+        }
+
+        .portfolio-tech-info p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .portfolio-tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .portfolio-tech-tag {
+            background-color: rgba(58, 134, 255, 0.1);
+            color: var(--tech-blue);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 80px 0;
+            background-color: var(--light);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .pricing-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .pricing-card.popular {
+            border: 2px solid var(--tech-blue);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background-color: var(--tech-blue);
+            color: white;
+            padding: 8px 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+            width: 120px;
+            text-align: center;
+        }
+
+        .pricing-header {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .pricing-name {
+            font-size: 1.5rem;
+            color: var(--tech-dark);
+            margin-bottom: 10px;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--tech-blue);
+            margin-bottom: 5px;
+        }
+
+        .pricing-period {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .pricing-features {
+            padding: 30px;
+        }
+
+        .pricing-features ul {
+            list-style: none;
+        }
+
+        .pricing-features ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-features ul li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features ul li i {
+            color: var(--tech-blue);
+        }
+
+        .pricing-cta {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+
+        /* CTA Section */
+        .cta-tech-section {
+            background: linear-gradient(135deg, var(--tech-dark) 0%, #16213e 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-tech-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 90%, rgba(58, 134, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 90% 10%, rgba(76, 201, 240, 0.2) 0%, transparent 50%);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-tech-section h2 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #4cc9f0, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-tech-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .btn-light {
+            background-color: white;
+            color: var(--tech-blue);
+        }
+
+        .btn-light:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--tech-dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .footer-about p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background-color: var(--tech-blue);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-tech h1 {
+                font-size: 2.8rem;
+            }
+            
+            .process-steps::before {
+                display: none;
+            }
+            
+            .process-step {
+                flex: 0 0 50%;
+            }
+            
+            .pricing-card.popular {
+                transform: none;
+            }
+            
+            .pricing-card.popular:hover {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .desktop-nav {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .hero-tech h1 {
+                font-size: 2.3rem;
+            }
+            
+            .hero-tech p {
+                font-size: 1.1rem;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .process-step {
+                flex: 0 0 100%;
+            }
+            
+            .portfolio-tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-tech {
+                padding: 80px 0 60px;
+            }
+            
+            .services-grid, .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-tech-section h2 {
+                font-size: 2rem;
+            }
+            
+            .mobile-nav {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-palette"></i>
+                Ravaa<span>Creative</span>
+            </a>
+            
+            <!-- Desktop Navigation -->
+            <div class="desktop-nav">
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="layanan.html">Layanan</a></li>
+                        <li><a href="produk.html">Produk</a></li>
+                        <li><a href="portfolio.html">Portfolio</a></li>
+                        <li><a href="software-house.html" class="active">Software House</a></li>
+                        <li><a href="kontak.html">Kontak</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="desktop-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Cari layanan...">
+                    </div>
+                    
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">3</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <a href="index.html" class="logo">
+                <i class="fas fa-palette"></i>
+                Ravaa<span>Creative</span>
+            </a>
+            <button class="mobile-close-btn" id="mobileCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-nav-content">
+            <ul class="mobile-nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="layanan.html">Layanan</a></li>
+                <li><a href="produk.html">Produk</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="software-house.html" class="active">Software House</a></li>
+                <li><a href="kontak.html">Kontak</a></li>
+            </ul>
+        </div>
+        
+        <div class="mobile-actions">
+            <div class="mobile-search" style="position: relative;">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Cari layanan...">
+            </div>
+            
+            <div class="mobile-cart">
+                <div class="mobile-cart-info">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">3</span>
+                    </div>
+                    <div class="mobile-cart-text">
+                        <h4>Keranjang Belanja</h4>
+                        <p>3 item - Rp 1.250.000</p>
+                    </div>
+                </div>
+                <button class="btn" style="padding: 8px 15px; font-size: 0.9rem;">Lihat</button>
+            </div>
+            
+            <div class="mobile-contact">
+                <p>Butuh bantuan? Hubungi kami:</p>
+                <a href="https://wa.me/6281234567890" class="btn" style="width: 100%;">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-tech">
+        <div class="container">
+            <div class="hero-content">
+                <div class="tech-badge">
+                    <i class="fas fa-code"></i> Divisi Software House
+                </div>
+                <h1>Ravaa Creative Tech</h1>
+                <p>Kami adalah divisi Software House dari Ravaa Creative yang khusus mengembangkan website, aplikasi mobile, dan solusi digital custom untuk bisnis Anda. Tim developer berpengalaman kami siap mewujudkan ide digital Anda.</p>
+                
+                <div class="hero-actions">
+                    <a href="#pricing" class="btn">Lihat Paket Website</a>
+                    <a href="#portfolio" class="btn btn-outline">Portfolio Tech</a>
+                    <a href="https://wa.me/6281234567890" class="btn btn-light" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Konsultasi Gratis
+                    </a>
+                </div>
+                
+                <div class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Software House</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Layanan Development Kami</h2>
+            </div>
+            
+            <p class="section-subtitle">Kami menyediakan berbagai layanan pengembangan software untuk kebutuhan digital bisnis Anda.</p>
+            
+            <div class="services-grid">
+                <!-- Service 1 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Website Development</h3>
+                    <p>Pembuatan website company profile, e-commerce, landing page, dan website custom sesuai kebutuhan bisnis Anda.</p>
+                    
+                    <div class="service-features">
+                        <h4>Fitur termasuk:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Website Responsive</li>
+                            <li><i class="fas fa-check"></i> CMS Custom</li>
+                            <li><i class="fas fa-check"></i> SEO Friendly</li>
+                            <li><i class="fas fa-check"></i> Integrasi Payment</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile App Development</h3>
+                    <p>Pengembangan aplikasi mobile iOS & Android untuk bisnis, startup, atau kebutuhan internal perusahaan.</p>
+                    
+                    <div class="service-features">
+                        <h4>Fitur termasuk:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Android & iOS</li>
+                            <li><i class="fas fa-check"></i> Cross-Platform</li>
+                            <li><i class="fas fa-check"></i> Push Notification</li>
+                            <li><i class="fas fa-check"></i> API Integration</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>E-Commerce Solution</h3>
+                    <p>Solusi toko online lengkap dengan sistem manajemen produk, order, payment gateway, dan dashboard analytics.</p>
+                    
+                    <div class="service-features">
+                        <h4>Fitur termasuk:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Multi-Vendor System</li>
+                            <li><i class="fas fa-check"></i> Payment Gateway</li>
+                            <li><i class="fas fa-check"></i> Inventory Management</li>
+                            <li><i class="fas fa-check"></i> Reporting System</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Service 4 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Custom Software</h3>
+                    <p>Pengembangan software khusus untuk kebutuhan bisnis seperti CRM, ERP, sistem inventory, dan aplikasi internal.</p>
+                    
+                    <div class="service-features">
+                        <h4>Fitur termasuk:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Custom Requirements</li>
+                            <li><i class="fas fa-check"></i> Scalable Architecture</li>
+                            <li><i class="fas fa-check"></i> Database Design</li>
+                            <li><i class="fas fa-check"></i> API Development</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Technology Stack Kami</h2>
+            </div>
+            
+            <p class="section-subtitle">Kami menggunakan teknologi terbaru dan terpercaya untuk pengembangan software yang berkualitas.</p>
+            
+            <div class="tech-grid">
+                <!-- Tech 1 -->
+                <div class="tech-item">
+                    <i class="fab fa-html5 tech-icon html"></i>
+                    <h4>HTML5</h4>
+                    <p>Frontend Structure</p>
+                </div>
+                
+                <!-- Tech 2 -->
+                <div class="tech-item">
+                    <i class="fab fa-css3-alt tech-icon css"></i>
+                    <h4>CSS3</h4>
+                    <p>Styling & Design</p>
+                </div>
+                
+                <!-- Tech 3 -->
+                <div class="tech-item">
+                    <i class="fab fa-js-square tech-icon js"></i>
+                    <h4>JavaScript</h4>
+                    <p>Frontend Logic</p>
+                </div>
+                
+                <!-- Tech 4 -->
+                <div class="tech-item">
+                    <i class="fab fa-react tech-icon react"></i>
+                    <h4>React.js</h4>
+                    <p>Frontend Framework</p>
+                </div>
+                
+                <!-- Tech 5 -->
+                <div class="tech-item">
+                    <i class="fab fa-node-js tech-icon node"></i>
+                    <h4>Node.js</h4>
+                    <p>Backend Runtime</p>
+                </div>
+                
+                <!-- Tech 6 -->
+                <div class="tech-item">
+                    <i class="fab fa-php tech-icon php"></i>
+                    <h4>PHP</h4>
+                    <p>Server Side</p>
+                </div>
+                
+                <!-- Tech 7 -->
+                <div class="tech-item">
+                    <i class="fab fa-laravel tech-icon laravel"></i>
+                    <h4>Laravel</h4>
+                    <p>PHP Framework</p>
+                </div>
+                
+                <!-- Tech 8 -->
+                <div class="tech-item">
+                    <i class="fab fa-flutter tech-icon flutter"></i>
+                    <h4>Flutter</h4>
+                    <p>Mobile Cross-Platform</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Process -->
+    <section class="process-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Proses Pengembangan</h2>
+            </div>
+            
+            <p class="section-subtitle">Kami mengikuti proses pengembangan yang terstruktur untuk memastikan kualitas dan ketepatan waktu.</p>
+            
+            <div class="process-steps">
+                <!-- Step 1 -->
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>Konsultasi & Analisis</h4>
+                    <p>Diskusi kebutuhan, analisis requirement, dan perencanaan proyek.</p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>UI/UX Design</h4>
+                    <p>Mendesain user interface dan experience yang optimal.</p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>Development</h4>
+                    <p>Pengembangan kode dengan teknologi terbaru dan best practices.</p>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4>Testing & QA</h4>
+                    <p>Pengujian menyeluruh untuk memastikan kualitas software.</p>
+                </div>
+                
+                <!-- Step 5 -->
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <h4>Deployment & Support</h4>
+                    <p>Peluncuran dan dukungan pasca-launch untuk maintenance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Tech -->
+    <section class="portfolio-tech-section" id="portfolio">
+        <div class="container">
+            <div class="section-title">
+                <h2>Portfolio Tech Kami</h2>
+            </div>
+            
+            <p class="section-subtitle">Beberapa proyek website dan aplikasi yang telah kami kembangkan untuk klien.</p>
+            
+            <div class="portfolio-tech-grid">
+                <!-- Portfolio 1 -->
+                <div class="portfolio-tech-item">
+                    <div class="portfolio-tech-image">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="E-commerce Website">
+                        <div class="portfolio-tech-category">E-commerce</div>
+                    </div>
+                    <div class="portfolio-tech-info">
+                        <h3>Tokopedia-like Marketplace</h3>
+                        <p>Pengembangan platform marketplace dengan sistem multi-vendor, integrasi berbagai payment gateway, dan dashboard analytics lengkap.</p>
+                        <div class="portfolio-tech-tags">
+                            <span class="portfolio-tech-tag">Laravel</span>
+                            <span class="portfolio-tech-tag">Vue.js</span>
+                            <span class="portfolio-tech-tag">MySQL</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Portfolio 2 -->
+                <div class="portfolio-tech-item">
+                    <div class="portfolio-tech-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Mobile App">
+                        <div class="portfolio-tech-category">Mobile App</div>
+                    </div>
+                    <div class="portfolio-tech-info">
+                        <h3>Delivery Service App</h3>
+                        <p>Aplikasi mobile untuk layanan delivery dengan fitur real-time tracking, in-app chat, dan sistem rating untuk driver dan customer.</p>
+                        <div class="portfolio-tech-tags">
+                            <span class="portfolio-tech-tag">Flutter</span>
+                            <span class="portfolio-tech-tag">Firebase</span>
+                            <span class="portfolio-tech-tag">Node.js</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Portfolio 3 -->
+                <div class="portfolio-tech-item">
+                    <div class="portfolio-tech-image">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="CRM System">
+                        <div class="portfolio-tech-category">CRM System</div>
+                    </div>
+                    <div class="portfolio-tech-info">
+                        <h3>Custom CRM System</h3>
+                        <p>Sistem CRM khusus untuk perusahaan properti dengan modul lead management, marketing automation, dan reporting dashboard.</p>
+                        <div class="portfolio-tech-tags">
+                            <span class="portfolio-tech-tag">React.js</span>
+                            <span class="portfolio-tech-tag">Express.js</span>
+                            <span class="portfolio-tech-tag">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Paket Website Development</h2>
+            </div>
+            
+            <p class="section-subtitle">Pilih paket yang sesuai dengan kebutuhan bisnis Anda. Semua paket termasuk domain, hosting, dan maintenance.</p>
+            
+            <div class="pricing-grid">
+                <!-- Paket Basic -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Paket Basic</h3>
+                        <div class="pricing-price">Rp 3.9JT</div>
+                        <div class="pricing-period">One-time payment</div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 5 Halaman Website</li>
+                            <li><i class="fas fa-check"></i> Design Responsive</li>
+                            <li><i class="fas fa-check"></i> CMS Simple</li>
+                            <li><i class="fas fa-check"></i> Kontak Form</li>
+                            <li><i class="fas fa-times"></i> E-commerce</li>
+                            <li><i class="fas fa-times"></i> Admin Panel</li>
+                            <li><i class="fas fa-times"></i> Mobile App</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-cta">
+                        <a href="https://wa.me/6281234567890" class="btn btn-outline" target="_blank">Pesan Sekarang</a>
+                    </div>
+                </div>
+                
+                <!-- Paket Professional -->
+                <div class="pricing-card popular">
+                    <div class="pricing-badge">POPULAR</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Paket Professional</h3>
+                        <div class="pricing-price">Rp 8.9JT</div>
+                        <div class="pricing-period">One-time payment</div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> 10-15 Halaman Website</li>
+                            <li><i class="fas fa-check"></i> Design Custom</li>
+                            <li><i class="fas fa-check"></i> CMS Custom</li>
+                            <li><i class="fas fa-check"></i> Admin Panel</li>
+                            <li><i class="fas fa-check"></i> Basic E-commerce</li>
+                            <li><i class="fas fa-check"></i> SEO Optimization</li>
+                            <li><i class="fas fa-times"></i> Mobile App</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-cta">
+                        <a href="https://wa.me/6281234567890" class="btn" target="_blank">Pesan Sekarang</a>
+                    </div>
+                </div>
+                
+                <!-- Paket Enterprise -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Paket Enterprise</h3>
+                        <div class="pricing-price">Rp 19.9JT</div>
+                        <div class="pricing-period">Custom Project</div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            <li><i class="fas fa-check"></i> Unlimited Pages</li>
+                            <li><i class="fas fa-check"></i> Advanced E-commerce</li>
+                            <li><i class="fas fa-check"></i> Mobile App Included</li>
+                            <li><i class="fas fa-check"></i> Custom Features</li>
+                            <li><i class="fas fa-check"></i> API Integration</li>
+                            <li><i class="fas fa-check"></i> Priority Support</li>
+                            <li><i class="fas fa-check"></i> 1 Year Maintenance</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-cta">
+                        <a href="https://wa.me/6281234567890" class="btn btn-outline" target="_blank">Konsultasi Proyek</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-tech-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Siap Transformasi Bisnis Anda ke Digital?</h2>
+                <p>Konsultasikan kebutuhan website atau aplikasi Anda dengan tim developer kami. Dapatkan solusi digital yang tepat untuk pertumbuhan bisnis Anda.</p>
+                
+                <div class="hero-actions">
+                    <a href="kontak.html" class="btn btn-light">
+                        <i class="fas fa-calendar-alt"></i> Jadwalkan Meeting
+                    </a>
+                    <a href="https://wa.me/6281234567890" class="btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Chat via WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="index.html" class="footer-logo">RavaaCreative</a>
+                    <p>Kami adalah perusahaan kreatif yang berfokus pada layanan desain grafis, percetakan, alat tulis kantor, dan pengembangan software. Dengan tim profesional, kami siap mewujudkan ide kreatif dan digital Anda.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Layanan Tech</h3>
+                    <ul>
+                        <li><a href="software-house.html#">Website Development</a></li>
+                        <li><a href="software-house.html#">Mobile App Development</a></li>
+                        <li><a href="software-house.html#">E-commerce Solution</a></li>
+                        <li><a href="software-house.html#">Custom Software</a></li>
+                        <li><a href="software-house.html#pricing">Paket Website</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Perusahaan</h3>
+                    <ul>
+                        <li><a href="tentang.html">Tentang Kami</a></li>
+                        <li><a href="portfolio.html">Portfolio</a></li>
+                        <li><a href="software-house.html#portfolio">Portfolio Tech</a></li>
+                        <li><a href="blog.html">Blog & Artikel</a></li>
+                        <li><a href="karir.html">Karir</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Kontak Tech Team</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Tech Hub No. 45, Jakarta</p>
+                    <p><i class="fas fa-phone"></i> (021) 9876-5432</p>
+                    <p><i class="fas fa-envelope"></i> tech@ravaacreative.com</p>
+                    <p><i class="fas fa-clock"></i> Senin - Jumat: 09:00 - 18:00</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Ravaa Creative. Hak Cipta Dilindungi. Divisi Software House: Ravaa Creative Tech</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+        const mobileNav = document.getElementById('mobileNav');
+        const mobileCloseBtn = document.getElementById('mobileCloseBtn');
+        const body = document.body;
+
+        // Buka mobile menu
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileNav.classList.add('active');
+            mobileNavOverlay.classList.add('active');
+            body.style.overflow = 'hidden';
+        });
+
+        // Tutup mobile menu
+        function closeMobileMenu() {
+            mobileNav.classList.remove('active');
+            mobileNavOverlay.classList.remove('active');
+            body.style.overflow = '';
+        }
+
+        mobileCloseBtn.addEventListener('click', closeMobileMenu);
+        mobileNavOverlay.addEventListener('click', closeMobileMenu);
+
+        // Smooth scroll untuk anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Tutup mobile menu jika terbuka
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Update WhatsApp links dengan pesan khusus software house
+        const whatsappLinks = document.querySelectorAll('a[href*="wa.me"]');
+        
+        whatsappLinks.forEach(link => {
+            if (link.classList.contains('btn-light') || link.textContent.includes('Konsultasi')) {
+                const message = "Halo Ravaa Creative Tech, saya tertarik dengan layanan software house/development. Bisa info lebih detail?";
+                const encodedMessage = encodeURIComponent(message);
+                link.href = `https://wa.me/6281234567890?text=${encodedMessage}`;
+            }
+        });
+
+        // Animasi saat scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe service cards
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+
+        // Observe tech items
+        document.querySelectorAll('.tech-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(item);
+        });
+
+        // Observe portfolio items
+        document.querySelectorAll('.portfolio-tech-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(item);
+        });
+
+        // Observe pricing cards
+        document.querySelectorAll('.pricing-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+
+        // Animasi process steps
+        document.querySelectorAll('.process-step').forEach((step, index) => {
+            step.style.opacity = '0';
+            step.style.transform = 'translateY(20px)';
+            step.style.transition = `opacity 0.5s ease ${index * 0.2}s, transform 0.5s ease ${index * 0.2}s`;
+            observer.observe(step);
+        });
+
+        // Counter animation untuk tech stack (jika ada counter)
+        const techItems = document.querySelectorAll('.tech-item');
+        techItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-5px) scale(1.05)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(-5px)';
+            });
+        });
+    </script>
+</body>
+</html>

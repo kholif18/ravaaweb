@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produk - Ravaa Creative | Katalog Desain, Print & ATK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f72585;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 5px 0;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        nav ul li a.active {
+            color: var(--primary);
+        }
+
+        nav ul li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            width: 250px;
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero-products {
+            background: linear-gradient(135deg, var(--accent) 0%, #3a0ca3 100%);
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero-products h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-products p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .breadcrumb a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            opacity: 1;
+        }
+
+        .breadcrumb i {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Product Filters */
+        .product-filters {
+            padding: 40px 0;
+            background-color: var(--light);
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .filter-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .filter-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            background-color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-filter input {
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            width: 250px;
+            font-size: 0.9rem;
+        }
+
+        .search-filter input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-filter {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-filter:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-clear {
+            background-color: transparent;
+            color: var(--gray);
+            border: 1px solid var(--light-gray);
+        }
+
+        .btn-clear:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .filter-tag {
+            background-color: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-tag i {
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        /* Product Categories */
+        .product-categories {
+            padding: 40px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 4px;
+            background-color: var(--secondary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .category-card.active {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .category-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .category-count {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Products Grid */
+        .products-grid-section {
+            padding: 60px 0;
+            background-color: var(--light-gray);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .products-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .product-count {
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .view-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .view-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .products-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card.list-view {
+            display: flex;
+            height: 200px;
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-card.list-view .product-image {
+            width: 250px;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-badge.discount {
+            background-color: #ff9e00;
+        }
+
+        .product-badge.new {
+            background-color: var(--accent);
+        }
+
+        .product-badge.popular {
+            background-color: #7209b7;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-card.list-view .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-category {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            height: 50px;
+            overflow: hidden;
+        }
+
+        .product-card.list-view .product-title {
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .product-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .product-card.list-view .product-description {
+            display: block;
+            flex: 1;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .current-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .original-price {
+            font-size: 1rem;
+            color: var(--gray);
+            text-decoration: line-through;
+        }
+
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-card.list-view .product-actions {
+            justify-content: flex-start;
+            gap: 15px;
+        }
+
+        .btn-add-to-cart {
+            padding: 8px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add-to-cart:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-detail {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-detail:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-quick-view {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark);
+        }
+
+        .btn-quick-view:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 50px;
+        }
+
+        .page-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--light-gray);
+            background-color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .page-item:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-item.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-item.disabled:hover {
+            border-color: var(--light-gray);
+            color: inherit;
+        }
+
+        /* Quick View Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .quick-view-modal {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(50px);
+            transition: transform 0.4s ease;
+        }
+
+        .modal-overlay.active .quick-view-modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content {
+            padding: 40px;
+        }
+
+        .modal-product {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .modal-product-image {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .modal-product-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .modal-product-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-product-category {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .modal-product-price {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .modal-product-description {
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .modal-product-features {
+            margin-bottom: 30px;
+        }
+
+        .modal-product-features h4 {
+            margin-bottom: 10px;
+        }
+
+        .modal-product-features ul {
+            list-style-position: inside;
+            color: var(--gray);
+        }
+
+        .modal-product-features li {
+            margin-bottom: 5px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-modal {
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .btn-modal-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-modal-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Promo Banner */
+        .promo-banner {
+            background: linear-gradient(to right, #7209b7, #4361ee);
+            color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .promo-banner h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .promo-banner p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .promo-code {
+            display: inline-block;
+            background-color: white;
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .footer-about p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .modal-product {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-left, .filter-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 15px 0;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            .search-box input:focus {
+                width: 180px;
+            }
+            
+            .hero-products h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-products p {
+                font-size: 1rem;
+            }
+            
+            .search-filter input {
+                width: 180px;
+            }
+            
+            .product-card.list-view {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .product-card.list-view .product-image {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-products {
+                padding: 60px 0 40px;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn-modal {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-palette"></i>
+                Ravaa<span>Creative</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="layanan.html">Layanan</a></li>
+                    <li><a href="produk.html" class="active">Produk</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="tentang.html">Tentang Kami</a></li>
+                    <li><a href="kontak.html">Kontak</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari produk...">
+                </div>
+                
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">3</span>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-products">
+        <div class="container">
+            <h1>Katalog Produk</h1>
+            <p>Temukan berbagai produk desain, percetakan, dan alat tulis kantor berkualitas tinggi dari Ravaa Creative. Solusi lengkap untuk kebutuhan kreatif dan bisnis Anda.</p>
+            
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Produk</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Filters -->
+    <section class="product-filters">
+        <div class="container">
+            <div class="filter-container">
+                <div class="filter-left">
+                    <div class="filter-group">
+                        <span class="filter-label">Kategori:</span>
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="all">Semua Kategori</option>
+                            <option value="design">Desain Grafis</option>
+                            <option value="printing">Percetakan</option>
+                            <option value="atk">ATK & Perlengkapan</option>
+                            <option value="merchandise">Sablon & Merchandise</option>
+                            <option value="digital">Digital Printing</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Harga:</span>
+                        <select class="filter-select" id="priceFilter">
+                            <option value="all">Semua Harga</option>
+                            <option value="0-500">Rp 0 - 500K</option>
+                            <option value="500-1000">Rp 500K - 1JT</option>
+                            <option value="1000-5000">Rp 1JT - 5JT</option>
+                            <option value="5000+">> Rp 5JT</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <span class="filter-label">Urutkan:</span>
+                        <select class="filter-select" id="sortFilter">
+                            <option value="default">Default</option>
+                            <option value="price-low">Harga: Rendah ke Tinggi</option>
+                            <option value="price-high">Harga: Tinggi ke Rendah</option>
+                            <option value="name-asc">Nama: A - Z</option>
+                            <option value="name-desc">Nama: Z - A</option>
+                            <option value="popular">Paling Populer</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-right">
+                    <div class="search-filter">
+                        <input type="text" placeholder="Cari produk..." id="searchInput">
+                        <button class="btn-filter" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <button class="btn-filter btn-clear" id="clearFilters">
+                        <i class="fas fa-times"></i> Hapus Filter
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-tags" id="filterTags">
+                <!-- Filter tags akan muncul di sini -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Categories -->
+    <section class="product-categories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Kategori Produk</h2>
+            </div>
+            
+            <div class="category-grid">
+                <div class="category-card active" data-category="all">
+                    <div class="category-icon">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <h3>Semua Produk</h3>
+                    <div class="category-count">48 produk</div>
+                </div>
+                
+                <div class="category-card" data-category="design">
+                    <div class="category-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>Desain Grafis</h3>
+                    <div class="category-count">12 produk</div>
+                </div>
+                
+                <div class="category-card" data-category="printing">
+                    <div class="category-icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <h3>Percetakan</h3>
+                    <div class="category-count">18 produk</div>
+                </div>
+                
+                <div class="category-card" data-category="atk">
+                    <div class="category-icon">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <h3>ATK & Perlengkapan</h3>
+                    <div class="category-count">10 produk</div>
+                </div>
+                
+                <div class="category-card" data-category="merchandise">
+                    <div class="category-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Sablon & Merchandise</h3>
+                    <div class="category-count">6 produk</div>
+                </div>
+                
+                <div class="category-card" data-category="digital">
+                    <div class="category-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Digital Printing</h3>
+                    <div class="category-count">8 produk</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products-grid-section">
+        <div class="container">
+            <div class="products-header">
+                <div>
+                    <h3>Semua Produk <span class="product-count">(48 produk)</span></h3>
+                </div>
+                
+                <div class="view-options">
+                    <div class="sort-options">
+                        <span style="margin-right: 10px;">Tampilan:</span>
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="productsGrid">
+                <!-- Produk 1 -->
+                <div class="product-card" data-category="design" data-price="499000" data-name="Paket Desain Logo Profesional" data-popular="true">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Desain Logo Profesional">
+                        <span class="product-badge new">Baru</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Desain Grafis</div>
+                        <h3 class="product-title">Paket Desain Logo Profesional</h3>
+                        <p class="product-description">Paket lengkap pembuatan logo dengan 3 konsep desain, revisi tanpa batas, dan file final dalam berbagai format.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 499.000</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="1">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 2 -->
+                <div class="product-card" data-category="printing" data-price="1200" data-name="Cetak Brosur A4 Full Color" data-popular="true">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Cetak Brosur">
+                        <span class="product-badge discount">Diskon 15%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Percetakan</div>
+                        <h3 class="product-title">Cetak Brosur A4 Full Color</h3>
+                        <p class="product-description">Cetak brosur A4 full color dengan kualitas premium. Minimal order 100 lembar, pilihan kertas art paper atau HVS.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.200/lembar</span>
+                            <span class="original-price">Rp 1.400/lembar</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="2">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 3 -->
+                <div class="product-card" data-category="atk" data-price="25000" data-name="Notebook Custom Logo Perusahaan" data-popular="false">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Notebook Custom">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">ATK & Perlengkapan</div>
+                        <h3 class="product-title">Notebook Custom Logo Perusahaan</h3>
+                        <p class="product-description">Notebook custom dengan cover hardcover dan logo perusahaan. Isi 100 halaman, ukuran A5, minimal order 50 pcs.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 25.000/buku</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="3">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 4 -->
+                <div class="product-card" data-category="merchandise" data-price="85000" data-name="Sablon Kaos Polo Custom" data-popular="true">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Sablon Kaos">
+                        <span class="product-badge popular">Populer</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Sablon & Merchandise</div>
+                        <h3 class="product-title">Sablon Kaos Polo Custom</h3>
+                        <p class="product-description">Kaos polo berkualitas dengan sablon custom menggunakan teknik plastisol. Pilihan warna kaos dan sablon tersedia.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 85.000/pcs</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="4">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 5 -->
+                <div class="product-card" data-category="digital" data-price="45000" data-name="Stiker Vinyl Outdoor" data-popular="false">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Stiker Vinyl">
+                        <span class="product-badge discount">Diskon 10%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Digital Printing</div>
+                        <h3 class="product-title">Stiker Vinyl Outdoor</h3>
+                        <p class="product-description">Stiker vinyl tahan cuaca untuk penggunaan outdoor. Tahan air, matahari, dan cuaca ekstrem. Cocok untuk kendaraan, signage, dll.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 45.000/m²</span>
+                            <span class="original-price">Rp 50.000/m²</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="5">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 6 -->
+                <div class="product-card" data-category="design" data-price="1299000" data-name="Paket Branding Lengkap" data-popular="false">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1634942537034-2531766767d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Paket Branding">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Desain Grafis</div>
+                        <h3 class="product-title">Paket Branding Lengkap</h3>
+                        <p class="product-description">Paket lengkap branding perusahaan: logo, kartu nama, kop surat, amplop, dan panduan penggunaan brand.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.299.000</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="6">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 7 -->
+                <div class="product-card" data-category="printing" data-price="350000" data-name="Cetak Banner Flexi 3x1 Meter" data-popular="true">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Cetak Banner">
+                        <span class="product-badge popular">Populer</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Percetakan</div>
+                        <h3 class="product-title">Cetak Banner Flexi 3x1 Meter</h3>
+                        <p class="product-description">Cetak banner flexi outdoor tahan cuaca, ukuran 3x1 meter. Cocok untuk promosi, event, atau signage.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 350.000</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="7">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 8 -->
+                <div class="product-card" data-category="atk" data-price="1500" data-name="Amplop Custom Logo Perusahaan" data-popular="false">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Amplop Custom">
+                        <span class="product-badge discount">Diskon 5%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">ATK & Perlengkapan</div>
+                        <h3 class="product-title">Amplop Custom Logo Perusahaan</h3>
+                        <p class="product-description">Amplop custom dengan logo perusahaan, ukuran standar. Minimal order 200 pcs, pilihan warna amplop tersedia.</p>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.500/buah</span>
+                            <span class="original-price">Rp 1.600/buah</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Keranjang
+                            </button>
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-quick-view" data-product="8">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="page-item disabled">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="page-item active">1</div>
+                <div class="page-item">2</div>
+                <div class="page-item">3</div>
+                <div class="page-item">4</div>
+                <div class="page-item">5</div>
+                <div class="page-item">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="container">
+        <div class="promo-banner">
+            <h2>Gratis Konsultasi Desain!</h2>
+            <p>Dapatkan konsultasi desain gratis untuk 5 project pertama Anda. Hubungi kami sekarang untuk mendiskusikan kebutuhan kreatif bisnis Anda.</p>
+            <a href="kontak.html" class="btn" style="background-color: white; color: #7209b7; margin-top: 15px;">Hubungi Sekarang</a>
+        </div>
+    </section>
+
+    <!-- Quick View Modal -->
+    <div class="modal-overlay" id="quickViewModal">
+        <div class="quick-view-modal">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content">
+                <div class="modal-product" id="modalProductContent">
+                    <!-- Konten modal akan dimuat di sini oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="index.html" class="footer-logo">RavaaCreative</a>
+                    <p>Kami adalah perusahaan kreatif yang berfokus pada layanan desain grafis, percetakan, dan alat tulis kantor. Dengan tim profesional, kami siap mewujudkan ide kreatif Anda.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Produk</h3>
+                    <ul>
+                        <li><a href="produk.html?category=design">Desain Grafis</a></li>
+                        <li><a href="produk.html?category=printing">Percetakan Digital</a></li>
+                        <li><a href="produk.html?category=atk">ATK & Perlengkapan</a></li>
+                        <li><a href="produk.html?category=merchandise">Sablon & Merchandise</a></li>
+                        <li><a href="produk.html?category=digital">Digital Printing Khusus</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Perusahaan</h3>
+                    <ul>
+                        <li><a href="tentang.html">Tentang Kami</a></li>
+                        <li><a href="portfolio.html">Portfolio</a></li>
+                        <li><a href="testimoni.html">Testimoni</a></li>
+                        <li><a href="blog.html">Blog & Artikel</a></li>
+                        <li><a href="karir.html">Karir</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Kontak Kami</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Kreatif No. 123, Jakarta</p>
+                    <p><i class="fas fa-phone"></i> (021) 1234-5678</p>
+                    <p><i class="fas fa-envelope"></i> info@ravaacreative.com</p>
+                    <p><i class="fas fa-clock"></i> Senin - Jumat: 08:00 - 17:00</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Ravaa Creative. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data produk untuk quick view
+        const productsData = {
+            1: {
+                name: "Paket Desain Logo Profesional",
+                category: "Desain Grafis",
+                price: "Rp 499.000",
+                description: "Paket lengkap pembuatan logo profesional untuk bisnis Anda. Tim desainer kami akan membuat 3 konsep desain logo yang unik dan sesuai dengan identitas bisnis Anda. Revisi tanpa batas hingga Anda puas dengan hasilnya.",
+                features: [
+                    "3 konsep desain logo yang berbeda",
+                    "Revisi tanpa batas hingga puas",
+                    "File final dalam format JPG, PNG, PDF, SVG",
+                    "File sumber (AI/PSD) untuk kebutuhan editing",
+                    "Panduan penggunaan warna dan font",
+                    "Garansi hak cipta 100%"
+                ],
+                image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            },
+            2: {
+                name: "Cetak Brosur A4 Full Color",
+                category: "Percetakan",
+                price: "Rp 1.200/lembar",
+                description: "Cetak brosur A4 full color dengan kualitas premium. Cocok untuk promosi produk, layanan, atau event. Kami menggunakan mesin cetak digital terbaru untuk hasil yang tajam dan warna yang akurat.",
+                features: [
+                    "Ukuran A4 (21x29.7 cm)",
+                    "Full color kedua sisi",
+                    "Pilihan kertas: Art paper 150gsm atau HVS 100gsm",
+                    "Finishing: Laminating doff/gloss (opsional)",
+                    "Minimal order 100 lembar",
+                    "Waktu pengerjaan 2-3 hari kerja"
+                ],
+                image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            },
+            3: {
+                name: "Notebook Custom Logo Perusahaan",
+                category: "ATK & Perlengkapan",
+                price: "Rp 25.000/buku",
+                description: "Notebook custom dengan cover hardcover yang dicetak logo perusahaan Anda. Cocok untuk kebutuhan internal perusahaan atau sebagai corporate gift untuk klien.",
+                features: [
+                    "Ukuran A5 (14.8x21 cm)",
+                    "Cover hardcover dengan cetak full color",
+                    "Isi 100 halaman kertas HVS 70gsm",
+                    "Garis atau polos (pilihan)",
+                    "Minimal order 50 pcs",
+                    "Waktu pengerjaan 7-10 hari kerja"
+                ],
+                image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            },
+            4: {
+                name: "Sablon Kaos Polo Custom",
+                category: "Sablon & Merchandise",
+                price: "Rp 85.000/pcs",
+                description: "Kaos polo berkualitas premium dengan sablon custom menggunakan teknik plastisol yang tahan lama. Cocok untuk seragam perusahaan, event, atau merchandise promosi.",
+                features: [
+                    "Bahan katun pique premium",
+                    "Teknik sablon plastisol (tahan lama)",
+                    "Pilihan warna kaos lengkap",
+                    "Sablon maksimal 3 warna",
+                    "Minimal order 12 pcs",
+                    "Ukuran S, M, L, XL, XXL"
+                ],
+                image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            }
+        };
+
+        // DOM Elements
+        const categoryCards = document.querySelectorAll('.category-card');
+        const productsGrid = document.getElementById('productsGrid');
+        const productCards = document.querySelectorAll('.product-card');
+        const viewButtons = document.querySelectorAll('.view-btn');
+        const quickViewButtons = document.querySelectorAll('.btn-quick-view');
+        const quickViewModal = document.getElementById('quickViewModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalProductContent = document.getElementById('modalProductContent');
+        const addToCartButtons = document.querySelectorAll('.btn-add-to-cart');
+        const cartCount = document.querySelector('.cart-count');
+        
+        // Filter elements
+        const categoryFilter = document.getElementById('categoryFilter');
+        const priceFilter = document.getElementById('priceFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearFiltersBtn = document.getElementById('clearFilters');
+        const filterTags = document.getElementById('filterTags');
+
+        // State untuk filter
+        let activeFilters = {
+            category: 'all',
+            price: 'all',
+            sort: 'default',
+            search: ''
+        };
+
+        // Filter produk berdasarkan kategori
+        categoryCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Hapus active class dari semua kategori
+                categoryCards.forEach(c => c.classList.remove('active'));
+                // Tambah active class ke kategori yang diklik
+                card.classList.add('active');
+                
+                // Update filter state
+                const category = card.getAttribute('data-category');
+                activeFilters.category = category;
+                
+                // Update dropdown filter
+                categoryFilter.value = category === 'all' ? 'all' : category;
+                
+                // Terapkan filter
+                applyFilters();
+                
+                // Update filter tags
+                updateFilterTags();
+            });
+        });
+
+        // Filter dengan dropdown
+        categoryFilter.addEventListener('change', () => {
+            const category = categoryFilter.value;
+            activeFilters.category = category;
+            
+            // Update kategori aktif
+            categoryCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                card.classList.toggle('active', cardCategory === category || (category === 'all' && cardCategory === 'all'));
+            });
+            
+            applyFilters();
+            updateFilterTags();
+        });
+
+        priceFilter.addEventListener('change', () => {
+            activeFilters.price = priceFilter.value;
+            applyFilters();
+            updateFilterTags();
+        });
+
+        sortFilter.addEventListener('change', () => {
+            activeFilters.sort = sortFilter.value;
+            applyFilters();
+            updateFilterTags();
+        });
+
+        // Search produk
+        searchBtn.addEventListener('click', () => {
+            activeFilters.search = searchInput.value.toLowerCase();
+            applyFilters();
+            updateFilterTags();
+        });
+
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                activeFilters.search = searchInput.value.toLowerCase();
+                applyFilters();
+                updateFilterTags();
+            }
+        });
+
+        // Hapus semua filter
+        clearFiltersBtn.addEventListener('click', () => {
+            // Reset filter state
+            activeFilters = {
+                category: 'all',
+                price: 'all',
+                sort: 'default',
+                search: ''
+            };
+            
+            // Reset UI
+            categoryFilter.value = 'all';
+            priceFilter.value = 'all';
+            sortFilter.value = 'default';
+            searchInput.value = '';
+            
+            // Reset kategori aktif
+            categoryCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                card.classList.toggle('active', cardCategory === 'all');
+            });
+            
+            // Terapkan filter
+            applyFilters();
+            
+            // Hapus filter tags
+            filterTags.innerHTML = '';
+        });
+
+        // Fungsi untuk menerapkan filter
+        function applyFilters() {
+            let visibleCount = 0;
+            
+            productCards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                const price = parseInt(card.getAttribute('data-price'));
+                const name = card.getAttribute('data-name').toLowerCase();
+                const searchTerm = activeFilters.search;
+                
+                // Filter kategori
+                const categoryMatch = activeFilters.category === 'all' || category === activeFilters.category;
+                
+                // Filter harga
+                let priceMatch = true;
+                if (activeFilters.price !== 'all') {
+                    const priceRange = activeFilters.price;
+                    if (priceRange === '0-500') priceMatch = price <= 500000;
+                    else if (priceRange === '500-1000') priceMatch = price > 500000 && price <= 1000000;
+                    else if (priceRange === '1000-5000') priceMatch = price > 1000000 && price <= 5000000;
+                    else if (priceRange === '5000+') priceMatch = price > 5000000;
+                }
+                
+                // Filter pencarian
+                const searchMatch = !searchTerm || name.includes(searchTerm);
+                
+                // Tampilkan atau sembunyikan produk
+                if (categoryMatch && priceMatch && searchMatch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Update jumlah produk yang ditampilkan
+            const productCountElement = document.querySelector('.product-count');
+            if (productCountElement) {
+                productCountElement.textContent = `(${visibleCount} produk)`;
+            }
+            
+            // Urutkan produk jika diperlukan
+            sortProducts();
+        }
+
+        // Fungsi untuk mengurutkan produk
+        function sortProducts() {
+            const productsContainer = document.getElementById('productsGrid');
+            const products = Array.from(productsContainer.querySelectorAll('.product-card[style*="display: block"]'));
+            
+            if (activeFilters.sort !== 'default') {
+                products.sort((a, b) => {
+                    const priceA = parseInt(a.getAttribute('data-price'));
+                    const priceB = parseInt(b.getAttribute('data-price'));
+                    const nameA = a.getAttribute('data-name').toLowerCase();
+                    const nameB = b.getAttribute('data-name').toLowerCase();
+                    const popularA = a.getAttribute('data-popular') === 'true';
+                    const popularB = b.getAttribute('data-popular') === 'true';
+                    
+                    switch (activeFilters.sort) {
+                        case 'price-low':
+                            return priceA - priceB;
+                        case 'price-high':
+                            return priceB - priceA;
+                        case 'name-asc':
+                            return nameA.localeCompare(nameB);
+                        case 'name-desc':
+                            return nameB.localeCompare(nameA);
+                        case 'popular':
+                            if (popularA && !popularB) return -1;
+                            if (!popularA && popularB) return 1;
+                            return 0;
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Reorder products in container
+                products.forEach(product => {
+                    productsContainer.appendChild(product);
+                });
+            }
+        }
+
+        // Fungsi untuk update filter tags
+        function updateFilterTags() {
+            filterTags.innerHTML = '';
+            
+            // Kategori tag
+            if (activeFilters.category !== 'all') {
+                const categoryText = categoryFilter.options[categoryFilter.selectedIndex].text;
+                addFilterTag(`Kategori: ${categoryText}`, 'category');
+            }
+            
+            // Harga tag
+            if (activeFilters.price !== 'all') {
+                const priceText = priceFilter.options[priceFilter.selectedIndex].text;
+                addFilterTag(`Harga: ${priceText}`, 'price');
+            }
+            
+            // Sort tag
+            if (activeFilters.sort !== 'default') {
+                const sortText = sortFilter.options[sortFilter.selectedIndex].text;
+                addFilterTag(`Urutkan: ${sortText}`, 'sort');
+            }
+            
+            // Search tag
+            if (activeFilters.search) {
+                addFilterTag(`Pencarian: "${activeFilters.search}"`, 'search');
+            }
+        }
+
+        // Fungsi untuk menambahkan filter tag
+        function addFilterTag(text, type) {
+            const tag = document.createElement('div');
+            tag.className = 'filter-tag';
+            tag.innerHTML = `
+                ${text}
+                <i class="fas fa-times" data-filter-type="${type}"></i>
+            `;
+            
+            // Tambah event listener untuk menghapus tag
+            const removeBtn = tag.querySelector('i');
+            removeBtn.addEventListener('click', () => {
+                removeFilter(type);
+            });
+            
+            filterTags.appendChild(tag);
+        }
+
+        // Fungsi untuk menghapus filter tertentu
+        function removeFilter(type) {
+            switch (type) {
+                case 'category':
+                    activeFilters.category = 'all';
+                    categoryFilter.value = 'all';
+                    categoryCards.forEach(card => {
+                        const cardCategory = card.getAttribute('data-category');
+                        card.classList.toggle('active', cardCategory === 'all');
+                    });
+                    break;
+                case 'price':
+                    activeFilters.price = 'all';
+                    priceFilter.value = 'all';
+                    break;
+                case 'sort':
+                    activeFilters.sort = 'default';
+                    sortFilter.value = 'default';
+                    break;
+                case 'search':
+                    activeFilters.search = '';
+                    searchInput.value = '';
+                    break;
+            }
+            
+            applyFilters();
+            updateFilterTags();
+        }
+
+        // Toggle view mode (grid/list)
+        viewButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const view = button.getAttribute('data-view');
+                
+                // Update active button
+                viewButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update products grid class
+                productsGrid.classList.toggle('list-view', view === 'list');
+                
+                // Update product cards
+                productCards.forEach(card => {
+                    card.classList.toggle('list-view', view === 'list');
+                });
+            });
+        });
+
+        // Quick View Modal
+        quickViewButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const productId = button.getAttribute('data-product');
+                const product = productsData[productId];
+                
+                if (product) {
+                    modalProductContent.innerHTML = `
+                        <div class="modal-product-image">
+                            <img src="${product.image}" alt="${product.name}">
+                        </div>
+                        <div class="modal-product-info">
+                            <h2>${product.name}</h2>
+                            <div class="modal-product-category">${product.category}</div>
+                            <div class="modal-product-price">${product.price}</div>
+                            <p class="modal-product-description">${product.description}</p>
+                            <div class="modal-product-features">
+                                <h4>Fitur Produk:</h4>
+                                <ul>
+                                    ${product.features.map(feature => `<li>${feature}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn btn-modal" id="modalAddToCart">
+                                    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+                                </button>
+                                <button class="btn btn-modal-outline" id="modalContact">
+                                    <i class="fas fa-envelope"></i> Konsultasi Produk
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Tambah event listener untuk tombol dalam modal
+                    const modalAddToCart = document.getElementById('modalAddToCart');
+                    if (modalAddToCart) {
+                        modalAddToCart.addEventListener('click', () => {
+                            let currentCount = parseInt(cartCount.textContent);
+                            cartCount.textContent = currentCount + 1;
+                            
+                            // Animasi sederhana
+                            cartCount.style.transform = 'scale(1.3)';
+                            setTimeout(() => {
+                                cartCount.style.transform = 'scale(1)';
+                            }, 300);
+                            
+                            // Tutup modal
+                            quickViewModal.classList.remove('active');
+                            
+                            alert(`"${product.name}" telah ditambahkan ke keranjang!`);
+                        });
+                    }
+                    
+                    // Buka modal
+                    quickViewModal.classList.add('active');
+                }
+            });
+        });
+
+        // Tutup modal
+        modalClose.addEventListener('click', () => {
+            quickViewModal.classList.remove('active');
+        });
+
+        // Tutup modal dengan klik di luar konten
+        quickViewModal.addEventListener('click', (e) => {
+            if (e.target === quickViewModal) {
+                quickViewModal.classList.remove('active');
+            }
+        });
+
+        // Tambah ke keranjang
+        addToCartButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                let currentCount = parseInt(cartCount.textContent);
+                cartCount.textContent = currentCount + 1;
+                
+                // Animasi sederhana
+                cartCount.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    cartCount.style.transform = 'scale(1)';
+                }, 300);
+                
+                alert('Produk telah ditambahkan ke keranjang!');
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const nav = document.querySelector('nav ul');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            if(nav.style.display === 'flex') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+                nav.style.flexDirection = 'column';
+                nav.style.position = 'absolute';
+                nav.style.top = '70px';
+                nav.style.right = '20px';
+                nav.style.background = 'white';
+                nav.style.padding = '20px';
+                nav.style.borderRadius = '10px';
+                nav.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+                nav.style.width = '200px';
+                nav.style.zIndex = '1000';
+            }
+        });
+
+        // Inisialisasi filter tags
+        updateFilterTags();
+    </script>
+</body>
+</html>

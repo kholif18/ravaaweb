@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravaa Creative - Jasa Desain, Print & ATK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f72585;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 5px 0;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        nav ul li a.active {
+            color: var(--primary);
+        }
+
+        nav ul li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            width: 250px;
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        /* Banner */
+        .banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 60px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .banner-text {
+            flex: 1;
+        }
+
+        .banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .banner p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #e11575;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            margin-left: 10px;
+        }
+
+        .btn-outline:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .banner-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .banner-image img {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Categories */
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2rem;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 4px;
+            background-color: var(--secondary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .categories {
+            padding: 60px 0;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .category-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .category-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        /* Products */
+        .products {
+            padding: 60px 0;
+            background-color: var(--light-gray);
+        }
+
+        .product-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            background-color: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-badge.discount {
+            background-color: #ff9e00;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            height: 50px;
+            overflow: hidden;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .current-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .original-price {
+            font-size: 1rem;
+            color: var(--gray);
+            text-decoration: line-through;
+        }
+
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-add-to-cart {
+            padding: 8px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-add-to-cart:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-detail {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-detail:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Promo Banner */
+        .promo-banner {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .promo-banner h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .promo-banner p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .promo-code {
+            display: inline-block;
+            background-color: white;
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .footer-about p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .banner-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .banner-text {
+                text-align: center;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 15px 0;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            .search-box input:focus {
+                width: 180px;
+            }
+            
+            .banner h1 {
+                font-size: 2rem;
+            }
+            
+            .promo-banner h2 {
+                font-size: 1.6rem;
+            }
+            
+            .product-tabs {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .banner {
+                padding: 40px 0;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .category-grid, .product-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .promo-banner {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <i class="fas fa-palette"></i>
+                Ravaa<span>Creative</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#">Layanan</a></li>
+                    <li><a href="#">Produk</a></li>
+                    <li><a href="#">Portfolio</a></li>
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Kontak</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari produk atau layanan...">
+                </div>
+                
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">3</span>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <section class="banner">
+        <div class="container banner-content">
+            <div class="banner-text">
+                <h1>Solusi Kreatif untuk Desain, Print & ATK Anda</h1>
+                <p>Ravaa Creative menyediakan layanan desain grafis, percetakan, dan alat tulis kantor berkualitas tinggi dengan harga kompetitif. Hasil kreatif yang memukau untuk kebutuhan bisnis Anda.</p>
+                <a href="#" class="btn">Lihat Layanan</a>
+                <a href="#" class="btn btn-outline">Portfolio Kami</a>
+            </div>
+            <div class="banner-image">
+                <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Desain Kreatif">
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Layanan Kami</h2>
+            </div>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>Desain Grafis</h3>
+                    <p>Logo, brosur, banner, kartu nama, dan desain kreatif lainnya untuk bisnis Anda.</p>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <h3>Percetakan</h3>
+                    <p>Cetak offset dan digital dengan kualitas tinggi untuk segala kebutuhan percetakan.</p>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <h3>Alat Tulis Kantor</h3>
+                    <p>Berbagai kebutuhan ATK dengan kualitas terbaik untuk mendukung produktivitas.</p>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Sablon & Merchandise</h3>
+                    <p>Sablon kaos, mug, tumbler, dan merchandise custom untuk branding perusahaan.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="container">
+        <div class="promo-banner">
+            <h2>Promo Spesial Bulan Ini!</h2>
+            <p>Dapatkan diskon 20% untuk semua layanan desain dan 15% untuk produk percetakan.</p>
+            <p>Gunakan kode promo:</p>
+            <div class="promo-code">RAVAA20</div>
+            <p>Promo berlaku hingga 30 November 2023</p>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section class="products">
+        <div class="container">
+            <div class="section-title">
+                <h2>Produk & Layanan Terbaru</h2>
+            </div>
+            
+            <div class="product-tabs">
+                <button class="tab-btn active" data-tab="new">Produk Terbaru</button>
+                <button class="tab-btn" data-tab="discount">Sedang Diskon</button>
+                <button class="tab-btn" data-tab="popular">Paling Laris</button>
+            </div>
+            
+            <div class="product-grid" id="new-products">
+                <!-- Produk 1 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Desain Logo Profesional">
+                        <span class="product-badge">Baru</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Desain Grafis</div>
+                        <h3 class="product-title">Paket Desain Logo Profesional</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 499.000</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 2 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Cetak Brosur">
+                        <span class="product-badge discount">Diskon 15%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Percetakan</div>
+                        <h3 class="product-title">Cetak Brosur A4 Full Color</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.200/lembar</span>
+                            <span class="original-price">Rp 1.400/lembar</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 3 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Notebook Custom">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">ATK</div>
+                        <h3 class="product-title">Notebook Custom Logo Perusahaan</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 25.000/buku</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Produk 4 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Sablon Kaos">
+                        <span class="product-badge">Baru</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Sablon & Merchandise</div>
+                        <h3 class="product-title">Sablon Kaos Polo Custom</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 85.000/pcs</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Produk diskon (hidden by default) -->
+            <div class="product-grid" id="discount-products" style="display: none;">
+                <!-- Produk diskon akan ditampilkan di sini -->
+            </div>
+            
+            <!-- Produk populer (hidden by default) -->
+            <div class="product-grid" id="popular-products" style="display: none;">
+                <!-- Produk populer akan ditampilkan di sini -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="#" class="footer-logo">RavaaCreative</a>
+                    <p>Kami adalah perusahaan kreatif yang berfokus pada layanan desain grafis, percetakan, dan alat tulis kantor. Dengan tim profesional, kami siap mewujudkan ide kreatif Anda.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Layanan</h3>
+                    <ul>
+                        <li><a href="#">Desain Grafis</a></li>
+                        <li><a href="#">Percetakan Digital</a></li>
+                        <li><a href="#">Percetakan Offset</a></li>
+                        <li><a href="#">ATK & Perlengkapan Kantor</a></li>
+                        <li><a href="#">Sablon & Merchandise</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Perusahaan</h3>
+                    <ul>
+                        <li><a href="#">Tentang Kami</a></li>
+                        <li><a href="#">Portfolio</a></li>
+                        <li><a href="#">Testimoni</a></li>
+                        <li><a href="#">Blog & Artikel</a></li>
+                        <li><a href="#">Karir</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Kontak Kami</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Kreatif No. 123, Jakarta</p>
+                    <p><i class="fas fa-phone"></i> (021) 1234-5678</p>
+                    <p><i class="fas fa-envelope"></i> info@ravaacreative.com</p>
+                    <p><i class="fas fa-clock"></i> Senin - Jumat: 08:00 - 17:00</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Ravaa Creative. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab produk
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const productGrids = {
+            'new': document.getElementById('new-products'),
+            'discount': document.getElementById('discount-products'),
+            'popular': document.getElementById('popular-products')
+        };
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Hapus class active dari semua tab
+                tabBtns.forEach(b => b.classList.remove('active'));
+                // Tambah class active ke tab yang diklik
+                btn.classList.add('active');
+                
+                // Sembunyikan semua produk
+                Object.values(productGrids).forEach(grid => {
+                    if(grid) grid.style.display = 'none';
+                });
+                
+                // Tampilkan produk sesuai tab
+                const tabId = btn.getAttribute('data-tab');
+                if(productGrids[tabId]) {
+                    productGrids[tabId].style.display = 'grid';
+                }
+            });
+        });
+        
+        // Tambah ke keranjang
+        const addToCartBtns = document.querySelectorAll('.btn-add-to-cart');
+        const cartCount = document.querySelector('.cart-count');
+        
+        addToCartBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                let currentCount = parseInt(cartCount.textContent);
+                cartCount.textContent = currentCount + 1;
+                
+                // Animasi sederhana
+                cartCount.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    cartCount.style.transform = 'scale(1)';
+                }, 300);
+                
+                alert('Produk telah ditambahkan ke keranjang!');
+            });
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const nav = document.querySelector('nav ul');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            if(nav.style.display === 'flex') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+                nav.style.flexDirection = 'column';
+                nav.style.position = 'absolute';
+                nav.style.top = '70px';
+                nav.style.right = '20px';
+                nav.style.background = 'white';
+                nav.style.padding = '20px';
+                nav.style.borderRadius = '10px';
+                nav.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+                nav.style.width = '200px';
+                nav.style.zIndex = '1000';
+            }
+        });
+        
+        // Simulasi data produk diskon dan populer
+        function loadDiscountProducts() {
+            const discountGrid = document.getElementById('discount-products');
+            discountGrid.innerHTML = `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Desain Logo">
+                        <span class="product-badge discount">Diskon 20%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Desain Grafis</div>
+                        <h3 class="product-title">Paket Desain Logo + Kartu Nama</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 799.000</span>
+                            <span class="original-price">Rp 999.000</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Cetak Brosur">
+                        <span class="product-badge discount">Diskon 15%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Percetakan</div>
+                        <h3 class="product-title">Cetak Brosur A4 Full Color</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.200/lembar</span>
+                            <span class="original-price">Rp 1.400/lembar</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Stiker Vinyl">
+                        <span class="product-badge discount">Diskon 10%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Percetakan</div>
+                        <h3 class="product-title">Stiker Vinyl Outdoor</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 45.000/m²</span>
+                            <span class="original-price">Rp 50.000/m²</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Amplop Custom">
+                        <span class="product-badge discount">Diskon 5%</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">ATK</div>
+                        <h3 class="product-title">Amplop Custom Logo Perusahaan</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.500/buah</span>
+                            <span class="original-price">Rp 1.600/buah</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Tambah event listener ke tombol baru
+            discountGrid.querySelectorAll('.btn-add-to-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    let currentCount = parseInt(cartCount.textContent);
+                    cartCount.textContent = currentCount + 1;
+                    
+                    cartCount.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        cartCount.style.transform = 'scale(1)';
+                    }, 300);
+                    
+                    alert('Produk telah ditambahkan ke keranjang!');
+                });
+            });
+        }
+        
+        function loadPopularProducts() {
+            const popularGrid = document.getElementById('popular-products');
+            popularGrid.innerHTML = `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Desain Logo">
+                        <span class="product-badge">Terlaris</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Desain Grafis</div>
+                        <h3 class="product-title">Desain Logo Profesional</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 499.000</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Notebook Custom">
+                        <span class="product-badge">Terlaris</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">ATK</div>
+                        <h3 class="product-title">Notebook Custom Logo Perusahaan</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 25.000/buku</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Sablon Kaos">
+                        <span class="product-badge">Terlaris</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Sablon & Merchandise</div>
+                        <h3 class="product-title">Sablon Kaos Polo Custom</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 85.000/pcs</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Cetak Brosur">
+                        <span class="product-badge">Terlaris</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Percetakan</div>
+                        <h3 class="product-title">Cetak Brosur A4 Full Color</h3>
+                        <div class="product-price">
+                            <span class="current-price">Rp 1.400/lembar</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-add-to-cart">+ Keranjang</button>
+                            <button class="btn-detail">Detail</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Tambah event listener ke tombol baru
+            popularGrid.querySelectorAll('.btn-add-to-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    let currentCount = parseInt(cartCount.textContent);
+                    cartCount.textContent = currentCount + 1;
+                    
+                    cartCount.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        cartCount.style.transform = 'scale(1)';
+                    }, 300);
+                    
+                    alert('Produk telah ditambahkan ke keranjang!');
+                });
+            });
+        }
+        
+        // Load data produk saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDiscountProducts();
+            loadPopularProducts();
+        });
+    </script>
+</body>
+</html>

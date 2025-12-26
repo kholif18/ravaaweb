@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravaa Creative Admin | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Metronic Color Palette */
+            --primary: #3699FF;
+            --primary-light: #E1F0FF;
+            --primary-dark: #187DE4;
+            --secondary: #E4E6EF;
+            --success: #1BC5BD;
+            --success-light: #C9F7F5;
+            --info: #8950FC;
+            --info-light: #EEE5FF;
+            --warning: #FFA800;
+            --warning-light: #FFF4DE;
+            --danger: #F64E60;
+            --danger-light: #FFE2E5;
+            --dark: #181C32;
+            --light: #F5F8FA;
+            --gray-100: #F3F6F9;
+            --gray-200: #EBEDF3;
+            --gray-300: #E4E6EF;
+            --gray-400: #D1D3E0;
+            --gray-500: #B5B5C3;
+            --gray-600: #7E8299;
+            --gray-700: #5E6278;
+            --gray-800: #3F4254;
+            --gray-900: #181C32;
+            
+            /* Shadows */
+            --shadow-sm: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+            --shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+            
+            /* Border Radius */
+            --border-radius-sm: 0.42rem;
+            --border-radius: 0.65rem;
+            --border-radius-lg: 0.85rem;
+            
+            /* Transition */
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: var(--gray-800);
+            background-color: var(--gray-100);
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Layout Container */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .brand-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .brand-text span {
+            color: var(--primary);
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .menu-section {
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.25rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--primary);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .menu-icon {
+            width: 24px;
+            text-align: center;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .menu-text {
+            flex: 1;
+        }
+
+        .menu-badge {
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: auto;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--success) 0%, var(--info) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-details h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.1rem;
+        }
+
+        .user-details p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            transition: var(--transition);
+        }
+
+        /* Topbar */
+        .topbar {
+            background-color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-search {
+            position: relative;
+        }
+
+        .topbar-search input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .topbar-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.1);
+        }
+
+        .topbar-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        .topbar-icons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .topbar-icon {
+            position: relative;
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .topbar-icon:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .topbar-icon.notification {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Content Container */
+        .content-container {
+            padding: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card.primary {
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .stat-card.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .stat-card.danger {
+            border-left: 4px solid var(--danger);
+        }
+
+        .stat-card.info {
+            border-left: 4px solid var(--info);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .stat-trend.up {
+            color: var(--success);
+        }
+
+        .stat-trend.down {
+            color: var(--danger);
+        }
+
+        .stat-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-card.primary .stat-icon {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card.success .stat-icon {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+
+        .stat-card.warning .stat-icon {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .stat-card.danger .stat-icon {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .stat-card.info .stat-icon {
+            background-color: var(--info-light);
+            color: var(--info);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-toolbar {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .card-btn {
+            padding: 0.4rem 0.75rem;
+            background-color: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.8rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .card-btn:hover {
+            background-color: var(--gray-200);
+        }
+
+        .card-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .chart-placeholder {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+        }
+
+        .chart-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Tables */
+        .table-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background-color: var(--gray-100);
+        }
+
+        .data-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: var(--gray-100);
+        }
+
+        .customer-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .customer-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .customer-info h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.1rem;
+        }
+
+        .customer-info p {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.success {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+
+        .status-badge.warning {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .status-badge.danger {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .status-badge.info {
+            background-color: var(--info-light);
+            color: var(--info);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .action-btn.view {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .action-btn.edit {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .action-btn.delete {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Recent Activity */
+        .activity-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .activity-icon.order {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .activity-icon.user {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+
+        .activity-icon.product {
+            background-color: var(--info-light);
+            color: var(--info);
+        }
+
+        .activity-icon.payment {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .activity-content h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-content p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        /* Footer */
+        .admin-footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: block;
+            }
+            
+            .topbar-search input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .topbar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .topbar-search input {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                font-size: 0.85rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .table-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--gray-700);
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .dark-mode .theme-toggle .fa-sun {
+            display: none;
+        }
+
+        .dark-mode .theme-toggle .fa-moon {
+            display: block;
+        }
+
+        .theme-toggle .fa-sun {
+            display: block;
+        }
+
+        .theme-toggle .fa-moon {
+            display: none;
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            --light: #1E1E2D;
+            --gray-100: #1B1B28;
+            --gray-200: #2A2A3C;
+            --gray-300: #3A3A4F;
+            --gray-400: #4A4A63;
+            --gray-500: #6D6D80;
+            --gray-600: #92929F;
+            --gray-700: #B5B5C3;
+            --gray-800: #D5D5E0;
+            --gray-900: #F5F5F5;
+            --dark: #FFFFFF;
+        }
+
+        .dark-mode body {
+            background-color: var(--light);
+            color: var(--gray-800);
+        }
+
+        .dark-mode .sidebar,
+        .dark-mode .topbar,
+        .dark-mode .stat-card,
+        .dark-mode .chart-card,
+        .dark-mode .table-card,
+        .dark-mode .activity-card {
+            background-color: var(--gray-100);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode h1, 
+        .dark-mode h2, 
+        .dark-mode h3, 
+        .dark-mode h4, 
+        .dark-mode h5, 
+        .dark-mode h6 {
+            color: var(--gray-900);
+        }
+
+        .dark-mode .brand-text {
+            color: var(--dark);
+        }
+
+        .dark-mode .menu-item {
+            color: var(--gray-700);
+        }
+
+        .dark-mode .menu-item:hover {
+            background-color: var(--gray-200);
+        }
+
+        .dark-mode .data-table thead {
+            background-color: var(--gray-200);
+        }
+
+        .dark-mode .data-table tbody tr:hover {
+            background-color: var(--gray-200);
+        }
+
+        .dark-mode .card-btn {
+            background-color: var(--gray-200);
+            border-color: var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .dark-mode .topbar-search input {
+            background-color: var(--gray-200);
+            border-color: var(--gray-300);
+            color: var(--gray-800);
+        }
+
+        .dark-mode .topbar-search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(54, 153, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="brand">
+                    <div class="brand-logo">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="brand-text">Ravaa<span>Creative</span></div>
+                </a>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-title">Main</div>
+                    <a href="admin-dashboard.html" class="menu-item active">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                    <a href="admin-analytics.html" class="menu-item">
+                        <i class="fas fa-chart-line menu-icon"></i>
+                        <span class="menu-text">Analytics</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Management</div>
+                    <a href="admin-orders.html" class="menu-item">
+                        <i class="fas fa-shopping-cart menu-icon"></i>
+                        <span class="menu-text">Orders</span>
+                        <span class="menu-badge">12</span>
+                    </a>
+                    <a href="admin-products.html" class="menu-item">
+                        <i class="fas fa-box menu-icon"></i>
+                        <span class="menu-text">Products</span>
+                    </a>
+                    <a href="admin-services.html" class="menu-item">
+                        <i class="fas fa-concierge-bell menu-icon"></i>
+                        <span class="menu-text">Services</span>
+                    </a>
+                    <a href="admin-customers.html" class="menu-item">
+                        <i class="fas fa-users menu-icon"></i>
+                        <span class="menu-text">Customers</span>
+                        <span class="menu-badge">5</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Content</div>
+                    <a href="admin-portfolio.html" class="menu-item">
+                        <i class="fas fa-images menu-icon"></i>
+                        <span class="menu-text">Portfolio</span>
+                    </a>
+                    <a href="admin-blog.html" class="menu-item">
+                        <i class="fas fa-newspaper menu-icon"></i>
+                        <span class="menu-text">Blog</span>
+                    </a>
+                    <a href="admin-media.html" class="menu-item">
+                        <i class="fas fa-photo-video menu-icon"></i>
+                        <span class="menu-text">Media Library</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Settings</div>
+                    <a href="admin-settings.html" class="menu-item">
+                        <i class="fas fa-cog menu-icon"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                    <a href="admin-users.html" class="menu-item">
+                        <i class="fas fa-user-cog menu-icon"></i>
+                        <span class="menu-text">User Management</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">AR</div>
+                    <div class="user-details">
+                        <h5>Admin Ravaa</h5>
+                        <p>Super Admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back, Admin! Here's what's happening with your business today.</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="topbar-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+
+                    <div class="topbar-icons">
+                        <button class="theme-toggle" id="themeToggle">
+                            <i class="fas fa-sun"></i>
+                            <i class="fas fa-moon"></i>
+                        </button>
+
+                        <button class="topbar-icon notification" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+
+                        <button class="topbar-icon" id="fullscreenBtn">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div class="content-container">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Orders</div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                12.5%
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">48</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Revenue</div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                8.3%
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">$24.5K</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <div class="stat-title">New Customers</div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                5.2%
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">15</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card info">
+                        <div class="stat-header">
+                            <div class="stat-title">Active Projects</div>
+                            <div class="stat-trend down">
+                                <i class="fas fa-arrow-down"></i>
+                                2.1%
+                            </div>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">8</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <div class="card-title">Revenue Overview</div>
+                            <div class="card-toolbar">
+                                <button class="card-btn active">Month</button>
+                                <button class="card-btn">Quarter</button>
+                                <button class="card-btn">Year</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-chart-line"></i>
+                                <p>Revenue chart would appear here</p>
+                                <p style="font-size: 0.8rem; margin-top: 10px;">Integrate with Chart.js, ApexCharts, or similar</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <div class="card-title">Sales by Category</div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-chart-pie"></i>
+                                <p>Category distribution chart</p>
+                                <p style="font-size: 0.8rem; margin-top: 10px;">Pie or donut chart visualization</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Table -->
+                <div class="table-card">
+                    <div class="card-header">
+                        <div class="card-title">Recent Orders</div>
+                        <a href="admin-orders.html" style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#RAV-2023-001</td>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="customer-avatar">BS</div>
+                                            <div class="customer-info">
+                                                <h5>Budi Santoso</h5>
+                                                <p>budi@email.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Nov 15, 2023</td>
+                                    <td>$1,250</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#RAV-2023-002</td>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="customer-avatar">SD</div>
+                                            <div class="customer-info">
+                                                <h5>Sari Dewi</h5>
+                                                <p>sari@email.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Nov 16, 2023</td>
+                                    <td>$899</td>
+                                    <td><span class="status-badge info">Processing</span></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#RAV-2023-003</td>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="customer-avatar">AT</div>
+                                            <div class="customer-info">
+                                                <h5>Ahmad Taufik</h5>
+                                                <p>ahmad@email.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Nov 17, 2023</td>
+                                    <td>$2,150</td>
+                                    <td><span class="status-badge warning">Pending</span></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#RAV-2023-004</td>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="customer-avatar">LM</div>
+                                            <div class="customer-info">
+                                                <h5>Linda Mulyani</h5>
+                                                <p>linda@email.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Nov 18, 2023</td>
+                                    <td>$750</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#RAV-2023-005</td>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="customer-avatar">RJ</div>
+                                            <div class="customer-info">
+                                                <h5>Rizky Jaya</h5>
+                                                <p>rizky@email.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Nov 19, 2023</td>
+                                    <td>$1,650</td>
+                                    <td><span class="status-badge danger">Cancelled</span></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Activity & Top Products -->
+                <div class="charts-section">
+                    <div class="activity-card">
+                        <div class="card-header">
+                            <div class="card-title">Recent Activity</div>
+                        </div>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon order">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h5>New Order Received</h5>
+                                    <p>Order #RAV-2023-006 from Dian Sari</p>
+                                    <div class="activity-time">2 minutes ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon user">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h5>New Customer Registration</h5>
+                                    <p>Fajar Nugroho joined the platform</p>
+                                    <div class="activity-time">1 hour ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon product">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h5>Product Updated</h5>
+                                    <p>"Premium Branding Package" was updated</p>
+                                    <div class="activity-time">3 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon payment">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h5>Payment Received</h5>
+                                    <p>Payment of $1,250 confirmed for order #RAV-2023-001</p>
+                                    <div class="activity-time">5 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon order">
+                                    <i class="fas fa-shipping-fast"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h5>Order Shipped</h5>
+                                    <p>Order #RAV-2023-003 has been shipped</p>
+                                    <div class="activity-time">Yesterday, 2:30 PM</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="card-header">
+                            <div class="card-title">Top Products</div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Sales</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <div class="customer-avatar" style="background-color: var(--info-light); color: var(--info);">
+                                                    <i class="fas fa-paint-brush"></i>
+                                                </div>
+                                                <div class="customer-info">
+                                                    <h5>Brand Identity Design</h5>
+                                                    <p>Design Package</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Design</td>
+                                        <td>24</td>
+                                        <td>$8,400</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <div class="customer-avatar" style="background-color: var(--success-light); color: var(--success);">
+                                                    <i class="fas fa-code"></i>
+                                                </div>
+                                                <div class="customer-info">
+                                                    <h5>E-commerce Website</h5>
+                                                    <p>Development</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Development</td>
+                                        <td>18</td>
+                                        <td>$12,600</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <div class="customer-avatar" style="background-color: var(--warning-light); color: var(--warning);">
+                                                    <i class="fas fa-video"></i>
+                                                </div>
+                                                <div class="customer-info">
+                                                    <h5>Promotional Video</h5>
+                                                    <p>Video Production</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Video</td>
+                                        <td>15</td>
+                                        <td>$5,250</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <div class="customer-avatar" style="background-color: var(--primary-light); color: var(--primary);">
+                                                    <i class="fas fa-chart-line"></i>
+                                                </div>
+                                                <div class="customer-info">
+                                                    <h5>Digital Marketing</h5>
+                                                    <p>Marketing</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Marketing</td>
+                                        <td>12</td>
+                                        <td>$3,600</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="customer-cell">
+                                                <div class="customer-avatar" style="background-color: var(--danger-light); color: var(--danger);">
+                                                    <i class="fas fa-mobile-alt"></i>
+                                                </div>
+                                                <div class="customer-info">
+                                                    <h5>Mobile App UI Kit</h5>
+                                                    <p>UI/UX Design</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Design</td>
+                                        <td>10</td>
+                                        <td>$2,500</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="admin-footer">
+                    <p>&copy; 2023 Ravaa Creative Admin. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--danger);"></i> for creative businesses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar Toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarToggle.querySelector('i').classList.toggle('fa-times');
+            sidebarToggle.querySelector('i').classList.toggle('fa-bars');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (event) => {
+            const isMobile = window.innerWidth <= 992;
+            if (isMobile && sidebar.classList.contains('active')) {
+                if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                    sidebarToggle.querySelector('i').classList.remove('fa-times');
+                    sidebarToggle.querySelector('i').classList.add('fa-bars');
+                }
+            }
+        });
+
+        // Update sidebar toggle icon based on window size
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                sidebarToggle.querySelector('i').classList.remove('fa-times');
+                sidebarToggle.querySelector('i').classList.add('fa-bars');
+            }
+        });
+
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            
+            // Toggle icon
+            const sunIcon = themeToggle.querySelector('.fa-sun');
+            const moonIcon = themeToggle.querySelector('.fa-moon');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.querySelector('.fa-sun').style.display = 'none';
+            themeToggle.querySelector('.fa-moon').style.display = 'block';
+        }
+
+        // Notification Button
+        const notificationBtn = document.getElementById('notificationBtn');
+        notificationBtn.addEventListener('click', () => {
+            alert('You have 3 new notifications!');
+            // In a real application, you would show a dropdown with notifications
+        });
+
+        // Fullscreen Toggle
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        fullscreenBtn.addEventListener('click', toggleFullScreen);
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                }
+            }
+        }
+
+        // Update fullscreen icon when exiting via ESC key
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+
+        // Chart period buttons
+        const periodButtons = document.querySelectorAll('.card-btn');
+        periodButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                periodButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                // In a real application, you would update the chart data here
+            });
+        });
+
+        // Table action buttons
+        const viewButtons = document.querySelectorAll('.action-btn.view');
+        viewButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const orderId = e.target.closest('tr').querySelector('td:first-child').textContent;
+                alert(`View order: ${orderId}`);
+            });
+        });
+
+        const editButtons = document.querySelectorAll('.action-btn.edit');
+        editButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const orderId = e.target.closest('tr').querySelector('td:first-child').textContent;
+                alert(`Edit order: ${orderId}`);
+            });
+        });
+
+        const deleteButtons = document.querySelectorAll('.action-btn.delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const orderId = e.target.closest('tr').querySelector('td:first-child').textContent;
+                if (confirm(`Are you sure you want to delete order ${orderId}?`)) {
+                    e.target.closest('tr').remove();
+                    alert(`Order ${orderId} deleted successfully!`);
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.topbar-search input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            // In a real application, you would filter the table or make an API call
+            console.log('Searching for:', searchTerm);
+        });
+
+        // Active menu item based on current page
+        const currentPage = window.location.pathname.split('/').pop();
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

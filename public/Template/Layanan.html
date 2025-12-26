@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan - Ravaa Creative | Jasa Desain, Print & ATK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f72585;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 5px 0;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        nav ul li a.active {
+            color: var(--primary);
+        }
+
+        nav ul li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border-radius: 30px;
+            border: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            width: 200px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            width: 250px;
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero-services {
+            background: linear-gradient(135deg, var(--primary) 0%, #3a0ca3 100%);
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero-services h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-services p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .breadcrumb a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            opacity: 1;
+        }
+
+        .breadcrumb i {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Service Categories */
+        .service-categories {
+            padding: 40px 0 60px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 4px;
+            background-color: var(--secondary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 50px;
+            font-size: 1.1rem;
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 50px;
+        }
+
+        .category-tab {
+            padding: 12px 30px;
+            background-color: white;
+            border: 2px solid var(--light-gray);
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-tab.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .category-tab i {
+            font-size: 1.2rem;
+        }
+
+        /* Service Detail Section */
+        .service-detail {
+            padding: 60px 0;
+            background-color: var(--light);
+        }
+
+        .service-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .service-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .service-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .service-cta {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #e11575;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .service-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--gray);
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        /* Service Features */
+        .service-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        /* Service Packages */
+        .service-packages {
+            margin-bottom: 60px;
+        }
+
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .package-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .package-card.popular {
+            border: 2px solid var(--secondary);
+            transform: scale(1.05);
+        }
+
+        .package-card.popular:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .package-badge {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background-color: var(--secondary);
+            color: white;
+            padding: 8px 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+            width: 120px;
+            text-align: center;
+        }
+
+        .package-header {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .package-name {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .package-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .package-period {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .package-features {
+            padding: 30px;
+        }
+
+        .package-features ul {
+            list-style: none;
+        }
+
+        .package-features ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .package-features ul li:last-child {
+            border-bottom: none;
+        }
+
+        .package-features ul li i {
+            color: var(--secondary);
+        }
+
+        .package-cta {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 60px 0;
+            background-color: white;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -15px;
+            width: 30px;
+            height: 2px;
+            background-color: var(--light-gray);
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 auto 25px;
+        }
+
+        .process-step h4 {
+            margin-bottom: 15px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 60px;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .btn-light {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .btn-light:hover {
+            background-color: var(--light);
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 60px 0;
+            background-color: var(--light);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .faq-question {
+            padding: 20px 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .faq-question i {
+            transition: var(--transition);
+        }
+
+        .faq-answer {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 30px 20px;
+            max-height: 500px;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .footer-about p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .service-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .service-cta {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .package-card.popular {
+                transform: none;
+            }
+            
+            .package-card.popular:hover {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 15px 0;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            .search-box input:focus {
+                width: 180px;
+            }
+            
+            .hero-services h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-services p {
+                font-size: 1rem;
+            }
+            
+            .category-tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .process-step:not(:last-child)::after {
+                display: none;
+            }
+            
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-services {
+                padding: 60px 0 40px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .service-features, .package-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .faq-question {
+                padding: 15px 20px;
+            }
+            
+            .faq-answer {
+                padding: 0 20px;
+            }
+            
+            .faq-item.active .faq-answer {
+                padding: 0 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-palette"></i>
+                Ravaa<span>Creative</span>
+            </a>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="layanan.html" class="active">Layanan</a></li>
+                    <li><a href="produk.html">Produk</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="tentang.html">Tentang Kami</a></li>
+                    <li><a href="kontak.html">Kontak</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari layanan...">
+                </div>
+                
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">3</span>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-services">
+        <div class="container">
+            <h1>Layanan Profesional Kami</h1>
+            <p>Ravaa Creative menyediakan berbagai solusi kreatif untuk kebutuhan desain, percetakan, dan alat tulis kantor Anda. Tim profesional kami siap membantu mewujudkan ide-ide kreatif menjadi hasil yang memukau.</p>
+            
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Layanan</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Categories -->
+    <section class="service-categories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Kategori Layanan</h2>
+            </div>
+            
+            <p class="section-subtitle">Kami menawarkan berbagai layanan profesional yang disesuaikan dengan kebutuhan bisnis Anda. Pilih kategori layanan untuk melihat detailnya.</p>
+            
+            <div class="category-tabs">
+                <div class="category-tab active" data-service="design">
+                    <i class="fas fa-paint-brush"></i>
+                    Desain Grafis
+                </div>
+                <div class="category-tab" data-service="printing">
+                    <i class="fas fa-print"></i>
+                    Percetakan
+                </div>
+                <div class="category-tab" data-service="atk">
+                    <i class="fas fa-pen-fancy"></i>
+                    ATK & Perlengkapan
+                </div>
+                <div class="category-tab" data-service="merchandise">
+                    <i class="fas fa-tshirt"></i>
+                    Sablon & Merchandise
+                </div>
+                <div class="category-tab" data-service="digital">
+                    <i class="fas fa-laptop-code"></i>
+                    Digital Printing
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Detail: Desain Grafis -->
+    <section class="service-detail">
+        <div class="container">
+            <div class="service-content active" id="design-content">
+                <div class="service-header">
+                    <div class="service-title">
+                        <div class="service-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div>
+                            <h2>Desain Grafis Profesional</h2>
+                            <p>Mewujudkan ide kreatif Anda menjadi desain visual yang menarik</p>
+                        </div>
+                    </div>
+                    <div class="service-cta">
+                        <a href="#" class="btn">Konsultasi Gratis</a>
+                        <a href="portfolio.html" class="btn btn-outline">Lihat Portfolio</a>
+                    </div>
+                </div>
+                
+                <p class="service-description">
+                    Layanan desain grafis profesional kami mencakup pembuatan logo, branding, brosur, banner, dan materi promosi lainnya. Tim desainer berpengalaman kami siap membantu mengkomunikasikan pesan bisnis Anda melalui desain visual yang menarik dan efektif.
+                </p>
+                
+                <div class="service-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h4>Desain Logo & Branding</h4>
+                        <p>Pembuatan logo, identitas visual, dan panduan branding untuk membangun citra perusahaan yang kuat dan konsisten.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <h4>Materi Promosi</h4>
+                        <p>Desain brosur, flyer, banner, katalog, dan materi promosi cetak maupun digital lainnya untuk kampanye pemasaran.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <h4>Digital & UI/UX Design</h4>
+                        <p>Desain website, aplikasi mobile, user interface, dan pengalaman pengguna untuk platform digital.</p>
+                    </div>
+                </div>
+                
+                <div class="service-packages">
+                    <h3 style="margin-bottom: 30px;">Paket Layanan Desain</h3>
+                    
+                    <div class="package-grid">
+                        <div class="package-card">
+                            <div class="package-header">
+                                <h4 class="package-name">Paket Dasar</h4>
+                                <div class="package-price">Rp 499K</div>
+                                <div class="package-period">Proyek sederhana</div>
+                            </div>
+                            <div class="package-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> 1 konsep desain</li>
+                                    <li><i class="fas fa-check"></i> 3 revisi minor</li>
+                                    <li><i class="fas fa-check"></i> File final (JPG, PNG)</li>
+                                    <li><i class="fas fa-times"></i> File sumber (AI/PSD)</li>
+                                    <li><i class="fas fa-times"></i> Panduan branding</li>
+                                </ul>
+                            </div>
+                            <div class="package-cta">
+                                <a href="#" class="btn btn-outline">Pilih Paket</a>
+                            </div>
+                        </div>
+                        
+                        <div class="package-card popular">
+                            <div class="package-badge">POPULAR</div>
+                            <div class="package-header">
+                                <h4 class="package-name">Paket Profesional</h4>
+                                <div class="package-price">Rp 1.299K</div>
+                                <div class="package-period">Proyek komprehensif</div>
+                            </div>
+                            <div class="package-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> 3 konsep desain</li>
+                                    <li><i class="fas fa-check"></i> Revisi tanpa batas</li>
+                                    <li><i class="fas fa-check"></i> File final semua format</li>
+                                    <li><i class="fas fa-check"></i> File sumber (AI/PSD)</li>
+                                    <li><i class="fas fa-check"></i> Panduan branding lengkap</li>
+                                </ul>
+                            </div>
+                            <div class="package-cta">
+                                <a href="#" class="btn">Pilih Paket</a>
+                            </div>
+                        </div>
+                        
+                        <div class="package-card">
+                            <div class="package-header">
+                                <h4 class="package-name">Paket Perusahaan</h4>
+                                <div class="package-price">Rp 3.999K</div>
+                                <div class="package-period">Paket bulanan</div>
+                            </div>
+                            <div class="package-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> Unlimited desain proyek</li>
+                                    <li><i class="fas fa-check"></i> Prioritas pengerjaan</li>
+                                    <li><i class="fas fa-check"></i> Konsultasi branding</li>
+                                    <li><i class="fas fa-check"></i> Support 24/7</li>
+                                    <li><i class="fas fa-check"></i> Revisi tanpa batas</li>
+                                </ul>
+                            </div>
+                            <div class="package-cta">
+                                <a href="#" class="btn btn-outline">Pilih Paket</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Service Detail: Percetakan -->
+            <div class="service-content" id="printing-content">
+                <div class="service-header">
+                    <div class="service-title">
+                        <div class="service-icon">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <div>
+                            <h2>Layanan Percetakan</h2>
+                            <p>Cetak berkualitas tinggi untuk segala kebutuhan bisnis Anda</p>
+                        </div>
+                    </div>
+                    <div class="service-cta">
+                        <a href="#" class="btn">Request Quotation</a>
+                        <a href="#" class="btn btn-outline">Lihat Katalog</a>
+                    </div>
+                </div>
+                
+                <p class="service-description">
+                    Layanan percetakan kami mencakup cetak offset dan digital untuk berbagai media dan ukuran. Dengan peralatan modern dan tenaga ahli, kami menjamin hasil cetak yang tajam, warna akurat, dan ketahanan yang optimal untuk semua produk cetakan Anda.
+                </p>
+                
+                <div class="service-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-scroll"></i>
+                        </div>
+                        <h4>Cetak Offset</h4>
+                        <p>Cetak berkualitas tinggi untuk kebutuhan dalam jumlah besar seperti brosur, buku, katalog, dan kemasan produk.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <h4>Digital Printing</h4>
+                        <p>Cetak cepat dengan kualitas tinggi untuk kebutuhan dalam jumlah kecil hingga menengah dengan fleksibilitas waktu.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <h4>Finishing & Packaging</h4>
+                        <p>Layanan finishing seperti laminating, spot UV, emboss, dan packaging yang memperindah hasil cetakan.</p>
+                    </div>
+                </div>
+                
+                <div class="service-packages">
+                    <h3 style="margin-bottom: 30px;">Paket Layanan Percetakan</h3>
+                    
+                    <div class="package-grid">
+                        <div class="package-card">
+                            <div class="package-header">
+                                <h4 class="package-name">Cetak Digital</h4>
+                                <div class="package-price">Mulai Rp 5K</div>
+                                <div class="package-period">per lembar</div>
+                            </div>
+                            <div class="package-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> Cetak full color A4/A3</li>
+                                    <li><i class="fas fa-check"></i> Minimal order 10 lembar</li>
+                                    <li><i class="fas fa-check"></i> Pilihan kertas: HVS, Art paper</li>
+                                    <li><i class="fas fa-check"></i> Waktu pengerjaan 1-2 hari</li>
+                                    <li><i class="fas fa-times"></i> Finishing khusus</li>
+                                </ul>
+                            </div>
+                            <div class="package-cta">
+                                <a href="#" class="btn btn-outline">Pilih Paket</a>
+                            </div>
+                        </div>
+                        
+                        <div class="package-card popular">
+                            <div class="package-badge">POPULAR</div>
+                            <div class="package-header">
+                                <h4 class="package-name">Cetak Offset</h4>
+                                <div class="package-price">Mulai Rp 2K</div>
+                                <div class="package-period">per lembar</div>
+                            </div>
+                            <div class="package-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> Cetak full color berbagai ukuran</li>
+                                    <li><i class="fas fa-check"></i> Minimal order 500 lembar</li>
+                                    <li><i class="fas fa-check"></i> Pilihan kertas premium</li>
+                                    <li><i class="fas fa-check"></i> Waktu pengerjaan 3-5 hari</li>
+                                    <li><i class="fas fa-check"></i> Konsultasi gratis</li>
+                                </ul>
+                            </div>
+                            <div class="package-cta">
+                                <a href="#" class="btn">Pilih Paket</a>
+                            </div>
+                        </div>
+                        
+                        <div class="package-card">
+                            <div class="package-header">
+                                <h4 class="package-name">Paket Lengkap</h4>
+                                <div class="package-price">Rp 2.5K</div>
+                                <div class="package-period">per lembar</div>
+                            </div>
+                            <div class="package-features">
+                                <ul>
+                                    <li><i class="fas fa-check"></i> Desain + cetak + finishing</li>
+                                    <li><i class="fas fa-check"></i> Pilihan finishing premium</li>
+                                    <li><i class="fas fa-check"></i> Garansi kualitas cetak</li>
+                                    <li><i class="fas fa-check"></i> Gratis pengiriman area tertentu</li>
+                                    <li><i class="fas fa-check"></i> Prioritas pengerjaan</li>
+                                </ul>
+                            </div>
+                            <div class="package-cta">
+                                <a href="#" class="btn btn-outline">Pilih Paket</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Service Detail: ATK -->
+            <div class="service-content" id="atk-content">
+                <div class="service-header">
+                    <div class="service-title">
+                        <div class="service-icon">
+                            <i class="fas fa-pen-fancy"></i>
+                        </div>
+                        <div>
+                            <h2>ATK & Perlengkapan Kantor</h2>
+                            <p>Kebutuhan alat tulis kantor lengkap dengan harga kompetitif</p>
+                        </div>
+                    </div>
+                    <div class="service-cta">
+                        <a href="#" class="btn">Lihat Katalog ATK</a>
+                        <a href="#" class="btn btn-outline">Request Quotation</a>
+                    </div>
+                </div>
+                
+                <p class="service-description">
+                    Menyediakan berbagai kebutuhan alat tulis kantor (ATK) dan perlengkapan kantor lainnya dengan kualitas terjamin. Kami juga menerima pesanan custom dengan logo perusahaan untuk kebutuhan branding internal dan eksternal.
+                </p>
+                
+                <div class="service-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                        <h4>Alat Tulis Standar</h4>
+                        <p>Berbagai alat tulis kantor seperti pulpen, pensil, penggaris, penghapus, dan perlengkapan menulis lainnya.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <h4>Perlengkapan Cetak</h4>
+                        <p>Kertas, tinta printer, toner, dan consumables lainnya untuk mendukung operasional kantor.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h4>ATK Custom</h4>
+                        <p>Pembuatan alat tulis kantor custom dengan logo perusahaan untuk kebutuhan branding dan promosi.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Service Detail: Merchandise -->
+            <div class="service-content" id="merchandise-content">
+                <div class="service-header">
+                    <div class="service-title">
+                        <div class="service-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div>
+                            <h2>Sablon & Merchandise</h2>
+                            <p>Produk merchandise custom untuk branding dan promosi perusahaan</p>
+                        </div>
+                    </div>
+                    <div class="service-cta">
+                        <a href="#" class="btn">Konsultasi Merchandise</a>
+                        <a href="#" class="btn btn-outline">Lihat Produk</a>
+                    </div>
+                </div>
+                
+                <p class="service-description">
+                    Layanan pembuatan merchandise custom seperti kaos, topi, mug, tumbler, tas, dan berbagai produk promosi lainnya dengan desain sesuai kebutuhan branding perusahaan Anda. Kami menggunakan teknik sablon dan printing terbaik untuk hasil yang tahan lama dan menarik.
+                </p>
+                
+                <div class="service-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4>Sablon Kaos & Pakaian</h4>
+                        <p>Sablon kaos, kemeja, jaket, dan pakaian lainnya dengan berbagai teknik untuk hasil terbaik.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mug-hot"></i>
+                        </div>
+                        <h4>Merchandise Promosi</h4>
+                        <p>Pembuatan mug, tumbler, gantungan kunci, tas, dan merchandise promosi lainnya.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h4>Corporate Gift</h4>
+                        <p>Paket corporate gift custom untuk klien, karyawan, atau acara perusahaan dengan packaging eksklusif.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Service Detail: Digital Printing -->
+            <div class="service-content" id="digital-content">
+                <div class="service-header">
+                    <div class="service-title">
+                        <div class="service-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div>
+                            <h2>Digital Printing Khusus</h2>
+                            <p>Solusi printing digital untuk kebutuhan khusus dan material unik</p>
+                        </div>
+                    </div>
+                    <div class="service-cta">
+                        <a href="#" class="btn">Konsultasi Proyek</a>
+                        <a href="#" class="btn btn-outline">Lihat Contoh</a>
+                    </div>
+                </div>
+                
+                <p class="service-description">
+                    Layanan digital printing khusus untuk media dan material unik seperti stiker vinyl, banner flexi, spanduk, backdrop, sticker cutting, dan printing pada berbagai media non-kertas. Cocok untuk kebutuhan indoor dan outdoor dengan ketahanan yang disesuaikan.
+                </p>
+                
+                <div class="service-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h4>Sticker & Label</h4>
+                        <p>Cetak stiker vinyl, hologram, label produk, dan sticker cutting untuk berbagai kebutuhan.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <h4>Banner & Spanduk</h4>
+                        <p>Cetak banner flexi, spanduk, backdrop, dan media promosi outdoor dengan kualitas tahan cuaca.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h4>Printing Khusus</h4>
+                        <p>Printing pada akrilik, kayu, kain, logam, dan media unik lainnya untuk kebutuhan khusus.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Proses Pengerjaan</h2>
+            </div>
+            
+            <p class="section-subtitle">Kami memiliki proses pengerjaan yang terstruktur untuk memastikan hasil terbaik dan kepuasan pelanggan.</p>
+            
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>Konsultasi</h4>
+                    <p>Diskusikan kebutuhan dan konsep proyek Anda dengan tim kami untuk menentukan solusi terbaik.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>Penawaran & Kontrak</h4>
+                    <p>Kami akan memberikan penawaran harga yang transparan dan perjanjian kerja yang jelas.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>Pengerjaan</h4>
+                    <p>Tim ahli kami akan mengerjakan proyek dengan standar kualitas tertinggi sesuai timeline.</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4>Pengiriman</h4>
+                    <p>Hasil akhir dikirimkan sesuai kesepakatan dengan jaminan kualitas dan ketepatan waktu.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="container">
+        <div class="cta-section">
+            <h2>Siap Mewujudkan Ide Kreatif Anda?</h2>
+            <p>Konsultasikan kebutuhan desain, printing, atau ATK Anda dengan tim profesional kami. Dapatkan solusi terbaik dengan harga kompetitif.</p>
+            <a href="kontak.html" class="btn btn-light">Hubungi Kami Sekarang</a>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Pertanyaan Umum</h2>
+            </div>
+            
+            <p class="section-subtitle">Berikut adalah beberapa pertanyaan yang sering diajukan tentang layanan kami.</p>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Berapa lama waktu pengerjaan untuk desain logo?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Waktu pengerjaan desain logo biasanya membutuhkan 3-7 hari kerja, tergantung kompleksitas dan jumlah revisi yang dibutuhkan. Untuk paket prioritas, waktu pengerjaan bisa dipercepat menjadi 1-3 hari kerja.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Apa perbedaan cetak offset dan digital printing?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Cetak offset cocok untuk jumlah besar (minimal 500 lembar) dengan biaya per unit lebih murah dan kualitas warna yang konsisten. Digital printing cocok untuk jumlah kecil (10-500 lembar) dengan biaya setup lebih murah dan waktu pengerjaan lebih cepat.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Apakah bisa membuat ATK dengan logo perusahaan custom?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ya, kami menyediakan layanan pembuatan ATK custom dengan logo perusahaan. Minimal order bervariasi tergantung jenis produk, mulai dari 50 pcs untuk pulpen custom hingga 100 pcs untuk notebook custom.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Apakah menyediakan layanan pengiriman?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ya, kami menyediakan layanan pengiriman ke seluruh Indonesia. Untuk area tertentu dalam kota, kami memberikan gratis ongkos kirim dengan minimal order tertentu. Biaya pengiriman luar kota disesuaikan dengan kurir yang dipilih.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Bagaimana cara melakukan pembayaran?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Kami menerima pembayaran melalui transfer bank, virtual account, e-wallet, dan tunai di tempat. Untuk proyek bernilai tinggi, biasanya kami menerapkan pembayaran bertahap: 50% di awal dan 50% sebelum pengiriman.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="index.html" class="footer-logo">RavaaCreative</a>
+                    <p>Kami adalah perusahaan kreatif yang berfokus pada layanan desain grafis, percetakan, dan alat tulis kantor. Dengan tim profesional, kami siap mewujudkan ide kreatif Anda.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Layanan</h3>
+                    <ul>
+                        <li><a href="layanan.html#design">Desain Grafis</a></li>
+                        <li><a href="layanan.html#printing">Percetakan Digital</a></li>
+                        <li><a href="layanan.html#printing">Percetakan Offset</a></li>
+                        <li><a href="layanan.html#atk">ATK & Perlengkapan Kantor</a></li>
+                        <li><a href="layanan.html#merchandise">Sablon & Merchandise</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Perusahaan</h3>
+                    <ul>
+                        <li><a href="tentang.html">Tentang Kami</a></li>
+                        <li><a href="portfolio.html">Portfolio</a></li>
+                        <li><a href="testimoni.html">Testimoni</a></li>
+                        <li><a href="blog.html">Blog & Artikel</a></li>
+                        <li><a href="karir.html">Karir</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Kontak Kami</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Kreatif No. 123, Jakarta</p>
+                    <p><i class="fas fa-phone"></i> (021) 1234-5678</p>
+                    <p><i class="fas fa-envelope"></i> info@ravaacreative.com</p>
+                    <p><i class="fas fa-clock"></i> Senin - Jumat: 08:00 - 17:00</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Ravaa Creative. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab layanan
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        const serviceContents = document.querySelectorAll('.service-content');
+        
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Hapus class active dari semua tab
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                // Tambah class active ke tab yang diklik
+                tab.classList.add('active');
+                
+                // Sembunyikan semua konten layanan
+                serviceContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Tampilkan konten sesuai tab
+                const serviceId = tab.getAttribute('data-service');
+                const targetContent = document.getElementById(`${serviceId}-content`);
+                if(targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+        
+        // FAQ accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                // Tutup semua FAQ lainnya
+                faqItems.forEach(otherItem => {
+                    if(otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                
+                // Buka/tutup FAQ yang diklik
+                item.classList.toggle('active');
+            });
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const nav = document.querySelector('nav ul');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            if(nav.style.display === 'flex') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+                nav.style.flexDirection = 'column';
+                nav.style.position = 'absolute';
+                nav.style.top = '70px';
+                nav.style.right = '20px';
+                nav.style.background = 'white';
+                nav.style.padding = '20px';
+                nav.style.borderRadius = '10px';
+                nav.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+                nav.style.width = '200px';
+                nav.style.zIndex = '1000';
+            }
+        });
+        
+        // Tambah ke keranjang
+        const addToCartBtns = document.querySelectorAll('.btn-add-to-cart');
+        const cartCount = document.querySelector('.cart-count');
+        
+        addToCartBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                let currentCount = parseInt(cartCount.textContent);
+                cartCount.textContent = currentCount + 1;
+                
+                // Animasi sederhana
+                cartCount.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    cartCount.style.transform = 'scale(1)';
+                }, 300);
+                
+                alert('Produk telah ditambahkan ke keranjang!');
+            });
+        });
+    </script>
+</body>
+</html>
