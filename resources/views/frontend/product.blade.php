@@ -3,7 +3,7 @@
 @section('title', 'Produk Kami')
 
 @section('content')
-        <!-- Hero Section -->
+    <!-- Hero Section -->
     <section class="hero-products">
         <div class="container">
             <h1>Katalog Produk</h1>

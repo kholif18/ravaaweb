@@ -3,7 +3,7 @@
 @section('title', 'Software House')
 
 @section('content')
-        <!-- Hero Section -->
+    <!-- Hero Section -->
     <section class="hero-tech">
         <div class="container">
             <div class="hero-content">

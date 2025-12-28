@@ -3,7 +3,7 @@
 @section('title', 'Detail Produk')
 
 @section('content')
-        <!-- Breadcrumb -->
+    <!-- Breadcrumb -->
     <section class="breadcrumb-container">
         <div class="container">
             <div class="breadcrumb">

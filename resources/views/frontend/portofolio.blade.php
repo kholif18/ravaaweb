@@ -3,7 +3,7 @@
 @section('title', 'Portfolio')
 
 @section('content')
-        <!-- Hero Section -->
+    <!-- Hero Section -->
     <section class="hero-portfolio">
         <div class="container">
             <h1>Portofolio Karya Kami</h1>
