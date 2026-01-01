@@ -4,7 +4,6 @@
 
 <body id="kt_body"
     class="header-fixed header-tablet-and-mobile-fixed
-            toolbar-enabled toolbar-fixed
             aside-enabled aside-fixed">
 
 <div class="d-flex flex-column flex-root">
