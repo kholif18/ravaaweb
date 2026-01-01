@@ -14,17 +14,6 @@
         </div>
 
         {{-- Menu Footer --}}
-        <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
-            <li class="menu-item">
-                <a href="#" class="menu-link px-2">About</a>
-            </li>
-            <li class="menu-item">
-                <a href="#" class="menu-link px-2">Support</a>
-            </li>
-            <li class="menu-item">
-                <a href="#" class="menu-link px-2">Docs</a>
-            </li>
-        </ul>
-
+        <span class="text-muted fw-semibold me-1 order-1">Version 0.0.1</span>
     </div>
 </div>
