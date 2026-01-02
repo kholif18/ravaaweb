@@ -7,7 +7,17 @@
     <li class="breadcrumb-item text-muted">
         <a href="{{ route('admin.dashboard') }}"
            class="text-muted text-hover-primary">
-            Home
+            Dashboard
+        </a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <span class="bullet bg-gray-300 w-5px h-2px"></span>
+    </li>
+
+    <li class="breadcrumb-item text-muted">
+        <a href="#" class="text-muted text-hover-primary">
+            Home Page
         </a>
     </li>
 
@@ -16,37 +26,8 @@
     </li>
 
     <li class="breadcrumb-item text-dark">
-        Home Banner
+        Banner Hero
     </li>
-@endsection
-
-@section('toolbar')
-<!--begin::Toolbar-->
-<div id="kt_toolbar" class="toolbar py-3 py-lg-6">
-    <!--begin::Container-->
-    <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
-        <!--begin::Page title-->
-        <div class="page-title d-flex flex-column me-3">
-            <!--begin::Title-->
-            <h1 class="d-flex text-dark fw-bolder my-1 fs-3">Banner Hero - Home Page</h1>
-            <!--end::Title-->
-            <!--begin::Breadcrumb-->
-            <ul class="breadcrumb breadcrumb-dot fw-bold text-gray-600 fs-7 my-1">
-                <li class="breadcrumb-item text-gray-600">
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 text-hover-primary">Dashboard</a>
-                </li>
-                <li class="breadcrumb-item text-gray-600">
-                    <a href="#" class="text-gray-600 text-hover-primary">Home Page</a>
-                </li>
-                <li class="breadcrumb-item text-gray-600">Banner Hero</li>
-            </ul>
-            <!--end::Breadcrumb-->
-        </div>
-        <!--end::Page title-->
-    </div>
-    <!--end::Container-->
-</div>
-<!--end::Toolbar-->
 @endsection
 
 @section('content')

@@ -57,7 +57,10 @@
                 </div>
 
                 {{-- Home Page Accordion --}}
-                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
+                @php
+                    $homePageActive = request()->routeIs('admin.home.*');
+                @endphp
+                <div class="menu-item menu-accordion {{ $homePageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="bi bi-house fs-2"></i>
@@ -65,7 +68,7 @@
                         <span class="menu-title">Home Page</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg">
+                    <div class="menu-sub menu-sub-accordion menu-active-bg {{ $homePageActive ? 'show' : '' }}">
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('admin.home.banner') ? 'active' : '' }}"
                                 href="{{ route('admin.home.banner') }}">
@@ -106,7 +109,10 @@
                 </div>
 
                 {{-- Layanan Page Accordion --}}
-                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
+                @php
+                    $servicesPageActive = request()->routeIs('admin.services.*');
+                @endphp
+                <div class="menu-item menu-accordion {{ $servicesPageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="bi bi-gear fs-2"></i>
@@ -114,7 +120,7 @@
                         <span class="menu-title">Layanan Page</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg">
+                    <div class="menu-sub menu-sub-accordion menu-active-bg {{ $servicesPageActive ? 'show' : '' }}">
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('admin.services.categories') ? 'active' : '' }}"
                                 href="{{ route('admin.services.categories') }}">

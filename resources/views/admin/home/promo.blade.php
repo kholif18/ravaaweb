@@ -7,7 +7,7 @@
     <li class="breadcrumb-item text-muted">
         <a href="{{ route('admin.dashboard') }}"
            class="text-muted text-hover-primary">
-            Home
+            Dashboard
         </a>
     </li>
 
@@ -15,6 +15,16 @@
         <span class="bullet bg-gray-300 w-5px h-2px"></span>
     </li>
 
+    <li class="breadcrumb-item text-muted">
+        <a href="#" class="text-muted text-hover-primary">
+            Home Page
+        </a>
+    </li>
+
+    <li class="breadcrumb-item">
+        <span class="bullet bg-gray-300 w-5px h-2px"></span>
+    </li>
+    
     <li class="breadcrumb-item text-dark">
         Promo Banner
     </li>
