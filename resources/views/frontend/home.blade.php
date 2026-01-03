@@ -63,12 +63,63 @@
 
     <!-- Promo Banner -->
     <section class="container">
-        <div class="promo-banner">
-            <h2>Promo Spesial Bulan Ini!</h2>
-            <p>Dapatkan diskon 20% untuk semua layanan desain dan 15% untuk produk percetakan.</p>
-            <p>Gunakan kode promo:</p>
-            <div class="promo-code">RAVAA20</div>
-            <p>Promo berlaku hingga 30 November 2023</p>
+        <div class="promo-banner catalog-promo">
+            <div class="promo-content">
+                <span class="promo-badge">PENAWARAN TERBATAS</span>
+                <h2>Diskon Spesial 20% Bulan Ini!</h2>
+                <p class="promo-desc">Untuk semua layanan desain & percetakan di Ravaa Creative</p>
+                
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Gratis konsultasi desain</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Free revisi 3x</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Gratis pengiriman area Jogja</span>
+                    </div>
+                </div>
+                
+                <!-- COUNTDOWN TIMER -->
+                <div class="countdown-timer">
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="days">00</span>
+                        <span class="countdown-label">Hari</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="hours">00</span>
+                        <span class="countdown-label">Jam</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="minutes">00</span>
+                        <span class="countdown-label">Menit</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="seconds">00</span>
+                        <span class="countdown-label">Detik</span>
+                    </div>
+                </div>
+                <p class="promo-date">Promo berlaku hingga 30 November 2023</p>
+
+                <div class="cta-container">
+                    <p class="cta-text">Hubungi kami sekarang untuk dapatkan penawaran!</p>
+                    <div class="contact-buttons">
+                        <a href="https://wa.me/628xxxxxxxxx" class="cta-button whatsapp-btn">
+                            <span class="btn-icon">💬</span> WhatsApp
+                        </a>
+                        <a href="tel:+628xxxxxxxxx" class="cta-button phone-btn">
+                            <span class="btn-icon">📞</span> Telepon
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="promo-image">
+                <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Customer Service Ravaa">
+            </div>
         </div>
     </section>
 
@@ -99,7 +150,6 @@
                             <span class="current-price">Rp 499.000</span>
                         </div>
                         <div class="product-actions">
-                            <button class="btn-add-to-cart">+ Keranjang</button>
                             <button class="btn-detail">Detail</button>
                         </div>
                     </div>
@@ -119,7 +169,6 @@
                             <span class="original-price">Rp 1.400/lembar</span>
                         </div>
                         <div class="product-actions">
-                            <button class="btn-add-to-cart">+ Keranjang</button>
                             <button class="btn-detail">Detail</button>
                         </div>
                     </div>
@@ -137,7 +186,6 @@
                             <span class="current-price">Rp 25.000/buku</span>
                         </div>
                         <div class="product-actions">
-                            <button class="btn-add-to-cart">+ Keranjang</button>
                             <button class="btn-detail">Detail</button>
                         </div>
                     </div>
@@ -156,7 +204,6 @@
                             <span class="current-price">Rp 85.000/pcs</span>
                         </div>
                         <div class="product-actions">
-                            <button class="btn-add-to-cart">+ Keranjang</button>
                             <button class="btn-detail">Detail</button>
                         </div>
                     </div>

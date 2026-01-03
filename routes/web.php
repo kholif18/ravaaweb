@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PromoBannerController;
 
 Route::get('/', function () {
     return view('frontend/home');
@@ -65,14 +66,9 @@ Route::prefix('admin')
             })->name('categories.update');
             
             // Promo Banner
-            Route::get('/promo', function () {
-                return view('admin.home.promo');
-            })->name('promo');
-            
-            Route::put('/promo', function () {
-                // Update promo logic here
-                return redirect()->back()->with('success', 'Promo updated successfully');
-            })->name('promo.update');
+            Route::get('/promo', [PromoBannerController::class, 'index'])->name('promo');
+            Route::put('/promo/update', [PromoBannerController::class, 'update'])->name('promo.update');
+            Route::get('/promo/preview', [PromoBannerController::class, 'preview'])->name('promo.preview');
             
             // Featured Products
             Route::get('/featured', function () {

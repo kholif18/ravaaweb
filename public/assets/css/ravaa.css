@@ -60,6 +60,7 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-left: 10px;
     font-size: 1.8rem;
     font-weight: 800;
     color: var(--primary);
@@ -726,36 +727,247 @@ a.btn-detail:focus {
 }
 
 /* Promo Banner */
-.promo-banner {
-    background: linear-gradient(to right, #4a00e0, #8e2de2);
-    color: white;
+.promo-banner.catalog-promo {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 20px;
     padding: 40px;
-    border-radius: var(--border-radius);
-    margin: 60px 0;
+    margin: 40px 0;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 10px 30px rgba(30, 60, 114, 0.3);
+    position: relative;
+    overflow: hidden;
     text-align: center;
 }
 
-.promo-banner h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
+/* Background efek */
+.promo-banner.catalog-promo::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    z-index: 1;
 }
 
-.promo-banner p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    opacity: 0.9;
+.promo-banner.catalog-promo::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    z-index: 1;
 }
 
-.promo-code {
-    display: inline-block;
-    background-color: white;
-    color: var(--primary);
-    padding: 10px 20px;
+/* Content bagian kiri */
+.promo-content {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.promo-badge {
+    background: #ff6b6b;
+    color: white;
+    padding: 8px 20px;
     border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.promo-banner.catalog-promo h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: white;
+    line-height: 1.2;
+}
+
+.promo-desc {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+/* Benefits List */
+.benefits-list {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 25px 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+    font-size: 16px;
+}
+
+.benefit-icon {
+    background: #4cd137;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* CTA Section */
+.cta-container {
+    margin: 30px 0;
+}
+
+.cta-text {
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.contact-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.cta-button {
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.whatsapp-btn {
+    background: #25d366;
+    color: white;
+}
+
+.whatsapp-btn:hover {
+    background: #1da851;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+}
+
+.phone-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.phone-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    transform: translateY(-3px);
+}
+
+.btn-icon {
+    font-size: 18px;
+}
+
+/* Tanggal Promo */
+.promo-date {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.promo-date::before {
+    content: '⏳';
+}
+
+/* Image bagian kanan - FIXED */
+.promo-image {
+    flex: 0 0 300px;
+    position: relative;
+    z-index: 2;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    height: 700px; /* Fixed height */
+}
+
+.promo-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.5s ease;
+}
+
+.promo-image:hover img {
+    transform: scale(1.05);
+}
+
+/* Countdown Timer Styles */
+.countdown-timer {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    justify-content: center;
+}
+
+.countdown-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 70px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.countdown-number {
+    font-size: 28px;
     font-weight: 700;
-    font-size: 1.3rem;
-    margin-top: 10px;
-    letter-spacing: 2px;
+    display: block;
+    color: #ffeaa7;
+}
+
+.countdown-label {
+    font-size: 12px;
+    opacity: 0.8;
+    text-transform: uppercase;
 }
 
 /* Hero Section */
@@ -1610,39 +1822,6 @@ a.btn-detail:focus {
 .btn-modal-outline:hover {
     background-color: var(--primary);
     color: white;
-}
-
-/* Promo Banner */
-.promo-banner {
-    background: linear-gradient(to right, #7209b7, #4361ee);
-    color: white;
-    padding: 40px;
-    border-radius: var(--border-radius);
-    margin: 60px 0;
-    text-align: center;
-}
-
-.promo-banner h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.promo-banner p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    opacity: 0.9;
-}
-
-.promo-code {
-    display: inline-block;
-    background-color: white;
-    color: var(--primary);
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 1.3rem;
-    margin-top: 10px;
-    letter-spacing: 2px;
 }
 
 .detail-product-price-container {
@@ -3515,6 +3694,34 @@ footer {
         font-size: 2.5rem;
     }
     
+    .promo-banner.catalog-promo {
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    .promo-banner.catalog-promo h2 {
+        font-size: 24px;
+    }
+    
+    .cta-button {
+        padding: 12px 25px;
+        font-size: 15px;
+    }
+    
+    .contact-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .cta-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .promo-image {
+        height: 200px;
+    }
+
     .contact-container {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -3609,6 +3816,41 @@ footer {
     
     .modal-content {
         padding: 30px;
+    }
+
+    .promo-banner.catalog-promo {
+        flex-direction: column;
+        padding: 30px;
+        gap: 30px;
+        text-align: center;
+    }
+    
+    .promo-image {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 400px;
+        height: 250px;
+        margin: 0 auto;
+    }
+    
+    .promo-banner.catalog-promo h2 {
+        font-size: 28px;
+    }
+    
+    .promo-desc {
+        font-size: 16px;
+    }
+    
+    .benefits-list {
+        padding: 15px;
+    }
+    
+    .benefit-item {
+        justify-content: center;
+    }
+    
+    .contact-buttons {
+        justify-content: center;
     }
 }
 
@@ -3715,10 +3957,6 @@ footer {
         font-size: 2rem;
     }
     
-    .promo-banner h2 {
-        font-size: 1.6rem;
-    }
-    
     .product-tabs {
         flex-wrap: wrap;
     }
@@ -3796,6 +4034,35 @@ footer {
     .gallery-grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
+
+    .contact-buttons {
+        flex-direction: column; /* Ubah ke kolom di mobile */
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 300px; /* Batasi maksimal lebar */
+        margin: 0 auto;
+    }
+    
+    .cta-button {
+        width: 100%; /* Tombol mengambil lebar penuh */
+        justify-content: center;
+        padding: 14px 20px;
+        text-align: center;
+    }
+
+    .countdown-timer {
+        flex-wrap: wrap;
+    }
+    
+    .countdown-item {
+        min-width: 70px;
+        padding: 12px;
+    }
+    
+    .countdown-number {
+        font-size: 24px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -3826,10 +4093,6 @@ footer {
     
     .category-grid, .product-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .promo-banner {
-        padding: 30px 20px;
     }
 
     .product-thumbnails {
@@ -3925,4 +4188,83 @@ footer {
     .faq-item.active .faq-answer {
         padding: 0 20px 15px;
     }
+
+    .benefit-item {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .contact-buttons {
+        flex-direction: column;
+    }
+    
+    .cta-button {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+    
+    .countdown-item {
+        min-width: 60px;
+        padding: 10px;
+    }
+    
+    .countdown-number {
+        font-size: 20px;
+    }
 }
+
+@media (max-width: 480px) {
+    .promo-banner.catalog-promo {
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    .promo-banner.catalog-promo h2 {
+        font-size: 20px;
+    }
+    
+    .promo-desc {
+        font-size: 15px;
+    }
+    
+    .benefit-item {
+        font-size: 15px;
+        justify-content: flex-start;
+        text-align: left;
+    }
+    
+    .promo-date {
+        font-size: 13px;
+    }
+    
+    .promo-image {
+        height: 180px;
+    }
+
+    .contact-buttons {
+        max-width: 100%; /* Lebar penuh di mobile kecil */
+    }
+    
+    .cta-button {
+        padding: 12px 15px;
+        font-size: 15px;
+    }
+}
+
+/* Animasi untuk banner */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.promo-banner.catalog-promo {
+    animation: fadeInUp 0.8s ease-out;
+}
+
