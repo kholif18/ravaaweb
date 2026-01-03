@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\PromoBannerController;
 
 Route::get('/', function () {
@@ -46,14 +47,10 @@ Route::prefix('admin')
         // Home Page Management
         Route::prefix('home')->name('home.')->group(function () {
             // Banner Hero
-            Route::get('/banner', function () {
-                return view('admin.home.banner');
-            })->name('banner');
-            
-            Route::put('/banner', function () {
-                // Update banner logic here
-                return redirect()->back()->with('success', 'Banner updated successfully');
-            })->name('banner.update');
+            Route::get('/banner', [HomeBannerController::class, 'edit'])->name('banner');
+            Route::put('/banner', [HomeBannerController::class, 'update'])->name('banner.update');
+            Route::post('/banner/reset', [HomeBannerController::class, 'reset'])->name('banner.reset');
+            Route::post('/banner/upload-image', [HomeBannerController::class, 'uploadImage'])->name('banner.upload-image');
             
             // Service Categories
             Route::get('/categories', function () {

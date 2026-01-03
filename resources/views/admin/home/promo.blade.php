@@ -505,7 +505,7 @@
                     <span style="background: ${colorTheme.badge}; color: white; padding: 8px 20px; border-radius: 30px; font-size: 14px; font-weight: 600; display: inline-block; margin-bottom: 15px;">
                         PENAWARAN TERBATAS
                     </span>
-                    <h3 style="font-size: 24px; margin-bottom: 10px; line-height: 1.2;">${title}</h3>
+                    <h3 style="font-size: 24px; color: white; margin-bottom: 10px; line-height: 1.2;">${title}</h3>
                     <p style="opacity: 0.9; margin-bottom: 20px;">${subtitle}</p>
                     
                     ${benefits.length > 0 ? `
