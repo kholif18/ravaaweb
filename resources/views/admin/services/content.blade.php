@@ -1367,12 +1367,7 @@ Revisi tanpa batas</textarea>
 <!--end::Card-->
 @endsection
 
-@push('styles')
-<link href="{{ asset('admin/assets/plugins/custom/select2/select2.bundle.css') }}" rel="stylesheet">
-@endpush
-
 @push('scripts')
-<script src="{{ asset('admin/assets/plugins/custom/select2/select2.bundle.js') }}"></script>
 <script>
     // Initialize Select2
     $(document).ready(function() {
