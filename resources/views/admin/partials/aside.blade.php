@@ -79,8 +79,8 @@
                             </a>
                         </div>
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.home.categories') ? 'active' : '' }}"
-                                href="{{ route('admin.home.categories') }}">
+                            <a class="menu-link {{ request()->routeIs('admin.home.categories.edit') ? 'active' : '' }}"
+                                href="{{ route('admin.home.categories.edit') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
                                 </span>

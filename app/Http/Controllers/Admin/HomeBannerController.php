@@ -24,7 +24,7 @@ class HomeBannerController extends Controller
      */
     public function edit()
     {
-        $banner = HomeBanner::getActiveBanner();
+        $banner = HomeBanner::first();
         
         // If no banner exists, create a default one
         if (!$banner) {
@@ -49,7 +49,7 @@ class HomeBannerController extends Controller
     {
         $validated = $request->validated();
     
-        $banner = HomeBanner::getActiveBanner();
+        $banner = HomeBanner::firstOrFail();
         
         if (!$banner) {
             $banner = new HomeBanner();
@@ -62,7 +62,6 @@ class HomeBannerController extends Controller
             'button1_link' => $validated['button1_link'],
             'button2_text' => $validated['button2_text'],
             'button2_link' => $validated['button2_link'],
-            'is_active' => $request->boolean('status', true),
         ];
 
         // Handle image upload
@@ -90,11 +89,6 @@ class HomeBannerController extends Controller
             $banner->update($data);
         } else {
             $banner = HomeBanner::create($data);
-        }
-
-        // Activate this banner if status is true
-        if ($request->boolean('status', true)) {
-            $banner->activate();
         }
 
         return redirect()->route('admin.home.banner')
@@ -139,56 +133,20 @@ class HomeBannerController extends Controller
      */
     public function reset()
     {
-        $banner = HomeBanner::getActiveBanner();
-        
-        if ($banner) {
-            $defaults = [
-                'title' => 'Solusi Kreatif untuk Desain, Print & ATK Anda',
-                'description' => 'Ravaa Creative menyediakan layanan desain grafis, percetakan, dan alat tulis kantor berkualitas tinggi dengan harga kompetitif. Hasil kreatif yang memukau untuk kebutuhan bisnis Anda.',
-                'button1_text' => 'Lihat Layanan',
-                'button1_link' => '/layanan',
-                'button2_text' => 'Portfolio Kami',
-                'button2_link' => '/portofolio',
-            ];
-            
-            $banner->update($defaults);
-            
-            return redirect()->route('admin.home.banner')
-                ->with('success', 'Banner berhasil direset ke nilai default!');
-        }
-        
-        return redirect()->route('admin.home.banner')
-            ->with('error', 'Banner tidak ditemukan!');
-    }
+        $banner = HomeBanner::firstOrFail();
 
-    /**
-     * API endpoint for frontend to get active banner
-     */
-    public function getActiveBannerApi()
-    {
-        $banner = HomeBanner::getActiveBanner();
-        
-        if (!$banner) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No active banner found',
-            ], 404);
-        }
-        
+        $banner->update([
+            'title' => 'Solusi Kreatif untuk Desain, Print & ATK Anda',
+            'description' => 'Ravaa Creative menyediakan layanan desain grafis, percetakan, dan alat tulis kantor berkualitas tinggi dengan harga kompetitif.',
+            'button1_text' => 'Lihat Layanan',
+            'button1_link' => '/layanan',
+            'button2_text' => 'Portfolio Kami',
+            'button2_link' => '/portofolio',
+        ]);
+
         return response()->json([
             'success' => true,
-            'data' => [
-                'id' => $banner->id,
-                'title' => $banner->title,
-                'description' => $banner->description,
-                'image_url' => $banner->image_url,
-                'button1_text' => $banner->button1_text,
-                'button1_link' => $banner->button1_link,
-                'button2_text' => $banner->button2_text,
-                'button2_link' => $banner->button2_link,
-                'is_active' => $banner->is_active,
-                'updated_at' => $banner->updated_at->format('Y-m-d H:i:s'),
-            ],
+            'message' => 'Banner berhasil direset!',
         ]);
     }
 }

@@ -17,37 +17,7 @@ class HomeBanner extends Model
         'button1_link',
         'button2_text',
         'button2_link',
-        'is_active',
     ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    /**
-     * Get active banner
-     */
-    public static function getActiveBanner()
-    {
-        return self::where('is_active', true)->first();
-    }
-
-    /**
-     * Deactivate all banners
-     */
-    public static function deactivateAll()
-    {
-        self::query()->update(['is_active' => false]);
-    }
-
-    /**
-     * Set this banner as active
-     */
-    public function activate()
-    {
-        self::deactivateAll();
-        $this->update(['is_active' => true]);
-    }
 
     /**
      * Get the full image URL

@@ -56,7 +56,13 @@
                         <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                             <!--begin::Switch-->
                             <div class="form-check form-switch form-check-custom form-check-solid me-5">
-                                <input class="form-check-input" type="checkbox" value="1" id="promo_status" name="status" {{ $promo->status ?? 'checked' }} />
+                                <input type="hidden" name="status" value="0">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="status"
+                                    id="promo_status"
+                                    value="1"
+                                    {{ old('status', $promo->status ?? true) ? 'checked' : '' }}>
                                 <label class="form-check-label fw-bold" for="promo_status">
                                     Aktifkan Promo Banner
                                 </label>
@@ -132,9 +138,12 @@
                                     <div class="mb-10">
                                         <label class="form-label required">Tanggal Mulai</label>
                                         <input type="date" class="form-control form-control-solid" 
-                                               name="start_date" 
-                                               value="{{ old('start_date', $promo->start_date ?? date('Y-m-d')) }}"
-                                               required />
+                                                name="start_date" 
+                                                value="{{ old('start_date',
+                                                $promo?->start_date ? 
+                                                    $promo->start_date->format('Y-m-d') 
+                                                    : now()->format('Y-m-d')) }}"
+                                                required />
                                         <div class="text-muted fs-7 mt-1">Tanggal promo mulai ditampilkan.</div>
                                     </div>
                                 </div>
@@ -142,9 +151,13 @@
                                     <div class="mb-10">
                                         <label class="form-label required">Tanggal Berakhir</label>
                                         <input type="date" class="form-control form-control-solid" 
-                                               name="expiry_date" 
-                                               value="{{ old('expiry_date', $promo->expiry_date ?? date('Y-m-d', strtotime('+30 days'))) }}"
-                                               required />
+                                                name="expiry_date" 
+                                                value="{{ old('expiry_date',
+                                                    $promo?->expiry_date
+                                                        ? $promo->expiry_date->format('Y-m-d')
+                                                        : now()->addDays(30)->format('Y-m-d')
+                                                ) }}"
+                                                required />
                                         <div class="text-muted fs-7 mt-1">Promo akan berakhir pada tanggal ini.</div>
                                     </div>
                                 </div>
@@ -194,8 +207,8 @@
                                             </div>
                                             <div class="benefit-item d-flex align-items-center mb-2">
                                                 <span class="bullet bullet-primary me-2"></span>
-                                                <span class="benefit-text">Gratis pengiriman area Jogja</span>
-                                                <input type="hidden" name="benefits[]" value="Gratis pengiriman area Jogja">
+                                                <span class="benefit-text">Gratis pengiriman area Ngluyu</span>
+                                                <input type="hidden" name="benefits[]" value="Gratis pengiriman area Ngluyu">
                                                 <button type="button" class="btn btn-icon btn-sm btn-light ms-auto remove-benefit">
                                                     <i class="bi bi-x"></i>
                                                 </button>
@@ -264,7 +277,7 @@
                                     <div class="image-upload-container">
                                         <div class="image-preview mb-3" id="imagePreview">
                                             @if(isset($promo->image_url) && $promo->image_url)
-                                                <img src="{{ asset($promo->image_url) }}" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                                <img src="{{ asset('storage/' . $promo->image_url) }}" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
                                             @else
                                                 <div class="placeholder bg-light rounded d-flex align-items-center justify-content-center" style="height: 200px;">
                                                     <span class="text-muted">Preview gambar akan muncul di sini</span>
@@ -369,7 +382,7 @@
                     <a href="{{ route('admin.home.promo.preview') }}" class="btn btn-light me-3" target="_blank">
                         <i class="bi bi-eye fs-2"></i> Preview Live
                     </a>
-                    <button type="reset" class="btn btn-light me-3">Reset</button>
+                    <button type="button" class="btn btn-light me-3" onclick="resetForm()">Reset</button>
                     <button type="submit" class="btn btn-primary">
                         <span class="indicator-label">Simpan Perubahan</span>
                         <span class="indicator-progress">Mohon tunggu...
@@ -625,6 +638,49 @@
                     }
                 });
             }
+        });
+    }
+
+    function resetForm() {
+        Swal.fire({
+            title: 'Reset Promo Banner?',
+            text: 'Semua data promo akan dikembalikan ke default.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Reset',
+            cancelButtonText: 'Batal',
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-danger',
+                cancelButton: 'btn btn-light'
+            }
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Memproses...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch('{{ route("admin.home.promo.reset") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(res => res.json())
+            .then(res => {
+                Swal.fire({
+                    icon: 'success',
+                    text: res.message,
+                    timer: 1200,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Gagal reset promo banner', 'error');
+            });
         });
     }
     

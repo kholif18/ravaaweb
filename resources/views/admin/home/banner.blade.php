@@ -264,35 +264,7 @@
                                 </div>
                                 <!--end::Card body-->
                             </div>
-                            <!--end::Card: Preview Gambar-->
-                            
-                            <!--begin::Card: Status Banner-->
-                            <div class="card card-flush">
-                                <!--begin::Card header-->
-                                <div class="card-header">
-                                    <h3 class="card-title">Status Banner</h3>
-                                </div>
-                                <!--end::Card header-->
-                                <!--begin::Card body-->
-                                <div class="card-body">
-                                    <!--begin::Switch-->
-                                    <div class="form-check form-switch form-check-custom form-check-solid">
-                                        <input class="form-check-input" type="checkbox" value="1" 
-                                               id="banner_status" name="status" 
-                                               {{ old('status', $banner->status ?? true) ? 'checked' : '' }} />
-                                        <label class="form-check-label" for="banner_status">
-                                            Tampilkan Banner
-                                        </label>
-                                    </div>
-                                    <!--end::Switch-->
-                                    @error('status')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                    <div class="text-muted fs-7 mt-2">Nonaktifkan jika ingin menyembunyikan banner dari homepage.</div>
-                                </div>
-                                <!--end::Card body-->
-                            </div>
-                            <!--end::Card: Status Banner-->
+                            <!--end::Card: Preview Gambar--> 
                             
                         </div>
                         <!--end::Col-->
@@ -308,7 +280,7 @@
                         <button type="button" class="btn btn-light-danger me-3" onclick="resetBanner()">
                             <i class="bi bi-arrow-clockwise me-2"></i> Reset ke Default
                         </button>
-                        <button type="reset" class="btn btn-light">Reset Form</button>
+                        <button type="button" class="btn btn-light" onclick="resetForm()">Reset Form</button>
                     </div>
                     <button type="submit" class="btn btn-primary">
                         <span class="indicator-label">Simpan Perubahan</span>
@@ -333,7 +305,10 @@
 @push('scripts')
     <script>
         // Image input handler
-        var bannerImage = new KTImageInput('banner_image');
+        const imageInputEl = document.querySelector('[data-kt-image-input="true"]');
+        if (imageInputEl) {
+            new KTImageInput(imageInputEl);
+        }
         
         // Form validation
         var form = document.getElementById('bannerForm');
@@ -425,6 +400,29 @@
             });
         }
         
+        function resetForm() {
+            // Reset HTML form
+            document.getElementById('bannerForm').reset();
+
+            // Reset image Metronic via cancel action
+            const imageInputEl = document.querySelector('[data-kt-image-input="true"]');
+
+            if (imageInputEl) {
+                const cancelBtn = imageInputEl.querySelector('[data-kt-image-input-action="cancel"]');
+                if (cancelBtn) {
+                    cancelBtn.click();
+                }
+            }
+
+            // Kembalikan preview ke image dari database
+            const defaultImage = "{{ $banner->image_url }}";
+            const wrapper = document.querySelector('.image-input-wrapper');
+
+            if (wrapper && defaultImage) {
+                wrapper.style.backgroundImage = `url('${defaultImage}')`;
+            }
+        }
+
         // AJAX image upload preview (optional enhancement)
         document.querySelector('input[name="banner_image"]')?.addEventListener('change', function(e) {
             if (this.files && this.files[0]) {

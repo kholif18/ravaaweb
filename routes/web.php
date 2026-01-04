@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\PromoBannerController;
+use App\Http\Controllers\Admin\HomeCategoryController;
 
 Route::get('/', function () {
     return view('frontend/home');
@@ -53,19 +54,16 @@ Route::prefix('admin')
             Route::post('/banner/upload-image', [HomeBannerController::class, 'uploadImage'])->name('banner.upload-image');
             
             // Service Categories
-            Route::get('/categories', function () {
-                return view('admin.home.categories');
-            })->name('categories');
-            
-            Route::put('/categories', function () {
-                // Update categories logic here
-                return redirect()->back()->with('success', 'Categories updated successfully');
-            })->name('categories.update');
+            Route::get('categories', [HomeCategoryController::class, 'edit'])->name('categories.edit');
+            Route::put('categories/update', [HomeCategoryController::class, 'update'])->name('categories.update');
+            Route::post('categories/{position}/toggle-status', [HomeCategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
+            Route::post('categories/reset', [HomeCategoryController::class, 'reset'])->name('categories.reset');
             
             // Promo Banner
             Route::get('/promo', [PromoBannerController::class, 'index'])->name('promo');
             Route::put('/promo/update', [PromoBannerController::class, 'update'])->name('promo.update');
             Route::get('/promo/preview', [PromoBannerController::class, 'preview'])->name('promo.preview');
+            Route::post('/promo/reset', [PromoBannerController::class, 'reset'])->name('promo.reset');
             
             // Featured Products
             Route::get('/featured', function () {

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\PromoBanner;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Database\Seeders\PromoBannerSeeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class PromoBannerController extends Controller
@@ -49,6 +51,8 @@ class PromoBannerController extends Controller
             $validated['image_url'] = null;
         }
 
+        $validated['status'] = $request->boolean('status');
+
         $promo->fill($validated);
         $promo->save();
 
@@ -64,5 +68,25 @@ class PromoBannerController extends Controller
             ->first();
 
         return view('frontend.promo-preview', compact('promo'));
+    }
+
+    public function reset()
+    {
+        // Hapus gambar jika ada
+        $promo = PromoBanner::first();
+        if ($promo && $promo->image_url) {
+            Storage::disk('public')->delete($promo->image_url);
+        }
+
+        // Reset via seeder
+        Artisan::call('db:seed', [
+            '--class' => PromoBannerSeeder::class,
+            '--force' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Promo banner berhasil dikembalikan ke default'
+        ]);
     }
 }

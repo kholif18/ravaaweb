@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('button1_link');
             $table->string('button2_text');
             $table->string('button2_link');
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
@@ -34,7 +33,6 @@ return new class extends Migration
             'button1_link' => '/layanan',
             'button2_text' => 'Portfolio Kami',
             'button2_link' => '/portofolio',
-            'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
