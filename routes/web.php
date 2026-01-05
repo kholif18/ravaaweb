@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\PromoBannerController;
 use App\Http\Controllers\Admin\HomeCategoryController;
@@ -121,12 +123,7 @@ Route::prefix('admin')
             Route::get('/categories', function () {
                 return view('admin.products-page.categories');
             })->name('categories');
-            
-            // Product Grid/List Settings
-            Route::get('/grid', function () {
-                return view('admin.products-page.grid');
-            })->name('grid');
-            
+
             // Promo Banner
             Route::get('/promo', function () {
                 return view('admin.products-page.promo');
@@ -154,10 +151,20 @@ Route::prefix('admin')
             Route::get('/stats', function () {
                 return view('admin.portfolio-page.stats');
             })->name('stats');
+
+            // CTA Section
+            Route::get('/cta', function () {
+                return view('admin.portfolio-page.cta');
+            })->name('cta');
         });
         
         // Software House Page Management
         Route::prefix('software')->name('software.')->group(function () {
+            // Hero Section
+            Route::get('/hero', function () {
+                return view('admin.software.hero');
+            })->name('hero');
+            
             // Tech Services
             Route::get('/services', function () {
                 return view('admin.software.services');
@@ -168,6 +175,11 @@ Route::prefix('admin')
                 return view('admin.software.stack');
             })->name('stack');
             
+            // Development Process
+            Route::get('/process', function () {
+                return view('admin.software.process');
+            })->name('process');
+            
             // Tech Portfolio
             Route::get('/portfolio', function () {
                 return view('admin.software.portfolio');
@@ -177,6 +189,11 @@ Route::prefix('admin')
             Route::get('/pricing', function () {
                 return view('admin.software.pricing');
             })->name('pricing');
+            
+            // CTA Section
+            Route::get('/cta', function () {
+                return view('admin.software.cta');
+            })->name('cta');
         });
         
         // Contact Page Management (single page)
@@ -192,63 +209,39 @@ Route::prefix('admin')
         
         // ========== MANAJEMEN PRODUK ==========
         
-        // Products CRUD
+        // Products
         Route::prefix('products')->name('products.')->group(function () {
-            // List all products
-            Route::get('/', function () {
-                return view('admin.products.index');
-            })->name('index');
+            Route::get('/', [ProductController::class, 'index'])->name('index');
+            Route::get('/create', [ProductController::class, 'create'])->name('create');
+            Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+            Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+            Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+            Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
             
-            // Create product form
-            Route::get('/create', function () {
-                return view('admin.products.create');
-            })->name('create');
-            
-            // Store new product
-            Route::post('/', function () {
-                return redirect()->route('admin.products.index')->with('success', 'Product created successfully');
-            })->name('store');
-            
-            // Edit product form
-            Route::get('/{id}/edit', function ($id) {
-                return view('admin.products.edit', compact('id'));
-            })->name('edit');
-            
-            // Update product
-            Route::put('/{id}', function ($id) {
-                return redirect()->route('admin.products.index')->with('success', 'Product updated successfully');
-            })->name('update');
-            
-            // Delete product
-            Route::delete('/{id}', function ($id) {
-                return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully');
-            })->name('destroy');
-            
-            // Toggle product status
-            Route::patch('/{id}/toggle-status', function ($id) {
-                return redirect()->back()->with('success', 'Product status updated');
-            })->name('toggle-status');
+            // Additional routes
+            Route::post('/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('bulk.destroy');
+            Route::put('/{product}/status', [ProductController::class, 'updateStatus'])->name('status.update');
+            Route::put('/{product}/stock', [ProductController::class, 'updateStock'])->name('stock.update');
+            Route::get('/export', [ProductController::class, 'export'])->name('export');
         });
         
         // Product Categories
         Route::prefix('categories')->name('categories.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.categories.index');
-            })->name('index');
+            Route::get('/', [CategoryController::class, 'index'])->name('index');
+            Route::post('/', [CategoryController::class, 'store'])->name('store');
+            Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
+            Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('bulk.destroy');
+            Route::put('/{category}/status', [CategoryController::class, 'updateStatus'])->name('status.update');
             
-            Route::post('/', function () {
-                return redirect()->back()->with('success', 'Category created successfully');
-            })->name('store');
+            // API untuk get category data (JSON) - PASTIKAN INI SEBELUM ROUTE {category}
+            Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('edit');
             
-            Route::put('/{id}', function ($id) {
-                return redirect()->back()->with('success', 'Category updated successfully');
-            })->name('update');
-            
-            Route::delete('/{id}', function ($id) {
-                return redirect()->back()->with('success', 'Category deleted successfully');
-            })->name('destroy');
+            // Opsional
+            Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
+            Route::get('/dropdown', [CategoryController::class, 'getCategoriesForDropdown'])->name('dropdown');
         });
-        
         // ========== MANAJEMEN KONTEN ==========
         
         // Portfolio Items CRUD

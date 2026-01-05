@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Api\ServiceCategoryController;
 
 Route::prefix('v1')->group(function () {
@@ -36,5 +37,18 @@ Route::prefix('services')->group(function () {
         Route::patch('/', [ServiceController::class, 'update']);
         Route::delete('/', [ServiceController::class, 'destroy']);
         Route::post('/increment-views', [ServiceController::class, 'incrementViews']);
+    });
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Categories API
+    Route::prefix('categories')->name('categories.')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('index');
+        Route::post('/', [CategoryController::class, 'store'])->name('store');
+        Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
+        Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+        Route::post('/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('bulk.destroy');
+        Route::get('/dropdown', [CategoryController::class, 'getCategoriesForDropdown'])->name('dropdown');
     });
 });

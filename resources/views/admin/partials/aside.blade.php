@@ -161,7 +161,10 @@
                 </div>
 
                 {{-- Produk Page Accordion --}}
-                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
+                @php
+                    $productsPageActive = request()->routeIs('admin.products-page.*');
+                @endphp
+                <div class="menu-item menu-accordion {{ $productsPageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="bi bi-box-seam fs-2"></i>
@@ -171,7 +174,7 @@
                     </span>
                     <div class="menu-sub menu-sub-accordion menu-active-bg">
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.products.categories') ? 'active' : '' }}"
+                            <a class="menu-link {{ request()->routeIs('admin.products-page.categories') ? 'active' : '' }}"
                                 href="{{ route('admin.products-page.categories') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
@@ -180,16 +183,7 @@
                             </a>
                         </div>
                         <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.products.grid') ? 'active' : '' }}"
-                                href="{{ route('admin.products-page.grid') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Product Grid/List</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.products.promo') ? 'active' : '' }}"
+                            <a class="menu-link {{ request()->routeIs('admin.products-page.promo') ? 'active' : '' }}"
                                 href="{{ route('admin.products-page.promo') }}">
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>
@@ -201,7 +195,10 @@
                 </div>
 
                 {{-- Portfolio Page Accordion --}}
-                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
+                @php
+                    $portfolioPageActive = request()->routeIs('admin.portfolio-page.*');
+                @endphp
+                <div class="menu-item menu-accordion {{ $portfolioPageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="bi bi-images fs-2"></i>
@@ -246,11 +243,23 @@
                                 <span class="menu-title">Stats Counter</span>
                             </a>
                         </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.portfolio-page.cta') ? 'active' : '' }}"
+                                href="{{ route('admin.portfolio-page.cta') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">CTA Section</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Software House Page Accordion --}}
-                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
+                @php
+                    $softwarePageActive = request()->routeIs('admin.software.*');
+                @endphp
+                <div class="menu-item menu-accordion {{ $softwarePageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <i class="bi bi-code-slash fs-2"></i>
@@ -258,7 +267,16 @@
                         <span class="menu-title">Software House</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg">
+                    <div class="menu-sub menu-sub-accordion menu-active-bg {{ $softwarePageActive ? 'show' : '' }}">
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.software.hero') ? 'active' : '' }}"
+                                href="{{ route('admin.software.hero') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Hero Section</span>
+                            </a>
+                        </div>
                         <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('admin.software.services') ? 'active' : '' }}"
                                 href="{{ route('admin.software.services') }}">
@@ -278,6 +296,15 @@
                             </a>
                         </div>
                         <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.software.process') ? 'active' : '' }}"
+                                href="{{ route('admin.software.process') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Development Process</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
                             <a class="menu-link {{ request()->routeIs('admin.software.portfolio') ? 'active' : '' }}"
                                 href="{{ route('admin.software.portfolio') }}">
                                 <span class="menu-bullet">
@@ -293,6 +320,15 @@
                                     <span class="bullet bullet-dot"></span>
                                 </span>
                                 <span class="menu-title">Pricing Plans</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.software.cta') ? 'active' : '' }}"
+                                href="{{ route('admin.software.cta') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">CTA Section</span>
                             </a>
                         </div>
                     </div>
@@ -317,6 +353,16 @@
                 </div>
 
                 <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}"
+                        href="{{ route('admin.categories.index') }}">
+                        <span class="menu-icon">
+                            <i class="bi bi-tags fs-2"></i>
+                        </span>
+                        <span class="menu-title">Kategori Produk</span>
+                    </a>
+                </div>
+                
+                <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('admin.products.index') ? 'active' : '' }}"
                         href="{{ route('admin.products.index') }}">
                         <span class="menu-icon">
@@ -333,16 +379,6 @@
                             <i class="bi bi-plus-circle fs-2"></i>
                         </span>
                         <span class="menu-title">Tambah Produk</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}"
-                        href="{{ route('admin.categories.index') }}">
-                        <span class="menu-icon">
-                            <i class="bi bi-tags fs-2"></i>
-                        </span>
-                        <span class="menu-title">Kategori Produk</span>
                     </a>
                 </div>
 

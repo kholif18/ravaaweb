@@ -727,6 +727,26 @@ a.btn-detail:focus {
 }
 
 /* Promo Banner */
+.promo-banner {
+    background: linear-gradient(to right, #7209b7, #4361ee);
+    color: white;
+    padding: 40px;
+    border-radius: var(--border-radius);
+    margin: 60px 0;
+    text-align: center;
+}
+
+.promo-banner h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.promo-banner p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
 .promo-banner.catalog-promo {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border-radius: 20px;
