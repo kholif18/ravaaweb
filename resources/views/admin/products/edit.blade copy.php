@@ -71,10 +71,10 @@
                             <div class="mb-10">
                                 <label class="form-label required">Nama Produk</label>
                                 <input type="text" class="form-control" 
-                                    name="name" 
-                                    value="{{ old('name', $product->name) }}"
-                                    placeholder="Masukkan nama produk"
-                                    required />
+                                       name="name" 
+                                       value="{{ old('name', $product->name) }}"
+                                       placeholder="Masukkan nama produk"
+                                       required />
                                 @error('name')
                                     <div class="text-danger fs-7 mt-1">{{ $message }}</div>
                                 @enderror
@@ -84,117 +84,49 @@
                                 <div class="col-md-6">
                                     <label class="form-label">SKU (Stock Keeping Unit)</label>
                                     <input type="text" class="form-control" 
-                                        name="sku" 
-                                        value="{{ old('sku', $product->sku) }}"
-                                        placeholder="SKU-001" />
+                                           name="sku" 
+                                           value="{{ old('sku', $product->sku) }}"
+                                           placeholder="SKU-001" />
                                     <div class="text-muted fs-7 mt-1">Kosongkan untuk generate otomatis</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Barcode</label>
                                     <input type="text" class="form-control" 
-                                        name="barcode" 
-                                        value="{{ old('barcode', $product->barcode) }}"
-                                        placeholder="123456789012" />
+                                           name="barcode" 
+                                           value="{{ old('barcode', $product->barcode) }}"
+                                           placeholder="123456789012" />
                                 </div>
                             </div>
                             
                             <div class="mb-10">
                                 <label class="form-label">Deskripsi Pendek</label>
                                 <textarea class="form-control" 
-                                        name="short_description" 
-                                        rows="2"
-                                        placeholder="Deskripsi singkat produk (max 500 karakter)">{{ old('short_description', $product->short_description) }}</textarea>
+                                          name="short_description" 
+                                          rows="2"
+                                          placeholder="Deskripsi singkat produk (max 500 karakter)">{{ old('short_description', $product->short_description) }}</textarea>
                             </div>
                             
                             <div class="mb-10">
                                 <label class="form-label">Deskripsi Lengkap</label>
                                 <textarea class="form-control" 
-                                        name="description" 
-                                        rows="4"
-                                        placeholder="Deskripsi lengkap produk">{{ old('description', $product->description) }}</textarea>
+                                          name="description" 
+                                          rows="4"
+                                          placeholder="Deskripsi lengkap produk">{{ old('description', $product->description) }}</textarea>
                             </div>
                             
                             <div class="mb-10">
                                 <label class="form-label">Slug (URL)</label>
                                 <input type="text" class="form-control" 
-                                    name="slug" 
-                                    value="{{ old('slug', $product->slug) }}"
-                                    placeholder="nama-produk-url" />
+                                       name="slug" 
+                                       value="{{ old('slug', $product->slug) }}"
+                                       placeholder="nama-produk-url" />
                                 <div class="text-muted fs-7 mt-1">Kosongkan untuk generate otomatis dari nama</div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Product Type & Variants -->
+                    <!-- Pricing Card -->
                     <div class="card card-bordered mb-10">
-                        <div class="card-header">
-                            <h4 class="card-title">Tipe Produk</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-10">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" 
-                                        name="has_variants" 
-                                        value="1" 
-                                        id="has_variants" 
-                                        {{ old('has_variants', $product->has_variants) ? 'checked' : '' }} />
-                                    <label class="form-check-label" for="has_variants">
-                                        Produk memiliki varian (ukuran, warna, dll)
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            {{-- Variant Attributes Section --}}
-                            <div class="mb-10" id="variant-attributes-section" style="display: {{ old('has_variants', $product->has_variants) ? 'block' : 'none' }}">
-                                <label class="form-label">Atribut Varian</label>
-                                <div id="variant-attributes-container">
-                                    @php
-                                        // Ambil dari old() jika ada
-                                        $variantAttrs = old('variant_attributes', []);
-                                        
-                                        // Jika dari old() kosong, coba dari product
-                                        if (empty($variantAttrs)) {
-                                            // Cek apakah variant_attributes sudah array atau masih string JSON
-                                            if (!empty($product->variant_attributes)) {
-                                                if (is_string($product->variant_attributes)) {
-                                                    // Jika masih string, decode JSON
-                                                    $decodedAttrs = json_decode($product->variant_attributes, true);
-                                                    $variantAttrs = is_array($decodedAttrs) ? $decodedAttrs : [];
-                                                } elseif (is_array($product->variant_attributes)) {
-                                                    // Jika sudah array, gunakan langsung
-                                                    $variantAttrs = $product->variant_attributes;
-                                                }
-                                            }
-                                        }
-                                        
-                                        // Pastikan selalu array
-                                        if (empty($variantAttrs) || !is_array($variantAttrs)) {
-                                            $variantAttrs = [''];
-                                        }
-                                    @endphp
-                                    
-                                    @foreach($variantAttrs as $index => $attribute)
-                                    <div class="input-group mb-2">
-                                        <input type="text" class="form-control" 
-                                            name="variant_attributes[]" 
-                                            value="{{ is_array($attribute) ? ($attribute['name'] ?? $attribute) : $attribute }}"
-                                            placeholder="Contoh: warna, ukuran, bahan" />
-                                        <button type="button" class="btn btn-light-danger remove-attribute">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <button type="button" class="btn btn-light-primary btn-sm mt-2" id="add-attribute">
-                                    <i class="bi bi-plus"></i> Tambah Atribut
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Pricing Card (Non-Variant Only) -->
-                    @if(!$product->has_variants || old('has_variants') == false)
-                    <div class="card card-bordered mb-10" id="non-variant-pricing" style="display: {{ old('has_variants', $product->has_variants) ? 'none' : 'block' }}">
                         <div class="card-header">
                             <h4 class="card-title">Harga & Stok</h4>
                             <div class="card-toolbar">
@@ -208,62 +140,47 @@
                                 <div class="col-md-4">
                                     <label class="form-label required">Harga Normal (Rp)</label>
                                     <input type="number" class="form-control" 
-                                        name="price" 
-                                        value="{{ old('price', $product->price) }}"
-                                        min="0" step="0.01" required />
+                                           name="price" 
+                                           value="{{ old('price', $product->price) }}"
+                                           min="0" step="0.01" required />
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Harga Diskon (Rp)</label>
                                     <input type="number" class="form-control" 
-                                        name="discount_price" 
-                                        value="{{ old('discount_price', $product->discount_price) }}"
-                                        min="0" step="0.01" />
+                                           name="discount_price" 
+                                           value="{{ old('discount_price', $product->discount_price) }}"
+                                           min="0" step="0.01" />
                                     <div class="text-muted fs-7 mt-1">Kosongkan jika tidak ada diskon</div>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Harga Modal (Rp)</label>
                                     <input type="number" class="form-control" 
-                                        name="cost_price" 
-                                        value="{{ old('cost_price', $product->cost_price) }}"
-                                        min="0" step="0.01" />
+                                           name="cost_price" 
+                                           value="{{ old('cost_price', $product->cost_price) }}"
+                                           min="0" step="0.01" />
                                 </div>
                             </div>
                             
                             <div class="row mb-10">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="form-label required">Stok Saat Ini</label>
                                     <input type="number" class="form-control" 
-                                        name="stock_quantity" 
-                                        value="{{ old('stock_quantity', $product->stock_quantity) }}"
-                                        min="0" required />
+                                           name="stock_quantity" 
+                                           value="{{ old('stock_quantity', $product->stock_quantity) }}"
+                                           min="0" required />
                                     @if($product->isLowStock())
                                         <div class="text-warning fs-7 mt-1">
                                             <i class="bi bi-exclamation-triangle"></i> Stok hampir habis!
                                         </div>
                                     @endif
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="form-label required">Stok Minimum</label>
                                     <input type="number" class="form-control" 
-                                        name="minimum_stock" 
-                                        value="{{ old('minimum_stock', $product->minimum_stock) }}"
-                                        min="0" required />
+                                           name="minimum_stock" 
+                                           value="{{ old('minimum_stock', $product->minimum_stock) }}"
+                                           min="0" required />
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Mulai Diskon</label>
-                                    <input type="datetime-local" class="form-control" 
-                                        name="discount_start" 
-                                        value="{{ old('discount_start', $product->discount_start ? $product->discount_start->format('Y-m-d\TH:i') : '') }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Akhir Diskon</label>
-                                    <input type="datetime-local" class="form-control" 
-                                        name="discount_end" 
-                                        value="{{ old('discount_end', $product->discount_end ? $product->discount_end->format('Y-m-d\TH:i') : '') }}" />
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-10">
                                 <div class="col-md-4">
                                     <label class="form-label required">Status Stok</label>
                                     <select class="form-select" name="stock_status" required>
@@ -273,41 +190,39 @@
                                         <option value="backorder" {{ old('stock_status', $product->stock_status) == 'backorder' ? 'selected' : '' }}>Backorder</option>
                                     </select>
                                 </div>
+                            </div>
+                            
+                            <div class="row mb-10">
                                 <div class="col-md-4">
                                     <label class="form-label">Berat (kg)</label>
                                     <input type="number" class="form-control" 
-                                        name="weight" 
-                                        value="{{ old('weight', $product->weight) }}"
-                                        min="0" step="0.01" />
+                                           name="weight" 
+                                           value="{{ old('weight', $product->weight) }}"
+                                           min="0" step="0.01" />
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Satuan</label>
                                     <input type="text" class="form-control" 
-                                        name="unit" 
-                                        value="{{ old('unit', $product->unit) }}"
-                                        placeholder="pcs, kg, meter, dll" />
+                                           name="unit" 
+                                           value="{{ old('unit', $product->unit) }}"
+                                           placeholder="pcs, kg, meter, dll" />
                                 </div>
-                            </div>
-                            
-                            <div class="mb-10">
-                                <label class="form-label">Manage Stock?</label>
-                                <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" 
-                                        name="manage_stock" 
-                                        value="1" 
-                                        id="manage_stock" 
-                                        {{ old('manage_stock', $product->manage_stock) ? 'checked' : '' }} />
-                                    <label class="form-check-label" for="manage_stock">
-                                        Ya, kelola stok
-                                    </label>
+                                <div class="col-md-4">
+                                    <label class="form-label">Manage Stock?</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="manage_stock" 
+                                               value="1" 
+                                               id="manage_stock" 
+                                               {{ old('manage_stock', $product->manage_stock) ? 'checked' : '' }} />
+                                        <label class="form-check-label" for="manage_stock">
+                                            Ya, kelola stok
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    @endif
-                    
-                    <!-- Variants Section -->
-                    @include('admin.products.partials.variants-form')
                     
                     <!-- Images Card -->
                     <div class="card card-bordered mb-10">
@@ -322,21 +237,21 @@
                                     <div class="d-flex align-items-center">
                                         <div class="symbol symbol-100px me-5">
                                             <img src="{{ $product->main_image_url }}" 
-                                                class="rounded" 
-                                                alt="{{ $product->name }}"
-                                                style="max-height: 100px; object-fit: cover;" />
+                                                 class="rounded" 
+                                                 alt="{{ $product->name }}"
+                                                 style="max-height: 100px; object-fit: cover;" />
                                         </div>
                                         <div class="d-flex flex-column">
                                             <a href="{{ $product->main_image_url }}" 
-                                            target="_blank" 
-                                            class="btn btn-light btn-sm mb-2">
+                                               target="_blank" 
+                                               class="btn btn-light btn-sm mb-2">
                                                 <i class="bi bi-eye"></i> Lihat Full
                                             </a>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" 
-                                                    name="remove_main_image" 
-                                                    value="1" 
-                                                    id="remove_main_image" />
+                                                       name="remove_main_image" 
+                                                       value="1" 
+                                                       id="remove_main_image" />
                                                 <label class="form-check-label text-danger" for="remove_main_image">
                                                     Hapus gambar ini
                                                 </label>
@@ -354,8 +269,8 @@
                             <div class="mb-10">
                                 <label class="form-label">Upload Gambar Utama Baru</label>
                                 <input type="file" class="form-control" 
-                                    name="main_image" 
-                                    accept="image/*" />
+                                       name="main_image" 
+                                       accept="image/*" />
                                 <div class="text-muted fs-7 mt-1">Ukuran maksimal 2MB. Format: JPG, PNG, GIF</div>
                             </div>
                             
@@ -370,14 +285,14 @@
                                                 <div class="card card-bordered">
                                                     <div class="card-body p-2 text-center">
                                                         <img src="{{ asset('storage/products/' . $image) }}" 
-                                                            class="rounded mb-2" 
-                                                            style="width: 100%; height: 80px; object-fit: cover;"
-                                                            alt="Gambar {{ $index + 1 }}" />
+                                                             class="rounded mb-2" 
+                                                             style="width: 100%; height: 80px; object-fit: cover;"
+                                                             alt="Gambar {{ $index + 1 }}" />
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" 
-                                                                name="remove_images[]" 
-                                                                value="{{ $image }}" 
-                                                                id="remove_image_{{ $index }}" />
+                                                                   name="remove_images[]" 
+                                                                   value="{{ $image }}" 
+                                                                   id="remove_image_{{ $index }}" />
                                                             <label class="form-check-label text-danger fs-7" for="remove_image_{{ $index }}">
                                                                 Hapus
                                                             </label>
@@ -399,9 +314,9 @@
                             <div class="mb-10">
                                 <label class="form-label">Upload Gambar Tambahan Baru</label>
                                 <input type="file" class="form-control" 
-                                    name="images[]" 
-                                    multiple 
-                                    accept="image/*" />
+                                       name="images[]" 
+                                       multiple 
+                                       accept="image/*" />
                                 <div class="text-muted fs-7 mt-1">Pilih beberapa gambar sekaligus (maks 10 gambar)</div>
                             </div>
                         </div>
@@ -416,33 +331,33 @@
                             <div class="mb-10">
                                 <label class="form-label">Spesifikasi Teknis</label>
                                 <textarea class="form-control" 
-                                        name="specifications" 
-                                        rows="3"
-                                        placeholder="Spesifikasi teknis produk">{{ old('specifications', $product->specifications) }}</textarea>
+                                          name="specifications" 
+                                          rows="3"
+                                          placeholder="Spesifikasi teknis produk">{{ old('specifications', $product->specifications) }}</textarea>
                             </div>
                             
                             <div class="mb-10">
                                 <label class="form-label">Fitur Unggulan</label>
                                 <textarea class="form-control" 
-                                        name="features" 
-                                        rows="3"
-                                        placeholder="Fitur-fitur unggulan produk">{{ old('features', $product->features) }}</textarea>
+                                          name="features" 
+                                          rows="3"
+                                          placeholder="Fitur-fitur unggulan produk">{{ old('features', $product->features) }}</textarea>
                             </div>
                             
                             <div class="mb-10">
                                 <label class="form-label">Cara Penggunaan</label>
                                 <textarea class="form-control" 
-                                        name="usage_instructions" 
-                                        rows="2"
-                                        placeholder="Petunjuk penggunaan">{{ old('usage_instructions', $product->usage_instructions) }}</textarea>
+                                          name="usage_instructions" 
+                                          rows="2"
+                                          placeholder="Petunjuk penggunaan">{{ old('usage_instructions', $product->usage_instructions) }}</textarea>
                             </div>
                             
                             <div class="mb-10">
                                 <label class="form-label">Informasi Garansi</label>
                                 <textarea class="form-control" 
-                                        name="warranty_info" 
-                                        rows="2"
-                                        placeholder="Informasi garansi produk">{{ old('warranty_info', $product->warranty_info) }}</textarea>
+                                          name="warranty_info" 
+                                          rows="2"
+                                          placeholder="Informasi garansi produk">{{ old('warranty_info', $product->warranty_info) }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -841,7 +756,7 @@ function showToast(type, message, title = '') {
 function confirmDelete() {
     Swal.fire({
         title: 'Hapus Produk?',
-        html: `Produk <strong>"{{ $product->name }}"</strong> akan dihapus permanen beserta semua gambarnya dan variannya.`,
+        html: `Produk <strong>"{{ $product->name }}"</strong> akan dihapus permanen beserta semua gambarnya.`,
         text: "Tindakan ini tidak dapat dibatalkan!",
         icon: 'warning',
         showCancelButton: true,
@@ -872,83 +787,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Toggle product type (variant/non-variant)
-    const hasVariantsCheckbox = document.getElementById('has_variants');
-    const variantAttributesSection = document.getElementById('variant-attributes-section');
-    const variantsContainer = document.getElementById('variants-container');
-    const nonVariantPricing = document.getElementById('non-variant-pricing');
-    
-    if (hasVariantsCheckbox && nonVariantPricing) {
-        hasVariantsCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                variantAttributesSection.style.display = 'block';
-                variantsContainer.style.display = 'block';
-                nonVariantPricing.style.display = 'none';
-                
-                // Set required for variant fields
-                const variantNameInputs = variantsContainer.querySelectorAll('input[name*="[name]"]');
-                const variantPriceInputs = variantsContainer.querySelectorAll('input[name*="[price]"]');
-                const variantStockInputs = variantsContainer.querySelectorAll('input[name*="[stock_quantity]"]');
-                
-                variantNameInputs.forEach(input => input.required = true);
-                variantPriceInputs.forEach(input => input.required = true);
-                variantStockInputs.forEach(input => input.required = true);
-                
-                // Remove required from non-variant fields
-                form.querySelector('input[name="price"]').required = false;
-                form.querySelector('input[name="stock_quantity"]').required = false;
-                form.querySelector('select[name="stock_status"]').required = false;
-            } else {
-                variantAttributesSection.style.display = 'none';
-                variantsContainer.style.display = 'none';
-                nonVariantPricing.style.display = 'block';
-                
-                // Remove required from variant fields
-                const variantNameInputs = variantsContainer.querySelectorAll('input[name*="[name]"]');
-                const variantPriceInputs = variantsContainer.querySelectorAll('input[name*="[price]"]');
-                const variantStockInputs = variantsContainer.querySelectorAll('input[name*="[stock_quantity]"]');
-                
-                variantNameInputs.forEach(input => input.required = false);
-                variantPriceInputs.forEach(input => input.required = false);
-                variantStockInputs.forEach(input => input.required = false);
-                
-                // Add required to non-variant fields
-                form.querySelector('input[name="price"]').required = true;
-                form.querySelector('input[name="stock_quantity"]').required = true;
-                form.querySelector('select[name="stock_status"]').required = true;
-            }
-        });
-    }
-    
-    // Add attribute
-    const addAttributeBtn = document.getElementById('add-attribute');
-    if (addAttributeBtn) {
-        addAttributeBtn.addEventListener('click', function() {
-            const container = document.getElementById('variant-attributes-container');
-            const newAttribute = document.createElement('div');
-            newAttribute.className = 'input-group mb-2';
-            newAttribute.innerHTML = `
-                <input type="text" class="form-control" 
-                       name="variant_attributes[]" 
-                       placeholder="Contoh: ukuran" />
-                <button type="button" class="btn btn-light-danger remove-attribute">
-                    <i class="bi bi-trash"></i>
-                </button>
-            `;
-            container.appendChild(newAttribute);
-        });
-    }
-    
-    // Remove attribute
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-attribute')) {
-            const inputGroup = e.target.closest('.input-group');
-            if (inputGroup) {
-                inputGroup.remove();
-            }
-        }
-    });
-    
     form.addEventListener('submit', function(e) {
         // Show loading state
         submitBtn.setAttribute('data-kt-indicator', 'on');
@@ -956,7 +794,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validation
         const name = form.querySelector('input[name="name"]').value.trim();
-        const hasVariants = hasVariantsCheckbox ? hasVariantsCheckbox.checked : false;
+        const price = form.querySelector('input[name="price"]').value;
         
         if (!name) {
             e.preventDefault();
@@ -966,114 +804,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validate non-variant product
-        if (!hasVariants) {
-            const price = form.querySelector('input[name="price"]').value;
-            const stockQuantity = form.querySelector('input[name="stock_quantity"]').value;
-            
-            if (!price || parseFloat(price) < 0) {
-                e.preventDefault();
-                showToast('error', 'Harga produk tidak valid', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!stockQuantity || parseInt(stockQuantity) < 0) {
-                e.preventDefault();
-                showToast('error', 'Stok awal tidak valid', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            // Validate discount dates for non-variant product
-            const discountStart = form.querySelector('input[name="discount_start"]');
-            const discountEnd = form.querySelector('input[name="discount_end"]');
-            const discountPrice = form.querySelector('input[name="discount_price"]');
-            
-            if (discountPrice && discountPrice.value && discountStart && discountStart.value && discountEnd && discountEnd.value) {
-                const startDate = new Date(discountStart.value);
-                const endDate = new Date(discountEnd.value);
-                
-                if (endDate < startDate) {
-                    e.preventDefault();
-                    showToast('error', 'Tanggal akhir diskon tidak boleh lebih awal dari tanggal mulai', 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-            }
-        }
-        
-        // Validate variant product
-        if (hasVariants) {
-            const variants = form.querySelectorAll('.variant-item');
-            
-            if (variants.length === 0) {
-                e.preventDefault();
-                showToast('error', 'Produk varian minimal harus memiliki 1 varian', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            let hasDefaultVariant = false;
-            let variantErrors = [];
-            
-            variants.forEach((variant, index) => {
-                const variantName = variant.querySelector('input[name*="[name]"]').value.trim();
-                const variantPrice = variant.querySelector('input[name*="[price]"]').value;
-                const variantStock = variant.querySelector('input[name*="[stock_quantity]"]').value;
-                const isDefault = variant.querySelector('input[name*="[is_default]"]').checked;
-                const discountStart = variant.querySelector('input[name*="[discount_start]"]');
-                const discountEnd = variant.querySelector('input[name*="[discount_end]"]');
-                const discountPrice = variant.querySelector('input[name*="[discount_price]"]');
-                
-                if (!variantName) {
-                    variantErrors.push(`Varian #${index + 1}: Nama varian wajib diisi`);
-                }
-                
-                if (!variantPrice || parseFloat(variantPrice) < 0) {
-                    variantErrors.push(`Varian #${index + 1}: Harga varian tidak valid`);
-                }
-                
-                if (!variantStock || parseInt(variantStock) < 0) {
-                    variantErrors.push(`Varian #${index + 1}: Stok varian tidak valid`);
-                }
-                
-                if (isDefault) {
-                    hasDefaultVariant = true;
-                }
-                
-                // Validate discount dates for variant
-                if (discountPrice && discountPrice.value && discountStart && discountStart.value && discountEnd && discountEnd.value) {
-                    const startDate = new Date(discountStart.value);
-                    const endDate = new Date(discountEnd.value);
-                    
-                    if (endDate < startDate) {
-                        variantErrors.push(`Varian #${index + 1}: Tanggal akhir diskon tidak boleh lebih awal dari tanggal mulai`);
-                    }
-                }
-            });
-            
-            if (variantErrors.length > 0) {
-                e.preventDefault();
-                variantErrors.forEach(error => {
-                    showToast('error', error, 'Validasi Varian Error!');
-                });
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!hasDefaultVariant) {
-                e.preventDefault();
-                showToast('error', 'Harus ada 1 varian yang ditandai sebagai default', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
+        if (!price || parseFloat(price) < 0) {
+            e.preventDefault();
+            showToast('error', 'Harga produk tidak valid', 'Validasi Error!');
+            submitBtn.removeAttribute('data-kt-indicator');
+            submitBtn.disabled = false;
+            return;
         }
         
         // Validate related products - prevent self-reference
@@ -1099,7 +835,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mainImage = form.querySelector('input[name="main_image"]');
         if (mainImage && mainImage.files.length > 0) {
             const file = mainImage.files[0];
-            if (file.size > 2 * 1024 * 1024) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB
                 e.preventDefault();
                 showToast('error', 'Gambar utama maksimal 2MB', 'Validasi Error!');
                 submitBtn.removeAttribute('data-kt-indicator');
@@ -1112,7 +848,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const additionalImages = form.querySelector('input[name="images[]"]');
         if (additionalImages && additionalImages.files.length > 0) {
             const files = Array.from(additionalImages.files);
-            const maxSize = 2 * 1024 * 1024;
+            const maxSize = 2 * 1024 * 1024; // 2MB
             const maxCount = 10;
             
             if (files.length > maxCount) {
@@ -1151,6 +887,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     .replace(/\s+/g, '-')
                     .replace(/-+/g, '-');
                 slugInput.value = slug;
+            }
+        });
+    }
+    
+    // Calculate profit margin
+    const priceInput = document.querySelector('input[name="price"]');
+    const costInput = document.querySelector('input[name="cost_price"]');
+    const discountInput = document.querySelector('input[name="discount_price"]');
+    
+    function calculateProfit() {
+        if (priceInput && costInput && parseFloat(costInput.value) > 0) {
+            const price = parseFloat(priceInput.value) || 0;
+            const cost = parseFloat(costInput.value) || 0;
+            const discount = parseFloat(discountInput?.value) || 0;
+            
+            const sellingPrice = discount > 0 ? discount : price;
+            const profit = sellingPrice - cost;
+            const margin = cost > 0 ? (profit / cost) * 100 : 0;
+            
+            // You can display this info somewhere
+            console.log(`Profit: Rp ${profit.toLocaleString()}, Margin: ${margin.toFixed(2)}%`);
+        }
+    }
+    
+    if (priceInput) priceInput.addEventListener('input', calculateProfit);
+    if (costInput) costInput.addEventListener('input', calculateProfit);
+    if (discountInput) discountInput.addEventListener('input', calculateProfit);
+    
+    // Preview image before upload
+    const mainImageInput = document.querySelector('input[name="main_image"]');
+    if (mainImageInput) {
+        mainImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Create preview if needed
+                    console.log('Main image selected:', file.name);
+                };
+                reader.readAsDataURL(file);
             }
         });
     }

@@ -100,68 +100,11 @@
                                           rows="4"
                                           placeholder="Deskripsi lengkap produk">{{ old('description') }}</textarea>
                             </div>
-                            
-                            <div class="mb-10">
-                                <label class="form-label">Slug (URL)</label>
-                                <input type="text" class="form-control" 
-                                       name="slug" 
-                                       value="{{ old('slug') }}"
-                                       placeholder="nama-produk-url" />
-                                <div class="text-muted fs-7 mt-1">Kosongkan untuk generate otomatis dari nama</div>
-                            </div>
                         </div>
                     </div>
                     
-                    <!-- Product Type & Variants -->
+                    <!-- Pricing Card -->
                     <div class="card card-bordered mb-10">
-                        <div class="card-header">
-                            <h4 class="card-title">Tipe Produk</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-10">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" 
-                                           name="has_variants" 
-                                           value="1" 
-                                           id="has_variants" 
-                                           {{ old('has_variants') ? 'checked' : '' }} />
-                                    <label class="form-check-label" for="has_variants">
-                                        Produk memiliki varian (ukuran, warna, dll)
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <!-- Variant Attributes Section -->
-                            <div class="mb-10" id="variant-attributes-section" style="display: {{ old('has_variants') ? 'block' : 'none' }}">
-                                <label class="form-label">Atribut Varian</label>
-                                <div id="variant-attributes-container">
-                                    @php
-                                        $variantAttrs = old('variant_attributes', []);
-                                        if (empty($variantAttrs)) {
-                                            $variantAttrs = [''];
-                                        }
-                                    @endphp
-                                    @foreach($variantAttrs as $index => $attribute)
-                                    <div class="input-group mb-2">
-                                        <input type="text" class="form-control" 
-                                               name="variant_attributes[]" 
-                                               value="{{ $attribute }}"
-                                               placeholder="Contoh: warna, ukuran, bahan" />
-                                        <button type="button" class="btn btn-light-danger remove-attribute">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <button type="button" class="btn btn-light-primary btn-sm mt-2" id="add-attribute">
-                                    <i class="bi bi-plus"></i> Tambah Atribut
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Pricing Card (Non-Variant Only) -->
-                    <div class="card card-bordered mb-10" id="non-variant-pricing" style="display: {{ old('has_variants') ? 'none' : 'block' }}">
                         <div class="card-header">
                             <h4 class="card-title">Harga & Stok</h4>
                         </div>
@@ -192,35 +135,20 @@
                             </div>
                             
                             <div class="row mb-10">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="form-label required">Stok Awal</label>
                                     <input type="number" class="form-control" 
                                            name="stock_quantity" 
                                            value="{{ old('stock_quantity', 0) }}"
                                            min="0" required />
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="form-label required">Stok Minimum</label>
                                     <input type="number" class="form-control" 
                                            name="minimum_stock" 
                                            value="{{ old('minimum_stock', 10) }}"
                                            min="0" required />
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Mulai Diskon</label>
-                                    <input type="datetime-local" class="form-control" 
-                                           name="discount_start" 
-                                           value="{{ old('discount_start') }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Akhir Diskon</label>
-                                    <input type="datetime-local" class="form-control" 
-                                           name="discount_end" 
-                                           value="{{ old('discount_end') }}" />
-                                </div>
-                            </div>
-                            
-                            <div class="row mb-10">
                                 <div class="col-md-4">
                                     <label class="form-label required">Status Stok</label>
                                     <select class="form-select" name="stock_status" required>
@@ -230,6 +158,9 @@
                                         <option value="backorder" {{ old('stock_status') == 'backorder' ? 'selected' : '' }}>Backorder</option>
                                     </select>
                                 </div>
+                            </div>
+                            
+                            <div class="row mb-10">
                                 <div class="col-md-4">
                                     <label class="form-label">Berat (kg)</label>
                                     <input type="number" class="form-control" 
@@ -244,26 +175,22 @@
                                            value="{{ old('unit', 'pcs') }}"
                                            placeholder="pcs, kg, meter, dll" />
                                 </div>
-                            </div>
-                            
-                            <div class="mb-10">
-                                <label class="form-label">Manage Stock?</label>
-                                <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" 
-                                           name="manage_stock" 
-                                           value="1" 
-                                           id="manage_stock" 
-                                           {{ old('manage_stock', true) ? 'checked' : '' }} />
-                                    <label class="form-check-label" for="manage_stock">
-                                        Ya, kelola stok
-                                    </label>
+                                <div class="col-md-4">
+                                    <label class="form-label">Manage Stock?</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="manage_stock" 
+                                               value="1" 
+                                               id="manage_stock" 
+                                               {{ old('manage_stock', true) ? 'checked' : '' }} />
+                                        <label class="form-check-label" for="manage_stock">
+                                            Ya, kelola stok
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Variants Section -->
-                    @include('admin.products.partials.variants-form', ['product' => null])
                     
                     <!-- Images Card -->
                     <div class="card card-bordered mb-10">
@@ -340,7 +267,7 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-10">
-                                <label class="form-label">Kategori</label>
+                                <label class="form-label required">Kategori</label>
                                 <select class="form-select" name="category_id">
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach($categories as $category)
@@ -361,11 +288,12 @@
                             </div>
                             
                             <div class="mb-10">
-                                <label class="form-label">Tanggal Publish</label>
-                                <input type="datetime-local" class="form-control" 
-                                       name="published_at" 
-                                       value="{{ old('published_at') }}" />
-                                <div class="text-muted fs-7 mt-1">Kosongkan untuk publish sekarang</div>
+                                <label class="form-label">Slug (URL)</label>
+                                <input type="text" class="form-control" 
+                                       name="slug" 
+                                       value="{{ old('slug') }}"
+                                       placeholder="nama-produk-url" />
+                                <div class="text-muted fs-7 mt-1">Kosongkan untuk generate otomatis dari nama</div>
                             </div>
                         </div>
                     </div>
@@ -478,26 +406,6 @@
                                        name="sizes" 
                                        value="{{ old('sizes') }}"
                                        placeholder="S, M, L, XL" />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Related Products Card -->
-                    <div class="card card-bordered mb-10">
-                        <div class="card-header">
-                            <h4 class="card-title">Produk Terkait</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-10">
-                                <label class="form-label">Pilih Produk Terkait</label>
-                                <select class="form-select" name="related_products[]" multiple data-control="select2" data-placeholder="Pilih produk terkait">
-                                    @foreach($relatedProducts as $related)
-                                        <option value="{{ $related->id }}" {{ in_array($related->id, old('related_products', [])) ? 'selected' : '' }}>
-                                            {{ $related->name }} ({{ $related->sku ?? 'No SKU' }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <div class="text-muted fs-7 mt-1">Pilih produk yang terkait dengan produk ini</div>
                             </div>
                         </div>
                     </div>
@@ -643,92 +551,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('product-form');
     const submitBtn = document.getElementById('submit-btn');
     
-    // Initialize Select2 for related products
-    if ($('[data-control="select2"]').length) {
-        $('[data-control="select2"]').select2({
-            minimumResultsForSearch: 10,
-            placeholder: "Pilih produk terkait",
-            allowClear: true
-        });
-    }
-    
-    // Toggle product type (variant/non-variant)
-    const hasVariantsCheckbox = document.getElementById('has_variants');
-    const variantAttributesSection = document.getElementById('variant-attributes-section');
-    const variantsContainer = document.getElementById('variants-container');
-    const nonVariantPricing = document.getElementById('non-variant-pricing');
-    
-    if (hasVariantsCheckbox) {
-        hasVariantsCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                variantAttributesSection.style.display = 'block';
-                variantsContainer.style.display = 'block';
-                nonVariantPricing.style.display = 'none';
-                
-                // Set required for variant fields
-                const variantNameInputs = variantsContainer.querySelectorAll('input[name*="[name]"]');
-                const variantPriceInputs = variantsContainer.querySelectorAll('input[name*="[price]"]');
-                const variantStockInputs = variantsContainer.querySelectorAll('input[name*="[stock_quantity]"]');
-                
-                variantNameInputs.forEach(input => input.required = true);
-                variantPriceInputs.forEach(input => input.required = true);
-                variantStockInputs.forEach(input => input.required = true);
-                
-                // Remove required from non-variant fields
-                form.querySelector('input[name="price"]').required = false;
-                form.querySelector('input[name="stock_quantity"]').required = false;
-                form.querySelector('select[name="stock_status"]').required = false;
-            } else {
-                variantAttributesSection.style.display = 'none';
-                variantsContainer.style.display = 'none';
-                nonVariantPricing.style.display = 'block';
-                
-                // Remove required from variant fields
-                const variantNameInputs = variantsContainer.querySelectorAll('input[name*="[name]"]');
-                const variantPriceInputs = variantsContainer.querySelectorAll('input[name*="[price]"]');
-                const variantStockInputs = variantsContainer.querySelectorAll('input[name*="[stock_quantity]"]');
-                
-                variantNameInputs.forEach(input => input.required = false);
-                variantPriceInputs.forEach(input => input.required = false);
-                variantStockInputs.forEach(input => input.required = false);
-                
-                // Add required to non-variant fields
-                form.querySelector('input[name="price"]').required = true;
-                form.querySelector('input[name="stock_quantity"]').required = true;
-                form.querySelector('select[name="stock_status"]').required = true;
-            }
-        });
-    }
-    
-    // Add attribute
-    const addAttributeBtn = document.getElementById('add-attribute');
-    if (addAttributeBtn) {
-        addAttributeBtn.addEventListener('click', function() {
-            const container = document.getElementById('variant-attributes-container');
-            const newAttribute = document.createElement('div');
-            newAttribute.className = 'input-group mb-2';
-            newAttribute.innerHTML = `
-                <input type="text" class="form-control" 
-                       name="variant_attributes[]" 
-                       placeholder="Contoh: ukuran" />
-                <button type="button" class="btn btn-light-danger remove-attribute">
-                    <i class="bi bi-trash"></i>
-                </button>
-            `;
-            container.appendChild(newAttribute);
-        });
-    }
-    
-    // Remove attribute
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-attribute')) {
-            const inputGroup = e.target.closest('.input-group');
-            if (inputGroup) {
-                inputGroup.remove();
-            }
-        }
-    });
-    
     form.addEventListener('submit', function(e) {
         // Show loading state
         submitBtn.setAttribute('data-kt-indicator', 'on');
@@ -736,6 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validation
         const name = form.querySelector('input[name="name"]').value.trim();
+        const price = form.querySelector('input[name="price"]').value;
         
         if (!name) {
             e.preventDefault();
@@ -745,162 +568,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validate non-variant product
-        if (!hasVariantsCheckbox.checked) {
-            const price = form.querySelector('input[name="price"]').value;
-            const stockQuantity = form.querySelector('input[name="stock_quantity"]').value;
-            
-            if (!price || parseFloat(price) < 0) {
-                e.preventDefault();
-                showToast('error', 'Harga produk tidak valid', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!stockQuantity || parseInt(stockQuantity) < 0) {
-                e.preventDefault();
-                showToast('error', 'Stok awal tidak valid', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            // Validate discount dates
-            const discountStart = form.querySelector('input[name="discount_start"]');
-            const discountEnd = form.querySelector('input[name="discount_end"]');
-            const discountPrice = form.querySelector('input[name="discount_price"]');
-            
-            if (discountPrice && discountPrice.value && discountStart && discountStart.value && discountEnd && discountEnd.value) {
-                const startDate = new Date(discountStart.value);
-                const endDate = new Date(discountEnd.value);
-                
-                if (endDate < startDate) {
-                    e.preventDefault();
-                    showToast('error', 'Tanggal akhir diskon tidak boleh lebih awal dari tanggal mulai', 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-            }
-        }
-        
-        // Validate variant product
-        if (hasVariantsCheckbox.checked) {
-            const variants = form.querySelectorAll('.variant-item');
-            
-            if (variants.length === 0) {
-                e.preventDefault();
-                showToast('error', 'Produk varian minimal harus memiliki 1 varian', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            let hasDefaultVariant = false;
-            let variantErrors = [];
-            
-            variants.forEach((variant, index) => {
-                const variantName = variant.querySelector('input[name*="[name]"]').value.trim();
-                const variantPrice = variant.querySelector('input[name*="[price]"]').value;
-                const variantStock = variant.querySelector('input[name*="[stock_quantity]"]').value;
-                const isDefault = variant.querySelector('input[name*="[is_default]"]').checked;
-                const discountStart = variant.querySelector('input[name*="[discount_start]"]');
-                const discountEnd = variant.querySelector('input[name*="[discount_end]"]');
-                const discountPrice = variant.querySelector('input[name*="[discount_price]"]');
-                
-                if (!variantName) {
-                    variantErrors.push(`Varian #${index + 1}: Nama varian wajib diisi`);
-                }
-                
-                if (!variantPrice || parseFloat(variantPrice) < 0) {
-                    variantErrors.push(`Varian #${index + 1}: Harga varian tidak valid`);
-                }
-                
-                if (!variantStock || parseInt(variantStock) < 0) {
-                    variantErrors.push(`Varian #${index + 1}: Stok varian tidak valid`);
-                }
-                
-                if (isDefault) {
-                    hasDefaultVariant = true;
-                }
-                
-                // Validate discount dates for variant
-                if (discountPrice && discountPrice.value && discountStart && discountStart.value && discountEnd && discountEnd.value) {
-                    const startDate = new Date(discountStart.value);
-                    const endDate = new Date(discountEnd.value);
-                    
-                    if (endDate < startDate) {
-                        variantErrors.push(`Varian #${index + 1}: Tanggal akhir diskon tidak boleh lebih awal dari tanggal mulai`);
-                    }
-                }
-            });
-            
-            if (variantErrors.length > 0) {
-                e.preventDefault();
-                variantErrors.forEach(error => {
-                    showToast('error', error, 'Validasi Varian Error!');
-                });
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!hasDefaultVariant) {
-                e.preventDefault();
-                showToast('error', 'Harus ada 1 varian yang ditandai sebagai default', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-        }
-        
-        // Validate images
-        const mainImage = form.querySelector('input[name="main_image"]');
-        if (mainImage && mainImage.files.length > 0) {
-            const file = mainImage.files[0];
-            if (file.size > 2 * 1024 * 1024) {
-                e.preventDefault();
-                showToast('error', 'Gambar utama maksimal 2MB', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-        }
-        
-        // Additional images validation
-        const additionalImages = form.querySelector('input[name="images[]"]');
-        if (additionalImages && additionalImages.files.length > 0) {
-            const files = Array.from(additionalImages.files);
-            const maxSize = 2 * 1024 * 1024;
-            const maxCount = 10;
-            
-            if (files.length > maxCount) {
-                e.preventDefault();
-                showToast('error', `Maksimal ${maxCount} gambar tambahan`, 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            for (const file of files) {
-                if (file.size > maxSize) {
-                    e.preventDefault();
-                    showToast('error', `Gambar "${file.name}" melebihi 2MB`, 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-            }
-        }
-        
-        // Validate related products - prevent self-reference
-        const relatedProducts = form.querySelector('select[name="related_products[]"]');
-        if (relatedProducts) {
-            const selectedOptions = Array.from(relatedProducts.selectedOptions);
-            
-            // Note: For create, we can't check self-reference yet since product doesn't have ID
-            // We'll handle this in controller
+        if (!price || parseFloat(price) < 0) {
+            e.preventDefault();
+            showToast('error', 'Harga produk tidak valid', 'Validasi Error!');
+            submitBtn.removeAttribute('data-kt-indicator');
+            submitBtn.disabled = false;
+            return;
         }
         
         // Jika semua valid, form akan submit
@@ -932,10 +605,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Generate simple SKU
                 const timestamp = Date.now().toString().slice(-6);
                 const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-                this.value = 'PRD-' + timestamp + '-' + random;
+                this.value = 'SKU-' + timestamp + '-' + random;
             }
         });
     }
+    
+    // Calculate profit margin
+    const priceInput = document.querySelector('input[name="price"]');
+    const costInput = document.querySelector('input[name="cost_price"]');
+    const discountInput = document.querySelector('input[name="discount_price"]');
+    
+    function calculateProfit() {
+        if (priceInput && costInput && parseFloat(costInput.value) > 0) {
+            const price = parseFloat(priceInput.value) || 0;
+            const cost = parseFloat(costInput.value) || 0;
+            const discount = parseFloat(discountInput?.value) || 0;
+            
+            const sellingPrice = discount > 0 ? discount : price;
+            const profit = sellingPrice - cost;
+            const margin = cost > 0 ? (profit / cost) * 100 : 0;
+            
+            // You can display this info somewhere
+            console.log(`Profit: Rp ${profit.toLocaleString()}, Margin: ${margin.toFixed(2)}%`);
+        }
+    }
+    
+    if (priceInput) priceInput.addEventListener('input', calculateProfit);
+    if (costInput) costInput.addEventListener('input', calculateProfit);
+    if (discountInput) discountInput.addEventListener('input', calculateProfit);
 });
 </script>
 @endpush

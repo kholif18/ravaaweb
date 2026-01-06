@@ -18,7 +18,15 @@ return new class extends Migration
             $table->string('sku')->unique()->nullable();
             $table->string('barcode')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
-
+            
+            // Tambahkan column untuk varian
+            $table->boolean('has_variants')->default(false);
+            $table->json('variant_attributes')->nullable();
+            
+            // Tambahkan column untuk diskon dengan tanggal
+            $table->timestamp('discount_start')->nullable();
+            $table->timestamp('discount_end')->nullable();
+            
             $table->foreign('category_id', 'fk_products_categories')
                 ->references('id')
                 ->on('categories')
@@ -69,6 +77,8 @@ return new class extends Migration
             $table->index('slug');
             $table->index('price');
             $table->index('created_at');
+            $table->index(['discount_start', 'discount_end']);
+            $table->index('has_variants');
         });
     }
 
