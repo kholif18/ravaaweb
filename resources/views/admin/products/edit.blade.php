@@ -318,13 +318,14 @@
                             <!-- Current Main Image -->
                             <div class="mb-10">
                                 <label class="form-label">Gambar Utama Saat Ini</label>
-                                @if($product->main_image_url)
+                                @if($product->main_image)
                                     <div class="d-flex align-items-center">
                                         <div class="symbol symbol-100px me-5">
                                             <img src="{{ $product->main_image_url }}" 
                                                 class="rounded" 
                                                 alt="{{ $product->name }}"
-                                                style="max-height: 100px; object-fit: cover;" />
+                                                style="max-height: 100px; object-fit: cover;" 
+                                                onerror="this.onerror=null; this.src='{{ asset('images/default-product.png') }}';" />
                                         </div>
                                         <div class="d-flex flex-column">
                                             <a href="{{ $product->main_image_url }}" 
@@ -362,21 +363,27 @@
                             <!-- Current Additional Images -->
                             <div class="mb-10">
                                 <label class="form-label">Gambar Tambahan Saat Ini</label>
-                                @if(!empty($product->images) && count($product->images) > 0)
+                                @php
+                                    $additionalImages = collect($product->images_for_edit)
+                                        ->where('is_main', false)
+                                        ->all();
+                                @endphp
+                                
+                                @if(!empty($additionalImages))
                                     <div class="row g-3">
-                                        @foreach($product->images as $index => $image)
-                                            @if($image && $image != $product->main_image)
+                                        @foreach($additionalImages as $index => $image)
                                             <div class="col-md-3">
                                                 <div class="card card-bordered">
                                                     <div class="card-body p-2 text-center">
-                                                        <img src="{{ asset('storage/products/' . $image) }}" 
+                                                        <img src="{{ $image['url'] }}" 
                                                             class="rounded mb-2" 
                                                             style="width: 100%; height: 80px; object-fit: cover;"
-                                                            alt="Gambar {{ $index + 1 }}" />
+                                                            alt="Gambar {{ $index + 1 }}"
+                                                            onerror="this.onerror=null; this.src='{{ asset('images/default-product.png') }}';" />
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" 
                                                                 name="remove_images[]" 
-                                                                value="{{ $image }}" 
+                                                                value="{{ $image['filename'] }}" 
                                                                 id="remove_image_{{ $index }}" />
                                                             <label class="form-check-label text-danger fs-7" for="remove_image_{{ $index }}">
                                                                 Hapus
@@ -385,7 +392,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @endif
                                         @endforeach
                                     </div>
                                 @else

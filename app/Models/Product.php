@@ -508,7 +508,6 @@ class Product extends Model
      */
     public function getMainImageUrlAttribute(): ?string
     {
-        
         // Jika ada main_image
         if ($this->main_image) {
             // Cek apakah sudah full URL (misal dari external source)
@@ -516,16 +515,18 @@ class Product extends Model
                 return $this->main_image;
             }
             
-            // Gunakan Storage facade (lebih konsisten dengan Laravel)
+            // Coba cek di storage
+            $path = 'products/' . $this->main_image;
             
-            // Juga fallback ke asset() jika Storage gagal
-            try {
-                if (Storage::disk('public')->exists('products/' . $this->main_image)) {
-                    return Storage::disk('public')->url('products/' . $this->main_image);
-                }
-            } catch (\Exception $e) {
-                // Fallback ke asset jika ada error
-                return asset('storage/products/' . $this->main_image);
+            // Cek apakah file ada di storage
+            if (Storage::disk('public')->exists($path)) {
+                return Storage::disk('public')->url($path);
+            }
+            
+            // Fallback ke public path
+            $publicPath = 'storage/' . $path;
+            if (file_exists(public_path($publicPath))) {
+                return asset($publicPath);
             }
         }
 
@@ -563,14 +564,12 @@ class Product extends Model
         
         // Add main image first
         if ($this->main_image && !filter_var($this->main_image, FILTER_VALIDATE_URL)) {
-            try {
-                if (Storage::disk('public')->exists('products/' . $this->main_image)) {
-                    $urls[] = Storage::disk('public')->url('products/' . $this->main_image);
-                } else {
-                    $urls[] = asset('storage/products/' . $this->main_image);
-                }
-            } catch (\Exception $e) {
-                $urls[] = asset('storage/products/' . $this->main_image);
+            $path = 'products/' . $this->main_image;
+            
+            if (Storage::disk('public')->exists($path)) {
+                $urls[] = Storage::disk('public')->url($path);
+            } elseif (file_exists(public_path('storage/' . $path))) {
+                $urls[] = asset('storage/' . $path);
             }
         }
 
@@ -587,14 +586,12 @@ class Product extends Model
                 if (filter_var($image, FILTER_VALIDATE_URL)) {
                     $urls[] = $image;
                 } else {
-                    try {
-                        if (Storage::disk('public')->exists('products/' . $image)) {
-                            $urls[] = Storage::disk('public')->url('products/' . $image);
-                        } else {
-                            $urls[] = asset('storage/products/' . $image);
-                        }
-                    } catch (\Exception $e) {
-                        $urls[] = asset('storage/products/' . $image);
+                    $path = 'products/' . $image;
+                    
+                    if (Storage::disk('public')->exists($path)) {
+                        $urls[] = Storage::disk('public')->url($path);
+                    } elseif (file_exists(public_path('storage/' . $path))) {
+                        $urls[] = asset('storage/' . $path);
                     }
                 }
             }
@@ -602,10 +599,58 @@ class Product extends Model
 
         // Jika tidak ada gambar sama sekali
         if (empty($urls)) {
-            $urls[] = asset('images/default-product.png');
+            $urls[] = asset('storage/images/default-product.png');
         }
 
         return $urls;
+    }
+
+    /**
+     * Get first image URL for display in tables
+     * Alias untuk kompatibilitas dengan kode lama
+     */
+    public function getFirstImageUrlAttribute()
+    {
+        return $this->main_image_url;
+    }
+
+    /**
+     * Get image URLs untuk form edit (dengan nama file untuk removal)
+     * Method baru untuk membantu form edit
+     */
+    public function getImagesForEditAttribute(): array
+    {
+        $images = [];
+        
+        // Main image
+        if ($this->main_image && !filter_var($this->main_image, FILTER_VALIDATE_URL)) {
+            $images[] = [
+                'url' => $this->main_image_url,
+                'filename' => $this->main_image,
+                'is_main' => true
+            ];
+        }
+
+        // Other images
+        $dbImages = $this->images;
+        if (!empty($dbImages) && is_array($dbImages)) {
+            foreach ($dbImages as $image) {
+                // Skip jika sama dengan main_image atau sudah full URL
+                if ($image === $this->main_image || filter_var($image, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+                
+                $images[] = [
+                    'url' => Storage::disk('public')->exists('products/' . $image) 
+                        ? Storage::disk('public')->url('products/' . $image)
+                        : asset('storage/products/' . $image),
+                    'filename' => $image,
+                    'is_main' => false
+                ];
+            }
+        }
+
+        return $images;
     }
 
     /**

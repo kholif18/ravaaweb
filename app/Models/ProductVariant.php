@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
@@ -84,11 +85,28 @@ class ProductVariant extends Model
     public function getImageUrlAttribute(): ?string
     {
         if (!$this->image) {
-            // Fallback to product main image
-            return $this->product->main_image_url;
+            return null;
         }
         
-        return asset('storage/variants/' . $this->image);
+        // Cek apakah full URL
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+        
+        $path = 'variants/' . $this->image;
+        
+        // Cek di storage
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+        
+        // Cek di public path
+        $publicPath = 'storage/' . $path;
+        if (file_exists(public_path($publicPath))) {
+            return asset($publicPath);
+        }
+        
+        return null;
     }
 
     /**

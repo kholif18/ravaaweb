@@ -181,10 +181,29 @@ class ProductController extends Controller
     }
 
     /**
+     * Decode and prepare product images for view
+     */
+    private function prepareProductImages(Product $product): Product
+    {
+        // Decode images JSON jika diperlukan
+        if (is_string($product->images) && !empty($product->images)) {
+            try {
+                $decoded = json_decode($product->images, true);
+                $product->setAttribute('images', is_array($decoded) ? $decoded : []);
+            } catch (\Exception $e) {
+                $product->setAttribute('images', []);
+            }
+        }
+        
+        return $product;
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Product $product)
     {
+        $product = $this->prepareProductImages($product);
         // Get categories with hierarchy
         $categories = Category::active()
             ->ordered()
@@ -438,6 +457,9 @@ class ProductController extends Controller
         
         // Store image
         $image->storeAs($path, $filename, 'public');
+        
+        // Also copy to public directory
+        $image->move(public_path('storage/' . $path), $filename);
         
         return $filename;
     }
@@ -718,8 +740,11 @@ class ProductController extends Controller
         $path = 'products';
         $filename = 'product_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
         
-        // Store image
+        // Store image to both storage and public for compatibility
         $image->storeAs($path, $filename, 'public');
+        
+        // Also copy to public directory for direct access
+        $image->move(public_path('storage/' . $path), $filename);
         
         return $filename;
     }

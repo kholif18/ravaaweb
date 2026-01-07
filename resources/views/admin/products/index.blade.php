@@ -193,8 +193,11 @@
                     <td>
                         <div class="d-flex align-items-center">
                             <div class="symbol symbol-50px me-5">
-                                @if($product->main_image_url)
-                                    <img src="{{ $product->main_image_url }}" class="rounded" alt="{{ $product->name }}" />
+                                @if($product->first_image_url)
+                                    <img src="{{ $product->first_image_url }}" 
+                                        class="rounded" 
+                                        alt="{{ $product->name }}"
+                                        onerror="handleImageError(this)" />
                                 @else
                                     <div class="symbol-label bg-light">
                                         <i class="bi bi-image text-gray-400 fs-2"></i>
@@ -561,6 +564,22 @@ document.addEventListener('DOMContentLoaded', function() {
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+
+    function handleImageError(img) {
+        // Coba fallback ke default image di storage
+        img.onerror = null;
+        img.src = '{{ asset("storage/images/default-product.png") }}';
+        
+        // Jika masih error, gunakan placeholder
+        img.onerror = function() {
+            img.style.display = 'none';
+            img.parentElement.innerHTML = `
+                <div class="symbol-label bg-light">
+                    <i class="bi bi-image text-gray-400 fs-2"></i>
+                </div>
+            `;
+        };
+    }
 });
 </script>
 @endpush
