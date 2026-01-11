@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -127,7 +128,7 @@ class MediaController extends Controller
                     'thumbnail_path' => $thumbPath,
                     'mime_type' => $file->getMimeType(),
                     'metadata' => $width ? ['dimensions'=>['w'=>$width,'h'=>$height]] : null,
-                    'uploaded_by' => auth()->id(),
+                    'uploaded_by' => Auth::id(),
                     'status' => 'active'
                 ]);
 
