@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use ZipArchive;
 
 class MediaController extends Controller
 {
@@ -22,7 +23,7 @@ class MediaController extends Controller
     }
 
     /* =========================
-       INDEX (LIST MEDIA)
+       INDEX
     ========================= */
     public function index(Request $request)
     {
@@ -53,15 +54,28 @@ class MediaController extends Controller
         $media = $query->paginate(20);
 
         $media->each(function ($m) {
-            $m->url = Storage::url("media/{$m->filename}");
+            $m->url = asset('storage/media/'.$m->filename);
             $m->thumbnail_url = $m->thumbnail_path
-                ? Storage::url($m->thumbnail_path)
+                ? asset('storage/'.$m->thumbnail_path)
                 : $m->url;
 
             $m->formatted_size = $this->formatBytes($m->size);
         });
 
         return view('admin.media.index', compact('media'));
+    }
+
+    /* =========================
+       SHOW
+    ========================= */
+    public function show(Media $media)
+    {
+        $media->url = asset('storage/media/'.$media->filename);
+        $media->thumbnail_url = $media->thumbnail_path
+            ? asset('storage/'.$media->thumbnail_path)
+            : $media->url;
+
+        return response()->json($media);
     }
 
     /* =========================
@@ -75,101 +89,55 @@ class MediaController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors'  => $validator->errors()
-            ], 422);
+            return response()->json(['success'=>false,'errors'=>$validator->errors()],422);
         }
 
         $saved = [];
 
         foreach ($request->file('files') as $file) {
             try {
-                $originalName = $file->getClientOriginalName();           // foto.jpg
-                $name         = pathinfo($originalName, PATHINFO_FILENAME); // foto
-                $ext          = strtolower($file->getClientOriginalExtension());
+                $originalName = $file->getClientOriginalName();
+                $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $ext = strtolower($file->getClientOriginalExtension());
+                $filename = Str::slug($name).'-'.Str::random(6).'.'.$ext;
 
-                $filename = Str::slug($name) . '-' . Str::random(8) . '.' . $ext;
-
-                // 1️⃣ Save original
                 $file->storeAs('media', $filename, 'public');
 
+                $thumbPath = null;
                 $width = null;
                 $height = null;
-                $thumbPath = null;
 
-                // 2️⃣ Generate thumbnail if image
                 if ($ext !== 'svg') {
-                    $img = $this->image->read(
-                        Storage::disk('public')->path("media/{$filename}")
-                    );
-
-                    $width  = $img->width();
+                    $img = $this->image->read(Storage::disk('public')->path("media/$filename"));
+                    $width = $img->width();
                     $height = $img->height();
 
-                    $thumb = $img->scaleDown(width: 300);
-
-                    $thumbPath = "media/thumbnails/{$filename}";
-
-                    Storage::disk('public')->put(
-                        $thumbPath,
-                        (string) $thumb->toJpeg(80)
-                    );
+                    $thumb = $img->scaleDown(width:300);
+                    $thumbPath = "media/thumbnails/$filename";
+                    Storage::disk('public')->put($thumbPath, (string)$thumb->toJpeg(80));
                 }
 
-                // 3️⃣ Save DB
-                $media = Media::create([
-                    'name'          => $name,
-                    'original_name' => $originalName,
-                    'filename'      => $filename,
-                    'mime_type'     => $file->getMimeType(),
-                    'extension'     => $ext,
-                    'size'          => $file->getSize(),
-                    'path'          => 'media',
-                    'thumbnail_path'=> $thumbPath,
-                    'metadata'      => $width ? [
-                        'dimensions' => [
-                            'width'  => $width,
-                            'height' => $height
-                        ]
-                    ] : null,
-                    'uploaded_by'   => auth()->id(),
-                    'status'        => 'active'
+                $saved[] = Media::create([
+                    'name' => $name,
+                    'original_name' => $originalName, 
+                    'filename' => $filename,
+                    'extension' => $ext,
+                    'size' => $file->getSize(),
+                    'path' => 'media',
+                    'thumbnail_path' => $thumbPath,
+                    'mime_type' => $file->getMimeType(),
+                    'metadata' => $width ? ['dimensions'=>['w'=>$width,'h'=>$height]] : null,
+                    'uploaded_by' => auth()->id(),
+                    'status' => 'active'
                 ]);
-
-                $saved[] = $media->fresh();
 
             } catch (\Throwable $e) {
-
-                Log::error('Media upload failed', [
-                    'file' => $file->getClientOriginalName(),
-                    'error' => $e->getMessage(),
-                ]);
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Upload gagal: ' . $e->getMessage()
-                ], 500);
+                Log::error($e);
+                return response()->json(['success'=>false,'message'=>$e->getMessage()],500);
             }
         }
 
-        return response()->json([
-            'success' => true,
-            'data'    => $saved
-        ]);
-    }
-
-    /* =========================
-        UPDATE
-    ========================= */
-    public function update(Request $request, Media $media)
-    {
-        $media->update($request->only(['name', 'alt_text', 'description']));
-
-        return response()->json([
-            'success' => true,
-            'data' => $media->fresh()
-        ]);
+        return response()->json(['success'=>true,'data'=>$saved]);
     }
 
     /* =========================
@@ -178,14 +146,92 @@ class MediaController extends Controller
     public function destroy(Media $media)
     {
         Storage::disk('public')->delete("media/{$media->filename}");
-
-        if ($media->thumbnail_path) {
-            Storage::disk('public')->delete($media->thumbnail_path);
-        }
-
+        if ($media->thumbnail_path) Storage::disk('public')->delete($media->thumbnail_path);
         $media->delete();
 
-        return response()->json(['success' => true]);
+        return response()->json(['success'=>true]);
+    }
+
+    /* =========================
+       BULK DELETE
+    ========================= */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate(['ids'=>'required|array']);
+        $media = Media::whereIn('id',$request->ids)->get();
+
+        foreach($media as $m){
+            Storage::disk('public')->delete("media/$m->filename");
+            if($m->thumbnail_path) Storage::disk('public')->delete($m->thumbnail_path);
+            $m->delete();
+        }
+
+        return response()->json(['success'=>true]);
+    }
+
+    /* =========================
+       BULK DOWNLOAD
+    ========================= */
+    public function bulkDownload(Request $request)
+    {
+        $request->validate(['ids'=>'required|array']);
+        $files = Media::whereIn('id',$request->ids)->get();
+
+        $zip = new ZipArchive;
+        $zipName = 'media-'.time().'.zip';
+        $zipPath = storage_path("app/public/$zipName");
+
+        $zip->open($zipPath, ZipArchive::CREATE);
+        foreach($files as $f){
+            $zip->addFile(Storage::disk('public')->path("media/$f->filename"), $f->filename);
+        }
+        $zip->close();
+
+        return response()->download($zipPath)->deleteFileAfterSend();
+    }
+
+    /* =========================
+       SEARCH (AJAX)
+    ========================= */
+    public function search(Request $request)
+    {
+        return Media::where('name','like','%'.$request->q.'%')->get();
+    }
+
+    /* =========================
+       STATS
+    ========================= */
+    public function getStats()
+    {
+        return response()->json([
+            'total' => Media::count(),
+            'size' => Media::sum('size'),
+            'images' => Media::whereIn('extension',['jpg','png','jpeg','webp'])->count()
+        ]);
+    }
+
+    /* =========================
+       DOWNLOAD SINGLE
+    ========================= */
+    public function download(Media $media)
+    {
+        return Storage::disk('public')->download("media/$media->filename");
+    }
+
+    /* =========================
+       REGENERATE THUMBNAILS
+    ========================= */
+    public function regenerateThumbnails()
+    {
+        $media = Media::whereNotNull('thumbnail_path')->get();
+
+        foreach($media as $m){
+            $img = $this->image->read(Storage::disk('public')->path("media/$m->filename"));
+            $thumb = $img->scaleDown(width:300);
+            Storage::disk('public')->put($m->thumbnail_path,(string)$thumb->toJpeg(80));
+        }
+
+        return response()->json(['success'=>true]);
     }
 
     /* =========================
@@ -193,8 +239,8 @@ class MediaController extends Controller
     ========================= */
     private function formatBytes($bytes)
     {
-        $units = ['B','KB','MB','GB'];
-        $i = floor(log($bytes, 1024));
-        return round($bytes / pow(1024, $i), 2).' '.$units[$i];
+        $units=['B','KB','MB','GB'];
+        $i=floor(log($bytes,1024));
+        return round($bytes/pow(1024,$i),2).' '.$units[$i];
     }
 }

@@ -28,7 +28,27 @@
     
     <div class="card-body">
         <!-- Filters -->
-        <div class="row mb-5">
+        <div class="row mb-5 align-items-center">
+            <div class="col-md-6 d-flex align-items-center gap-3">
+
+                <!-- Select All -->
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAllMedia">
+                    <label class="form-check-label fw-semibold" for="selectAllMedia">
+                        Pilih Semua
+                    </label>
+                </div>
+
+                <!-- Delete Selected -->
+                <button id="btnDeleteSelected" class="btn btn-danger">
+                    <i class="fa fa-trash"></i> Hapus Terpilih
+                </button>
+
+                <button id="btnDownloadSelected" class="btn btn-success">
+                    <i class="bi bi-download"></i> Download Terpilih
+                </button>
+            </div>
+
             <div class="col-md-4">
                 <input type="text" class="form-control" placeholder="Cari media..." id="searchInput">
             </div>
@@ -60,7 +80,7 @@
                 data-date="{{ optional($item->created_at)->format('Y-m-d') }}">
                 <div class="card card-bordered h-100">
                     <div class="card-body p-2 text-center">
-                        <div class="position-relative mb-2" style="height: 180px; overflow: hidden;">
+                        <div class="position-relative mb-2 media-thumb">
                             <!-- Thumbnail Image -->
                             <img src="{{ $item->thumbnail_url ?? $item->url }}"
                                 class="img-fluid rounded h-100 w-100 object-fit-cover"
@@ -122,10 +142,18 @@
                                     <button class="btn btn-light btn-sm" 
                                             type="button" 
                                             data-bs-toggle="dropdown" 
+                                            data-bs-boundary="viewport"
+                                            data-bs-display="static"
                                             aria-expanded="false">
                                         <i class="bi bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg">
+                                        <li>
+                                            <a class="dropdown-item" 
+                                            href="{{ route('admin.media.download', $item->id) }}">
+                                                <i class="bi bi-download me-2"></i> Download
+                                            </a>
+                                        </li>
                                         <li>
                                             <a class="dropdown-item" 
                                                href="#" 
@@ -285,7 +313,6 @@
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .media-item:hover {
-    transform: translateY(-5px);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 .media-checkbox:checked {
@@ -303,6 +330,10 @@
     object-fit: cover;
 }
 
+.media-thumb {
+    height: 180px;
+    overflow: hidden;   /* tetap untuk crop gambar */
+}
 /* Preview image styles */
 .preview-image {
     position: relative;
@@ -399,6 +430,15 @@
 /* Style untuk file yang terlalu besar */
 .preview-image .text-danger {
     font-weight: bold;
+}
+
+.card,
+.media-item {
+    overflow: visible !important;
+}
+
+.dropdown-menu {
+    z-index: 1055; /* lebih tinggi dari card grid */
 }
 </style>
 @endpush
@@ -501,17 +541,19 @@ function deleteMedia(id, name) {
                     Swal.showLoading();
                 },
                 success: function(response) {
-                    Swal.fire(
-                        'Terhapus!',
-                        response.message || 'Media berhasil dihapus.',
-                        'success'
-                    ).then(() => {
-                        $(`.media-item[data-id="${id}"]`).fadeOut(300, function() {
-                            $(this).remove();
-                            if ($('.media-item').length === 0) {
-                                location.reload();
-                            }
-                        });
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Terhapus!',
+                        text: response.message || 'Media berhasil dihapus.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+                    $(`.media-item[data-id="${id}"]`).fadeOut(300, function() {
+                        $(this).remove();
+                        if ($('.media-item').length === 0) {
+                            location.reload();
+                        }
                     });
                 },
                 error: function(xhr) {
@@ -915,6 +957,133 @@ $('#uploadModal').on('hidden.bs.modal', function() {
     $('#uploadProgress').addClass('d-none');
     $('#uploadButton').prop('disabled', false).html('<i class="bi bi-upload me-1"></i>Upload');
     $('#cancelBtn').prop('disabled', false);
+});
+
+// Bulk Delete
+$('#btnDeleteSelected').on('click', function () {
+
+    let ids = $('.media-checkbox:checked').map(function () {
+        return this.value;
+    }).get();
+
+    if (ids.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Belum ada pilihan',
+            text: 'Pilih minimal 1 media terlebih dahulu',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Hapus Media?',
+        html: `Anda akan menghapus <strong>${ids.length}</strong> media secara permanen.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        reverseButtons: true
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        // Modal loading (mengganti tombol OK)
+        Swal.fire({
+            title: 'Menghapus...',
+            text: 'Mohon tunggu',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.ajax({
+            url: "{{ route('admin.media.bulk.destroy') }}",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                ids: ids
+            },
+            success: function (response) {
+
+                // Notifikasi sukses tanpa tombol OK
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Terhapus!',
+                    text: response.message || `${ids.length} media berhasil dihapus.`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+
+                ids.forEach(id => {
+                    $(`.media-item[data-id="${id}"]`).fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                });
+
+                $('#selectAllMedia').prop('checked', false);
+            },
+            error: function (xhr) {
+                const message = xhr.responseJSON?.message || 'Gagal menghapus media';
+                Swal.fire('Error!', message, 'error');
+            }
+        });
+    });
+});
+
+// Toggle semua checkbox
+$('#selectAllMedia').on('change', function () {
+    $('.media-checkbox').prop('checked', this.checked);
+});
+
+// Jika user klik satu per satu, update Select All
+$(document).on('change', '.media-checkbox', function () {
+    let total = $('.media-checkbox').length;
+    let checked = $('.media-checkbox:checked').length;
+
+    $('#selectAllMedia').prop('checked', total === checked);
+});
+
+// Bulk Download
+$('#btnDownloadSelected').on('click', function () {
+
+    let ids = $('.media-checkbox:checked').map(function () {
+        return this.value;
+    }).get();
+
+    if (ids.length === 0) {
+        showToast('warning', 'Pilih minimal 1 media');
+        return;
+    }
+
+    // Buat form dynamic untuk POST (karena file response)
+    const form = $('<form>', {
+        method: 'POST',
+        action: "{{ route('admin.media.bulk.download') }}"
+    });
+
+    form.append($('<input>', {
+        type: 'hidden',
+        name: '_token',
+        value: "{{ csrf_token() }}"
+    }));
+
+    ids.forEach(id => {
+        form.append($('<input>', {
+            type: 'hidden',
+            name: 'ids[]',
+            value: id
+        }));
+    });
+
+    $('body').append(form);
+    form.submit();
+    form.remove();
 });
 
 // Select media button (for use in other forms)

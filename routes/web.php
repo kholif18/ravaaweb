@@ -214,13 +214,11 @@ Route::prefix('admin')
             Route::get('/', [MediaController::class, 'index'])->name('index');
             Route::post('/', [MediaController::class, 'store'])->name('store');
             Route::get('/{media}', [MediaController::class, 'show'])->name('show');
-            Route::put('/{media}', [MediaController::class, 'update'])->name('update');
             Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-destroy', [MediaController::class, 'bulkDestroy'])->name('bulk.destroy');
             Route::post('/bulk-download', [MediaController::class, 'bulkDownload'])->name('bulk.download');
             Route::post('/search', [MediaController::class, 'search'])->name('search');
             Route::get('/stats/summary', [MediaController::class, 'getStats'])->name('stats.summary');
-            Route::get('/picker', [MediaController::class, 'picker'])->name('picker');
             Route::get('/download/{media}', [MediaController::class, 'download'])->name('download');
             Route::post('/regenerate-thumbnails', [MediaController::class, 'regenerateThumbnails'])->name('regenerate.thumbnails');
         });
