@@ -7,6 +7,9 @@
 
     <link rel="shortcut icon" href="{{ asset('admin/assets/media/logos/favicon.ico') }}" />
 
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     {{-- Fonts --}}
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />

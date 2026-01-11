@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeBannerController;
@@ -209,6 +210,22 @@ Route::prefix('admin')
         
         // ========== MANAJEMEN PRODUK ==========
         
+        Route::prefix('media')->name('media.')->group(function () {
+            Route::get('/', [MediaController::class, 'index'])->name('index');
+            Route::post('/', [MediaController::class, 'store'])->name('store');
+            Route::get('/{media}', [MediaController::class, 'show'])->name('show');
+            Route::put('/{media}', [MediaController::class, 'update'])->name('update');
+            Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-destroy', [MediaController::class, 'bulkDestroy'])->name('bulk.destroy');
+            Route::post('/bulk-download', [MediaController::class, 'bulkDownload'])->name('bulk.download');
+            Route::post('/search', [MediaController::class, 'search'])->name('search');
+            Route::get('/stats/summary', [MediaController::class, 'getStats'])->name('stats.summary');
+            Route::get('/picker', [MediaController::class, 'picker'])->name('picker');
+            Route::get('/download/{media}', [MediaController::class, 'download'])->name('download');
+            Route::post('/regenerate-thumbnails', [MediaController::class, 'regenerateThumbnails'])->name('regenerate.thumbnails');
+        });
+        // Products tetap ada
+        Route::resource('products', ProductController::class);
         // Products
         Route::prefix('products')->name('products.')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->name('index');
@@ -452,26 +469,6 @@ Route::prefix('admin')
         });
         
         // ========== UTILITIES ==========
-        
-        // Media Library
-        Route::prefix('media')->name('media.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.media.index');
-            })->name('index');
-            
-            Route::post('/upload', function () {
-                return response()->json(['success' => true]);
-            })->name('upload');
-            
-            Route::delete('/{id}', function ($id) {
-                return response()->json(['success' => true]);
-            })->name('destroy');
-            
-            // Browse media
-            Route::get('/browse', function () {
-                return view('admin.media.browse');
-            })->name('browse');
-        });
         
         // Export Data
         Route::prefix('export')->name('export.')->group(function () {

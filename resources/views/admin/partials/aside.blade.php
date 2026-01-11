@@ -382,6 +382,16 @@
                     </a>
                 </div>
 
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.media.index') ? 'active' : '' }}"
+                        href="{{ route('admin.media.index') }}">
+                        <span class="menu-icon">
+                            <i class="bi bi-images fs-2"></i>
+                        </span>
+                        <span class="menu-title">Media</span>
+                    </a>
+                </div>
+
                 {{-- Manajemen Konten --}}
                 <div class="menu-item">
                     <div class="menu-content pb-2">

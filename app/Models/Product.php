@@ -504,42 +504,6 @@ class Product extends Model
     }
 
     /**
-     * Get main image URL.
-     */
-    public function getMainImageUrlAttribute(): ?string
-    {
-        // Jika ada main_image
-        if ($this->main_image) {
-            // Cek apakah sudah full URL (misal dari external source)
-            if (filter_var($this->main_image, FILTER_VALIDATE_URL)) {
-                return $this->main_image;
-            }
-            
-            // Coba cek di storage
-            $path = 'products/' . $this->main_image;
-            
-            // Cek apakah file ada di storage
-            if (Storage::disk('public')->exists($path)) {
-                return Storage::disk('public')->url($path);
-            }
-            
-            // Fallback ke public path
-            $publicPath = 'storage/' . $path;
-            if (file_exists(public_path($publicPath))) {
-                return asset($publicPath);
-            }
-        }
-
-        // Fallback to first image in images array
-        $images = $this->image_urls;
-        if (!empty($images[0])) {
-            return $images[0];
-        }
-
-        return asset('images/default-product.png');
-    }
-
-    /**
      * Get all image URLs as array
      * Ini untuk kompatibilitas dengan view yang menggunakan $product->images
      */
@@ -623,30 +587,57 @@ class Product extends Model
         $images = [];
         
         // Main image
-        if ($this->main_image && !filter_var($this->main_image, FILTER_VALIDATE_URL)) {
-            $images[] = [
-                'url' => $this->main_image_url,
-                'filename' => $this->main_image,
-                'is_main' => true
-            ];
+        if ($this->main_image) {
+            // Check if it's a full URL
+            if (filter_var($this->main_image, FILTER_VALIDATE_URL)) {
+                $images[] = [
+                    'url' => $this->main_image,
+                    'filename' => basename($this->main_image),
+                    'is_main' => true
+                ];
+            } else {
+                // Check in storage first
+                $path = 'products/' . $this->main_image;
+                $url = Storage::disk('public')->exists($path) 
+                    ? Storage::disk('public')->url($path)
+                    : asset('storage/' . $path);
+                
+                $images[] = [
+                    'url' => $url,
+                    'filename' => $this->main_image,
+                    'is_main' => true
+                ];
+            }
         }
 
-        // Other images
+        // Other images from images field
         $dbImages = $this->images;
         if (!empty($dbImages) && is_array($dbImages)) {
             foreach ($dbImages as $image) {
-                // Skip jika sama dengan main_image atau sudah full URL
-                if ($image === $this->main_image || filter_var($image, FILTER_VALIDATE_URL)) {
+                // Skip if it's the same as main_image
+                if ($image === $this->main_image) {
                     continue;
                 }
                 
-                $images[] = [
-                    'url' => Storage::disk('public')->exists('products/' . $image) 
-                        ? Storage::disk('public')->url('products/' . $image)
-                        : asset('storage/products/' . $image),
-                    'filename' => $image,
-                    'is_main' => false
-                ];
+                // Handle full URL or filename
+                if (filter_var($image, FILTER_VALIDATE_URL)) {
+                    $images[] = [
+                        'url' => $image,
+                        'filename' => basename($image),
+                        'is_main' => false
+                    ];
+                } else {
+                    $path = 'products/' . $image;
+                    $url = Storage::disk('public')->exists($path) 
+                        ? Storage::disk('public')->url($path)
+                        : asset('storage/' . $path);
+                    
+                    $images[] = [
+                        'url' => $url,
+                        'filename' => $image,
+                        'is_main' => false
+                    ];
+                }
             }
         }
 
@@ -784,5 +775,68 @@ class Product extends Model
                 ->where('discount_end', '>=', now());
             });
         });
+    }
+
+    public function mainMedia()
+    {
+        return $this->belongsTo(Media::class, 'main_media_id');
+    }
+
+    public function galleryMedia()
+    {
+        return $this->belongsToMany(Media::class, 'product_media')
+                    ->wherePivot('type', 'gallery')
+                    ->withPivot('sort_order')
+                    ->orderBy('product_media.sort_order');
+    }
+
+    public function allMedia()
+    {
+        return $this->belongsToMany(Media::class, 'product_media')
+                    ->withPivot('type', 'sort_order')
+                    ->orderBy('product_media.sort_order');
+    }
+
+    // Update method untuk pakai media
+    public function getMainImageUrlAttribute()
+    {
+        if ($this->mainMedia) {
+            return $this->mainMedia->url;
+        }
+        
+        // Fallback ke yang lama untuk kompatibilitas
+        if ($this->main_image) {
+            return asset('storage/products/' . $this->main_image);
+        }
+        
+        return asset('images/default-product.png');
+    }
+
+    public function getGalleryImagesAttribute()
+    {
+        $images = [];
+        
+        // Ambil dari media gallery
+        foreach ($this->galleryMedia as $media) {
+            $images[] = [
+                'url' => $media->url,
+                'thumbnail' => $media->thumbnail,
+                'alt' => $media->alt_text,
+                'media_id' => $media->id
+            ];
+        }
+        
+        // Fallback ke yang lama
+        if (empty($images) && !empty($this->images)) {
+            foreach ($this->images as $image) {
+                $images[] = [
+                    'url' => asset('storage/products/' . $image),
+                    'thumbnail' => asset('storage/products/' . $image),
+                    'alt' => $this->name
+                ];
+            }
+        }
+        
+        return $images;
     }
 }
