@@ -210,9 +210,12 @@ Route::prefix('admin')
         
         // ========== MANAJEMEN PRODUK ==========
         
+        // Media 
         Route::prefix('media')->name('media.')->group(function () {
             Route::get('/', [MediaController::class, 'index'])->name('index');
+            Route::get('/picker', [MediaController::class, 'picker'])->name('picker');
             Route::post('/', [MediaController::class, 'store'])->name('store');
+            Route::post('/upload', [MediaController::class, 'upload'])->name('upload');
             Route::get('/{media}', [MediaController::class, 'show'])->name('show');
             Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-destroy', [MediaController::class, 'bulkDestroy'])->name('bulk.destroy');
@@ -222,6 +225,7 @@ Route::prefix('admin')
             Route::get('/download/{media}', [MediaController::class, 'download'])->name('download');
             Route::post('/regenerate-thumbnails', [MediaController::class, 'regenerateThumbnails'])->name('regenerate.thumbnails');
         });
+
         // Products tetap ada
         Route::resource('products', ProductController::class);
         // Products

@@ -913,6 +913,169 @@
         z-index: 10;
     }
 
+      .gallery-item.loading .placeholder {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* Selected state untuk media picker */
+    .media-item.selected {
+        position: relative;
+    }
+
+    .media-item.selected::after {
+        content: "✓";
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        background: #198754;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+        /* Style untuk modal picker */
+    .modal-content {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .modal-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .nav-tabs-wordpress {
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .nav-tabs-wordpress .nav-link {
+        border: none;
+        border-radius: 0;
+        color: #495057;
+        padding: 12px 20px;
+        font-weight: 500;
+    }
+    
+    .nav-tabs-wordpress .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 2px solid #0d6efd;
+        background: transparent;
+    }
+    
+    .nav-tabs-wordpress .nav-link:hover {
+        border-color: transparent;
+    }
+    
+    /* Media grid dalam modal */
+    .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 15px;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 5px;
+    }
+    
+    .media-item {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .media-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .media-item.selected .card {
+        border-color: #198754;
+        box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.2);
+    }
+    
+    .fixed-thumbnail {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    
+    /* Pagination dalam modal */
+    .pagination {
+        margin-bottom: 0;
+    }
+    
+    .page-link {
+        border: none;
+        color: #495057;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    /* Upload area */
+    .upload-dropzone {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 60px 20px;
+        text-align: center;
+        background: #f8f9fa;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .upload-dropzone:hover {
+        border-color: #0d6efd;
+        background: #e7f1ff;
+    }
+    
+    .upload-dropzone i {
+        font-size: 48px;
+        color: #6c757d;
+        margin-bottom: 16px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .media-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+        
+        .fixed-thumbnail {
+            height: 120px;
+        }
+    }
+
+    /* Style untuk bulk selection info */
+    .bulk-selection-info {
+        background: #e7f1ff;
+        border: 1px solid #b6d4fe;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
     /* Gallery preview style */
     #galleryImages .card {
         transition: transform 0.2s;
@@ -935,7 +1098,137 @@
 <!-- TinyMCE -->
 {{-- <script src="https://cdn.tiny.cloud/1/YOUR_API_KEY/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script> --}}
 <script>
-    
+    function loadPage(page) {
+        const search = document.getElementById('searchInput')?.value || '';
+        let url = `{{ route('admin.media.picker') }}?page=${page}&ajax=true&embedded=true`;
+        
+        if (search) {
+            url += `&search=${encodeURIComponent(search)}`;
+        }
+        
+        // Show loading
+        const content = document.getElementById('mediaLibraryContent');
+        if (content) {
+            content.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3 text-muted">Memuat media...</p>
+                </div>
+            `;
+            
+            // Load page via AJAX
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    content.innerHTML = html;
+                    initializeMediaPickerEvents();
+                })
+                .catch(error => {
+                    console.error('Error loading page:', error);
+                    content.innerHTML = `
+                        <div class="alert alert-danger">
+                            Gagal memuat halaman
+                        </div>
+                    `;
+                });
+        }
+    }
+
+    function refreshMediaList() {
+        const search = document.getElementById('searchInput')?.value || '';
+        let url = `{{ route('admin.media.picker') }}?ajax=true&embedded=true`;
+        
+        if (search) {
+            url += `&search=${encodeURIComponent(search)}`;
+        }
+        
+        // Show loading
+        const content = document.getElementById('mediaLibraryContent');
+        if (content) {
+            content.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3 text-muted">Memuat media...</p>
+                </div>
+            `;
+            
+            // Load via AJAX
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    content.innerHTML = html;
+                    initializeMediaPickerEvents();
+                })
+                .catch(error => {
+                    console.error('Error refreshing media:', error);
+                    content.innerHTML = `
+                        <div class="alert alert-danger">
+                            Gagal memuat media
+                        </div>
+                    `;
+                });
+        }
+    }
+
+    function searchMedia() {
+        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        const mediaItems = document.querySelectorAll('.media-item');
+        
+        mediaItems.forEach(item => {
+            const searchData = item.dataset.search || '';
+            if (searchTerm === '' || searchData.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function selectAllMedia() {
+        const btn = document.getElementById('selectAllBtn');
+        if (!btn) return;
+        
+        const mediaItems = document.querySelectorAll('.media-item:not([style*="display: none"])');
+        const allSelected = Array.from(mediaItems).every(item => 
+            item.classList.contains('selected')
+        );
+        
+        if (allSelected) {
+            // Deselect all
+            mediaItems.forEach(item => {
+                item.classList.remove('selected');
+            });
+            btn.innerHTML = '<i class="bi bi-check-square me-1"></i> Pilih Semua';
+        } else {
+            // Select all visible
+            mediaItems.forEach(item => {
+                item.classList.add('selected');
+            });
+            btn.innerHTML = '<i class="bi bi-square me-1"></i> Batal Semua';
+        }
+        
+        // Update selection count
+        updateSelectionCount();
+    }
+
+    function updateSelectionCount() {
+        const selectedCount = document.querySelectorAll('.media-item.selected').length;
+        const bulkInfo = document.getElementById('bulkSelectionInfo');
+        const countElement = document.getElementById('selectedCount');
+        
+        if (countElement) {
+            countElement.textContent = selectedCount;
+        }
+        
+        if (bulkInfo) {
+            if (selectedCount > 0) {
+                bulkInfo.style.display = 'flex';
+            } else {
+                bulkInfo.style.display = 'none';
+            }
+        }
+    }
+
     let selectedMediaItems = [];
     let currentPickerTarget = 'main';
 
@@ -948,62 +1241,64 @@
         const bulkInfo = document.getElementById('bulkSelectionInfo');
         
         if (target === 'main') {
-            badge.textContent = 'Gambar Utama';
+            badge.textContent = 'Gambar Utama (Klik untuk Pilih)';
             badge.className = 'badge bg-primary ms-2';
-            // Show bulk info but hide count
             if (bulkInfo) {
-                bulkInfo.style.display = 'flex';
-                document.getElementById('selectedCount').textContent = '1';
+                bulkInfo.style.display = 'none';
             }
         } else if (target === 'gallery') {
             badge.textContent = 'Gallery Produk (Pilih Banyak)';
             badge.className = 'badge bg-success ms-2';
             if (bulkInfo) {
-                bulkInfo.style.display = 'none'; // Initially hidden
+                bulkInfo.style.display = 'flex';
             }
         }
         
         // Clear selection sebelumnya
         selectedMediaItems = [];
-        
-        // Load media library
-        loadMediaLibrary();
+        updateSelectionUI();
         
         // Show modal
         const modal = new bootstrap.Modal(document.getElementById('mediaPickerModal'));
         modal.show();
         
-        // Reset tabs ke media library
-        const mediaTab = document.getElementById('media-library-tab');
-        if (mediaTab) {
-            const mediaTabInstance = new bootstrap.Tab(mediaTab);
-            mediaTabInstance.show();
-        }
-    }
-
-    // Load media library via AJAX
-    function loadMediaLibrary() {
-        fetch(`{{ route('admin.media.picker') }}?ajax=true&embedded=true`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('mediaLibraryContent').innerHTML = html;
-                initializeMediaPickerEvents();
-            })
-            .catch(error => {
-                console.error('Error loading media:', error);
-                document.getElementById('mediaLibraryContent').innerHTML = `
-                    <div class="alert alert-danger">
-                        Gagal memuat media library
-                    </div>
-                `;
-            });
+        // Reset ke tab media library setiap kali modal dibuka
+        setTimeout(() => {
+            const mediaTab = document.getElementById('media-library-tab');
+            if (mediaTab) {
+                // Active tab media library
+                mediaTab.classList.add('active');
+                mediaTab.setAttribute('aria-selected', 'true');
+                
+                // Remove active dari tab upload
+                const uploadTab = document.getElementById('upload-tab');
+                if (uploadTab) {
+                    uploadTab.classList.remove('active');
+                    uploadTab.setAttribute('aria-selected', 'false');
+                }
+                
+                // Show media library content, hide upload content
+                const mediaContent = document.getElementById('media-library');
+                if (mediaContent) {
+                    mediaContent.classList.add('show', 'active');
+                }
+                
+                const uploadContent = document.getElementById('upload');
+                if (uploadContent) {
+                    uploadContent.classList.remove('show', 'active');
+                }
+                
+                // Load media library
+                loadMediaLibrary();
+            }
+        }, 100);
     }
 
     // Function untuk handle select button click
     function handleSelectButtonClick(button) {
         const mediaId = parseInt(button.dataset.mediaId);
         const mediaUrl = button.dataset.mediaUrl;
-        const mediaThumbnail = button.dataset.mediaThumbnail;
+        const mediaThumbnail = button.dataset.mediaThumbnail || mediaUrl;
         const mediaName = button.dataset.mediaName;
         
         if (currentPickerTarget === 'main') {
@@ -1037,7 +1332,7 @@
 
     // Function untuk insert main image langsung ke form
     function insertMainImageToForm(media) {
-        console.log('Inserting main image directly:', media);
+        console.log('Inserting main image:', media);
         
         // Update preview
         const previewDiv = document.getElementById('mainImagePreview');
@@ -1051,19 +1346,45 @@
         const mainImageInput = document.getElementById('main_image_id');
         if (mainImageInput) {
             mainImageInput.value = media.id;
-            console.log('Main image ID set to:', media.id);
         }
         
         // Show remove button
-        const removeBtn = document.getElementById('removeMainImageBtn');
+        const removeBtn = document.getElementById('removeMainImage');
         if (removeBtn) {
             removeBtn.style.display = 'block';
         }
     }
+    
+    // Load media library via AJAX
+    function loadMediaLibrary() {
+        fetch(`{{ route('admin.media.picker') }}?ajax=true&embedded=true`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('mediaLibraryContent').innerHTML = html;
+                initializeMediaPickerEvents();
+            })
+            .catch(error => {
+                console.error('Error loading media:', error);
+                document.getElementById('mediaLibraryContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        Gagal memuat media library
+                    </div>
+                `;
+            });
+    }
+
     // Initialize events setelah load media
     function initializeMediaPickerEvents() {
-        // Handle media selection (click on card)
-        document.getElementById('mediaLibraryContent').addEventListener('click', function(e) {
+        // Handle select button click
+        document.querySelectorAll('.btn-select-media').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                handleSelectButtonClick(this);
+            });
+        });
+        
+        // Handle media item click
+        document.getElementById('mediaLibraryContent')?.addEventListener('click', function(e) {
             const mediaCard = e.target.closest('.media-item');
             if (!mediaCard) return;
             
@@ -1073,44 +1394,35 @@
             toggleMediaSelection(mediaCard);
         });
         
-        // Handle select button click
-        document.querySelectorAll('.btn-select-media').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const mediaCard = this.closest('.media-item');
-                if (mediaCard) {
-                    toggleMediaSelection(mediaCard);
-                }
-            });
-        });
-        
-        // Setup search
+        // Setup search input
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const mediaItems = document.querySelectorAll('.media-item');
-                
-                mediaItems.forEach(item => {
-                    const searchData = item.dataset.search || '';
-                    if (searchTerm === '' || searchData.includes(searchTerm)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    refreshMediaList();
+                } else {
+                    searchMedia();
+                }
             });
         }
         
-        // Setup upload
+        // Setup select all button
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectAllMedia();
+            });
+        }
+        
+        // Setup upload (jika ada)
         setupUpload();
     }
-
     // Function untuk toggle selection
     function toggleMediaSelection(mediaCard) {
         const mediaId = parseInt(mediaCard.dataset.id);
         const mediaUrl = mediaCard.dataset.url;
-        const mediaThumbnail = mediaCard.dataset.thumbnail;
+        const mediaThumbnail = mediaCard.dataset.thumbnail || mediaUrl;
         const mediaName = mediaCard.dataset.name;
         const isSelected = mediaCard.classList.contains('selected');
         
@@ -1130,24 +1442,8 @@
                     name: mediaName
                 });
             }
-        } else {
-            // Single selection mode (untuk main image)
-            // Deselect all first
-            document.querySelectorAll('.media-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            
-            // Select this one
-            mediaCard.classList.add('selected');
-            selectedMediaItems = [{
-                id: mediaId,
-                url: mediaUrl,
-                thumbnail: mediaThumbnail,
-                name: mediaName
-            }];
+            updateSelectionUI();
         }
-        
-        updateSelectionUI();
     }
 
     // Update selection UI
@@ -1160,17 +1456,12 @@
             countElement.textContent = selectedCount;
         }
         
-        // Always show bulk info if there's selection
-        if (bulkInfo) {
+        // Untuk gallery, tampilkan bulk info
+        if (bulkInfo && currentPickerTarget === 'gallery') {
             if (selectedCount > 0) {
                 bulkInfo.style.display = 'flex';
             } else {
-                // For main image, show anyway but with count 0
-                if (currentPickerTarget === 'main') {
-                    bulkInfo.style.display = 'flex';
-                } else {
-                    bulkInfo.style.display = 'none';
-                }
+                bulkInfo.style.display = 'none';
             }
         }
     }
@@ -1188,39 +1479,19 @@
     function insertSelectedMedia() {
         console.log('Inserting media for:', currentPickerTarget, selectedMediaItems);
         
-        if (selectedMediaItems.length === 0) {
-            alert('Pilih media terlebih dahulu');
-            return;
-        }
-        
         if (currentPickerTarget === 'main') {
-            // Untuk gambar utama (single)
-            const media = selectedMediaItems[0];
-            console.log('Setting main image:', media);
-            
-            // Update preview
-            const previewDiv = document.getElementById('mainImagePreview');
-            if (previewDiv) {
-                previewDiv.innerHTML = `
-                    <img src="${media.url}" alt="${media.name}" class="img-fluid" style="max-height: 200px; object-fit: contain;">
-                `;
+            // Untuk gambar utama (single) - seharusnya tidak sampai sini
+            if (selectedMediaItems.length > 0) {
+                const media = selectedMediaItems[0];
+                insertMainImageToForm(media);
             }
-            
-            // Update hidden input
-            const mainImageInput = document.getElementById('main_image_id');
-            if (mainImageInput) {
-                mainImageInput.value = media.id;
-                console.log('Main image ID set to:', media.id);
-            }
-            
-            // Show remove button
-            const removeBtn = document.getElementById('removeMainImage');
-            if (removeBtn) {
-                removeBtn.style.display = 'block';
-            }
-            
         } else if (currentPickerTarget === 'gallery') {
             // Untuk gallery (multiple)
+            if (selectedMediaItems.length === 0) {
+                alert('Pilih media terlebih dahulu');
+                return;
+            }
+            
             const galleryContainer = document.getElementById('galleryPreview');
             const galleryInput = document.getElementById('gallery_images');
             
@@ -1253,7 +1524,7 @@
                 galleryItem.className = 'gallery-item';
                 galleryItem.setAttribute('data-id', media.id);
                 galleryItem.innerHTML = `
-                    <img src="${media.thumbnail || media.url}" alt="${media.name}" style="width: 100%; height: 120px; object-fit: cover;">
+                    <img src="${media.thumbnail}" alt="${media.name}" style="width: 100%; height: 120px; object-fit: cover;">
                     <button type="button" class="btn btn-sm btn-danger" onclick="removeGalleryImage(${media.id})">
                         <i class="bi bi-x"></i>
                     </button>
@@ -1298,12 +1569,13 @@
         if (removeBtn) {
             removeBtn.style.display = 'none';
         }
-        
-        console.log('Main image removed');
     }
 
     // Function untuk menghapus gambar gallery
     function removeGalleryImage(mediaId) {
+        console.log('Removing gallery image:', mediaId);
+        
+        // Hapus dari preview
         const galleryItem = document.querySelector(`.gallery-item[data-id="${mediaId}"]`);
         if (galleryItem) {
             galleryItem.remove();
@@ -1315,42 +1587,10 @@
             let galleryImages = JSON.parse(galleryInput.value || '[]');
             galleryImages = galleryImages.filter(id => id !== mediaId);
             galleryInput.value = JSON.stringify(galleryImages);
+            console.log('Updated gallery after removal:', galleryImages);
         } catch (e) {
             console.error('Error removing gallery image:', e);
         }
-    }
-
-    // Function untuk select all media (untuk gallery)
-    function selectAllMedia() {
-        const btn = document.getElementById('selectAllBtn');
-        const mediaItems = document.querySelectorAll('.media-item:not([style*="display: none"])');
-        const allSelected = Array.from(mediaItems).every(item => 
-            item.classList.contains('selected')
-        );
-        
-        if (allSelected) {
-            // Deselect all
-            mediaItems.forEach(item => {
-                item.classList.remove('selected');
-            });
-            btn.innerHTML = '<i class="bi bi-check-square me-1"></i> Pilih Semua';
-            selectedMediaItems = [];
-        } else {
-            // Select all visible
-            selectedMediaItems = [];
-            mediaItems.forEach(item => {
-                item.classList.add('selected');
-                selectedMediaItems.push({
-                    id: parseInt(item.dataset.id),
-                    url: item.dataset.url,
-                    thumbnail: item.dataset.thumbnail,
-                    name: item.dataset.name
-                });
-            });
-            btn.innerHTML = '<i class="bi bi-square me-1"></i> Batal Semua';
-        }
-        
-        updateSelectionUI();
     }
 
     // Setup upload functionality
@@ -1399,8 +1639,10 @@
             
             // Switch to upload tab
             const uploadTab = document.getElementById('upload-tab');
-            const uploadTabInstance = new bootstrap.Tab(uploadTab);
-            uploadTabInstance.show();
+            if (uploadTab) {
+                const tab = new bootstrap.Tab(uploadTab);
+                tab.show();
+            }
             
             // Start upload
             uploadFiles(files);
@@ -1412,9 +1654,9 @@
         const formData = new FormData();
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
         
-        // Add files
+        // Add files - gunakan field 'file' untuk single file
         Array.from(files).forEach((file, index) => {
-            formData.append(`files[${index}]`, file);
+            formData.append(`file`, file); // Ganti dari files[${index}] menjadi file
         });
         
         formData.append('_token', csrfToken);
@@ -1439,29 +1681,30 @@
                 }
             });
             
-            if (response.ok) {
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Show success message
-                    if (queueElement) {
-                        queueElement.innerHTML = `
-                            <div class="alert alert-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                ${result.message || 'File berhasil diupload'}
-                            </div>
-                        `;
-                    }
-                    
-                    // Refresh media library setelah 1.5 detik
-                    setTimeout(() => {
-                        loadMediaLibrary();
-                    }, 1500);
-                } else {
-                    throw new Error(result.message || 'Upload failed');
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                // Show success message
+                if (queueElement) {
+                    queueElement.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle me-2"></i>
+                            ${result.message || 'File berhasil diupload'}
+                        </div>
+                    `;
                 }
+                
+                // Refresh media library setelah 1.5 detik
+                setTimeout(() => {
+                    // Kembali ke tab media library
+                    const mediaTab = document.getElementById('media-library-tab');
+                    if (mediaTab) {
+                        mediaTab.click();
+                        loadMediaLibrary();
+                    }
+                }, 1500);
             } else {
-                throw new Error('Server error');
+                throw new Error(result.message || 'Upload failed');
             }
         } catch (error) {
             if (queueElement) {
@@ -1480,391 +1723,49 @@
             }
         }
     }
-    // Function untuk update counter gallery
-    function updateGalleryCounter() {
-        const items = document.querySelectorAll('[data-media-id]');
-        const counter = document.getElementById('galleryCounter');
-        if (counter) {
-            counter.textContent = `(${items.length} gambar)`;
-        }
-    }
-
-    // Tambahkan event listener untuk messages dari picker
-    window.addEventListener('message', function(event) {
-        // Pastikan message dari origin yang sama
-        if (event.origin !== window.location.origin) return;
-        
-        const data = event.data;
-        console.log('Message received:', data);
-        
-        if (data.type === 'media-selected') {
-            console.log('Media selected:', data);
-            
-            if (data.isMultiple) {
-                // Multiple selection untuk gallery
-                if (data.target === 'gallery') {
-                    data.media.forEach(media => {
-                        addGalleryImage(media.id, media.url);
-                    });
-                }
-            } else {
-                // Single selection
-                if (data.target === 'main') {
-                    setMainImage(data.media[0].id, data.media[0].url);
-                } else if (data.target === 'gallery') {
-                    addGalleryImage(data.media[0].id, data.media[0].url);
-                }
-            }
-            
-            // Close modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('mediaPickerModal'));
-            if (modal) {
-                modal.hide();
-            }
-        }
-        
-        if (data.type === 'close-media-picker') {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('mediaPickerModal'));
-            if (modal) {
-                modal.hide();
-            }
-        }
-    });
-
-
-    // Toast Notification Function
-    function showToast(type, message, title = '') {
-        const toastId = 'toast-' + Date.now();
-        const icon = {
-            'success': 'bi-check-circle',
-            'error': 'bi-x-circle',
-            'warning': 'bi-exclamation-triangle',
-            'info': 'bi-info-circle'
-        }[type] || 'bi-info-circle';
-
-        const color = {
-            'success': 'text-success',
-            'error': 'text-danger',
-            'warning': 'text-warning',
-            'info': 'text-info'
-        }[type] || 'text-info';
-
-        const toastHTML = `
-            <div id="${toastId}" class="toast mb-3" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <i class="bi ${icon} ${color} me-2"></i>
-                    <strong class="me-auto">${title || type.charAt(0).toUpperCase() + type.slice(1)}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    ${message}
-                </div>
-            </div>
-        `;
-
-        const container = document.getElementById('toastContainer');
-        container.insertAdjacentHTML('beforeend', toastHTML);
-        
-        const toastElement = document.getElementById(toastId);
-        const toast = new bootstrap.Toast(toastElement, {
-            delay: 5000,
-            autohide: true
-        });
-        toast.show();
-
-        toastElement.addEventListener('hidden.bs.toast', function () {
-            this.remove();
-        });
-    }
-
-    // Show session messages as toast
-    @if(session('success'))
-        showToast('success', '{{ session('success') }}', 'Sukses!');
-    @endif
-
-    @if(session('error'))
-        showToast('error', '{{ session('error') }}', 'Error!');
-    @endif
-
-    @if($errors->any())
-        @foreach($errors->all() as $error)
-            showToast('error', '{{ $error }}', 'Validasi Error!');
-        @endforeach
-    @endif
-
-    // Form submission
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('product-form');
-        const submitBtn = document.getElementById('submit-btn');
-        
-        // Initialize Select2 for related products
-        if ($('[data-control="select2"]').length) {
-            $('[data-control="select2"]').select2({
-                minimumResultsForSearch: 10,
-                placeholder: "Pilih produk terkait",
-                allowClear: true,
-                width: '100%'
-            });
-        }
-        
-        // Toggle product type (variant/non-variant)
-        const hasVariantsCheckbox = document.getElementById('has_variants');
-        const variantAttributesSection = document.getElementById('variant-attributes-section');
-        const variantsContainer = document.getElementById('variants-container');
-        const nonVariantPricing = document.getElementById('non-variant-pricing');
-        
-        if (hasVariantsCheckbox) {
-            hasVariantsCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    variantAttributesSection.style.display = 'block';
-                    variantsContainer.style.display = 'block';
-                    nonVariantPricing.style.display = 'none';
-                    
-                    // Set required for variant fields
-                    const variantNameInputs = variantsContainer.querySelectorAll('input[name*="[name]"]');
-                    const variantPriceInputs = variantsContainer.querySelectorAll('input[name*="[price]"]');
-                    const variantStockInputs = variantsContainer.querySelectorAll('input[name*="[stock_quantity]"]');
-                    
-                    variantNameInputs.forEach(input => input.required = true);
-                    variantPriceInputs.forEach(input => input.required = true);
-                    variantStockInputs.forEach(input => input.required = true);
-                    
-                    // Remove required from non-variant fields
-                    form.querySelector('input[name="price"]').required = false;
-                    form.querySelector('input[name="stock_quantity"]').required = false;
-                    form.querySelector('select[name="stock_status"]').required = false;
-                } else {
-                    variantAttributesSection.style.display = 'none';
-                    variantsContainer.style.display = 'none';
-                    nonVariantPricing.style.display = 'block';
-                    
-                    // Remove required from variant fields
-                    const variantNameInputs = variantsContainer.querySelectorAll('input[name*="[name]"]');
-                    const variantPriceInputs = variantsContainer.querySelectorAll('input[name*="[price]"]');
-                    const variantStockInputs = variantsContainer.querySelectorAll('input[name*="[stock_quantity]"]');
-                    
-                    variantNameInputs.forEach(input => input.required = false);
-                    variantPriceInputs.forEach(input => input.required = false);
-                    variantStockInputs.forEach(input => input.required = false);
-                    
-                    // Add required to non-variant fields
-                    form.querySelector('input[name="price"]').required = true;
-                    form.querySelector('input[name="stock_quantity"]').required = true;
-                    form.querySelector('select[name="stock_status"]').required = true;
-                }
-            });
-        }
-        
-        // Add attribute
-        const addAttributeBtn = document.getElementById('add-attribute');
-        if (addAttributeBtn) {
-            addAttributeBtn.addEventListener('click', function() {
-                const container = document.getElementById('variant-attributes-container');
-                const newAttribute = document.createElement('div');
-                newAttribute.className = 'input-group mb-2';
-                newAttribute.innerHTML = `
-                    <input type="text" class="form-control" 
-                           name="variant_attributes[]" 
-                           placeholder="Contoh: ukuran" />
-                    <button type="button" class="btn btn-light-danger remove-attribute">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
-                container.appendChild(newAttribute);
-            });
-        }
-        
-        // Remove attribute
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-attribute')) {
-                const inputGroup = e.target.closest('.input-group');
-                if (inputGroup) {
-                    inputGroup.remove();
-                }
-            }
-        });
-        
-        form.addEventListener('submit', function(e) {
-            // Save TinyMCE content before submit
-            if (typeof tinymce !== 'undefined') {
-                tinymce.triggerSave();
-            }
-            
-            // Show loading state
-            submitBtn.setAttribute('data-kt-indicator', 'on');
-            submitBtn.disabled = true;
-            
-            // Validation
-            const name = form.querySelector('input[name="name"]').value.trim();
-            const categoryId = form.querySelector('select[name="category_id"]').value;
-            const mainImageId = form.querySelector('input[name="main_image_id"]').value;
-            const description = form.querySelector('#description-textarea').value;
-            
-            if (!name) {
-                e.preventDefault();
-                showToast('error', 'Nama produk wajib diisi', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!categoryId) {
-                e.preventDefault();
-                showToast('error', 'Kategori produk wajib dipilih', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!mainImageId) {
-                e.preventDefault();
-                showToast('error', 'Gambar utama produk wajib dipilih', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            if (!description || description.trim() === '') {
-                e.preventDefault();
-                showToast('error', 'Deskripsi produk wajib diisi', 'Validasi Error!');
-                submitBtn.removeAttribute('data-kt-indicator');
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            // Validate non-variant product
-            if (!hasVariantsCheckbox.checked) {
-                const price = form.querySelector('input[name="price"]').value;
-                const stockQuantity = form.querySelector('input[name="stock_quantity"]').value;
-                
-                if (!price || parseFloat(price) < 0) {
-                    e.preventDefault();
-                    showToast('error', 'Harga produk tidak valid', 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                if (!stockQuantity || parseInt(stockQuantity) < 0) {
-                    e.preventDefault();
-                    showToast('error', 'Stok awal tidak valid', 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                // Validate discount dates
-                const discountStart = form.querySelector('input[name="discount_start"]');
-                const discountEnd = form.querySelector('input[name="discount_end"]');
-                const discountPrice = form.querySelector('input[name="discount_price"]');
-                
-                if (discountPrice && discountPrice.value && discountStart && discountStart.value && discountEnd && discountEnd.value) {
-                    const startDate = new Date(discountStart.value);
-                    const endDate = new Date(discountEnd.value);
-                    
-                    if (endDate < startDate) {
-                        e.preventDefault();
-                        showToast('error', 'Tanggal akhir diskon tidak boleh lebih awal dari tanggal mulai', 'Validasi Error!');
-                        submitBtn.removeAttribute('data-kt-indicator');
-                        submitBtn.disabled = false;
-                        return;
-                    }
-                }
-            }
-            
-            // Validate variant product
-            if (hasVariantsCheckbox.checked) {
-                const variants = form.querySelectorAll('.variant-item');
-                
-                if (variants.length === 0) {
-                    e.preventDefault();
-                    showToast('error', 'Produk varian minimal harus memiliki 1 varian', 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                let hasDefaultVariant = false;
-                let variantErrors = [];
-                
-                variants.forEach((variant, index) => {
-                    const variantName = variant.querySelector('input[name*="[name]"]').value.trim();
-                    const variantPrice = variant.querySelector('input[name*="[price]"]').value;
-                    const variantStock = variant.querySelector('input[name*="[stock_quantity]"]').value;
-                    const isDefault = variant.querySelector('input[name*="[is_default]"]').checked;
-                    
-                    if (!variantName) {
-                        variantErrors.push(`Varian #${index + 1}: Nama varian wajib diisi`);
-                    }
-                    
-                    if (!variantPrice || parseFloat(variantPrice) < 0) {
-                        variantErrors.push(`Varian #${index + 1}: Harga varian tidak valid`);
-                    }
-                    
-                    if (!variantStock || parseInt(variantStock) < 0) {
-                        variantErrors.push(`Varian #${index + 1}: Stok varian tidak valid`);
-                    }
-                    
-                    if (isDefault) {
-                        hasDefaultVariant = true;
-                    }
-                });
-                
-                if (variantErrors.length > 0) {
-                    e.preventDefault();
-                    variantErrors.forEach(error => {
-                        showToast('error', error, 'Validasi Varian Error!');
-                    });
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                if (!hasDefaultVariant) {
-                    e.preventDefault();
-                    showToast('error', 'Harus ada 1 varian yang ditandai sebagai default', 'Validasi Error!');
-                    submitBtn.removeAttribute('data-kt-indicator');
-                    submitBtn.disabled = false;
-                    return;
-                }
-            }
-            
-            // Jika semua valid, form akan submit
-        });
-
+    // Initialize gallery dari data lama
+    function initializeGalleryFromOldData() {
         const galleryInput = document.getElementById('gallery_images');
         if (galleryInput && galleryInput.value) {
             try {
                 const galleryImages = JSON.parse(galleryInput.value);
-                galleryImages.forEach(imageId => {
-                    // Anda bisa load image dari server jika diperlukan
-                    // Atau biarkan kosong, nanti di-backend akan di-handle
-                });
+                const galleryContainer = document.getElementById('galleryPreview');
+                
+                if (galleryContainer && galleryImages.length > 0) {
+                    // Hapus loading atau placeholder jika ada
+                    galleryContainer.innerHTML = '';
+                    
+                    // Tambahkan loading state
+                    galleryImages.forEach(imageId => {
+                        const galleryItem = document.createElement('div');
+                        galleryItem.className = 'gallery-item loading';
+                        galleryItem.setAttribute('data-id', imageId);
+                        galleryItem.innerHTML = `
+                            <div class="placeholder" style="width: 100%; height: 120px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        `;
+                        galleryContainer.appendChild(galleryItem);
+                    });
+                    
+                    // Load images dari server (optional)
+                    // Anda bisa menambahkan AJAX request untuk mendapatkan URL gambar
+                }
             } catch (e) {
                 console.error('Error parsing gallery images:', e);
             }
         }
-        
-        // Auto-generate slug from name
-        const nameInput = document.querySelector('input[name="name"]');
-        const slugInput = document.querySelector('input[name="slug"]');
-        
-        if (nameInput && slugInput) {
-            nameInput.addEventListener('blur', function() {
-                if (!slugInput.value) {
-                    // Simple slug generation
-                    const slug = this.value
-                        .toLowerCase()
-                        .replace(/[^\w\s]/gi, '')
-                        .replace(/\s+/g, '-')
-                        .replace(/-+/g, '-')
-                        .replace(/^-+|-+$/g, '');
-                    slugInput.value = slug;
-                }
-            });
-        }
+    }
 
-         const removeMainImageBtn = document.getElementById('removeMainImage');
+    // Initialize ketika DOM siap
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize gallery dari old data
+        initializeGalleryFromOldData();
+        
+        // Setup tombol hapus main image
+        const removeMainImageBtn = document.getElementById('removeMainImage');
         if (removeMainImageBtn) {
             removeMainImageBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1872,17 +1773,13 @@
             });
         }
         
-        // Auto-generate SKU if empty
-        const skuInput = document.querySelector('input[name="sku"]');
-        if (skuInput && !skuInput.value) {
-            skuInput.addEventListener('blur', function() {
-                if (!this.value) {
-                    // Generate simple SKU
-                    const timestamp = Date.now().toString().slice(-6);
-                    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-                    this.value = 'PRD-' + timestamp + '-' + random;
-                }
-            });
+        // Cek jika ada main image dari old data
+        const mainImageId = document.getElementById('main_image_id').value;
+        if (mainImageId && mainImageId !== '') {
+            const removeBtn = document.getElementById('removeMainImage');
+            if (removeBtn) {
+                removeBtn.style.display = 'block';
+            }
         }
     });
 </script>

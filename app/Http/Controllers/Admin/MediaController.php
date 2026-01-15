@@ -63,9 +63,77 @@ class MediaController extends Controller
             $m->formatted_size = $this->formatBytes($m->size);
         });
 
-        return view('admin.media.index', compact('media'));
+        return view('admin.media.index', [
+            'media' => $media,
+            'mode' => 'manager'
+        ]);
     }
 
+    public function picker(Request $request)
+    {
+        try {
+            $query = Media::query()->latest();
+
+            if ($request->search) {
+                $query->where('name', 'like', "%{$request->search}%");
+            }
+
+            if ($request->type && $request->type !== 'all') {
+                if ($request->type === 'image') {
+                    $query->whereIn('extension', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']);
+                }
+            }
+
+            $media = $query->paginate(24);
+
+            // Transform data
+            $media->each(function ($m) {
+                $m->url = asset('storage/media/'.$m->filename);
+                $m->thumbnail_url = $m->thumbnail_path
+                    ? asset('storage/'.$m->thumbnail_path)
+                    : $m->url;
+
+                $m->formatted_size = $this->formatBytes($m->size);
+            });
+
+            // Jika request ajax (untuk modal dan pagination)
+            if ($request->ajax()) {
+                // Return HTML untuk dimasukkan ke modal
+                return response()->make(view('admin.media.picker-content', compact('media'))->render());
+            }
+
+            // Jika request embedded (dalam modal full page)
+            if ($request->embedded === 'true') {
+                return view('admin.media.picker', [
+                    'media' => $media,
+                    'mode' => 'picker'
+                ]);
+            }
+
+            // Normal page - redirect ke media index
+            return redirect()->route('admin.media.index');
+
+        } catch (\Exception $e) {
+            Log::error('Media picker error: ' . $e->getMessage());
+            
+            // Jika ajax request, return error
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => 'Failed to load media',
+                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                ], 500);
+            }
+            
+            // Jika embedded, show error page
+            if ($request->embedded === 'true') {
+                return view('admin.media.picker-error', [
+                    'message' => 'Failed to load media library'
+                ]);
+            }
+            
+            abort(500, 'Failed to load media library');
+        }
+    }
     /* =========================
        SHOW
     ========================= */
@@ -139,6 +207,138 @@ class MediaController extends Controller
         }
 
         return response()->json(['success'=>true,'data'=>$saved]);
+    }
+
+    /* =========================
+       UPLOAD
+    ========================= */
+    public function upload(Request $request)
+    {
+        // Validasi untuk single file upload (media picker)
+        $validator = Validator::make($request->all(), [
+            'files' => ['sometimes', 'array'], // Untuk multiple upload dari form produk
+            'files.*' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,webp,gif,svg', 'max:5120'],
+            'file' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,webp,gif,svg', 'max:5120'], // Untuk single upload dari media picker
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Handle single file upload (dari media picker)
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                return $this->processSingleFile($file);
+            }
+            
+            // Handle multiple file upload (dari form produk)
+            if ($request->hasFile('files')) {
+                $files = $request->file('files');
+                $results = [];
+                
+                foreach ($files as $file) {
+                    $result = $this->processSingleFile($file);
+                    if ($result->getStatusCode() === 200) {
+                        $results[] = json_decode($result->getContent());
+                    }
+                }
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Semua file berhasil diupload',
+                    'files' => $results
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada file yang diupload'
+            ], 400);
+
+        } catch (\Throwable $e) {
+            Log::error('Upload error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengupload file',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    private function processSingleFile($file)
+    {
+        $originalName = $file->getClientOriginalName();
+        $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $ext = strtolower($file->getClientOriginalExtension());
+        $filename = Str::slug($name) . '-' . Str::random(6) . '.' . $ext;
+
+        // Simpan file
+        $file->storeAs('media', $filename, 'public');
+
+        $thumbPath = null;
+        $width = null;
+        $height = null;
+        $thumbnailUrl = null;
+        $fileUrl = asset('storage/media/' . $filename);
+
+        // Generate thumbnail untuk non-SVG
+        if ($ext !== 'svg') {
+            $img = $this->image->read(Storage::disk('public')->path("media/$filename"));
+            $width = $img->width();
+            $height = $img->height();
+
+            $thumb = $img->scaleDown(width: 300);
+            $thumbPath = "media/thumbnails/$filename";
+            Storage::disk('public')->put($thumbPath, (string) $thumb->toJpeg(80));
+            
+            $thumbnailUrl = asset('storage/' . $thumbPath);
+        } else {
+            // Untuk SVG, gunakan file asli sebagai thumbnail
+            $thumbnailUrl = $fileUrl;
+        }
+
+        // Simpan ke database
+        $media = Media::create([
+            'name' => $name,
+            'original_name' => $originalName,
+            'filename' => $filename,
+            'extension' => $ext,
+            'size' => $file->getSize(),
+            'path' => 'media',
+            'thumbnail_path' => $thumbPath,
+            'mime_type' => $file->getMimeType(),
+            'metadata' => $width ? ['dimensions' => ['w' => $width, 'h' => $height]] : null,
+            'uploaded_by' => Auth::id(),
+            'status' => 'active'
+        ]);
+
+        // Response khusus untuk media picker
+        return response()->json([
+            'success' => true,
+            'message' => 'File berhasil diupload',
+            'media' => [
+                'id' => $media->id,
+                'url' => $fileUrl,
+                'thumbnail_url' => $thumbnailUrl,
+                'name' => $media->name,
+                'original_name' => $media->original_name,
+                'size' => $media->size,
+                'formatted_size' => $this->formatBytes($media->size),
+                'extension' => $media->extension,
+                'mime_type' => $media->mime_type,
+                'created_at' => $media->created_at->format('Y-m-d H:i'),
+                'dimensions' => $width ? "{$width}x{$height}" : null,
+            ]
+        ]);
     }
 
     /* =========================

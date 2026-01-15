@@ -52,14 +52,27 @@
                                    placeholder="SKU-VARIAN-001" />
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Atribut (JSON)</label>
-                            <input type="text" class="form-control variant-attributes-input" 
-                                   name="variants[{{ $index }}][attribute_options]" 
-                                   value="{{ isset($variant['attribute_options']) ? 
-                                           (is_array($variant['attribute_options']) ? 
-                                            json_encode($variant['attribute_options']) : 
-                                            $variant['attribute_options']) : '' }}"
-                                   placeholder='{"color": "Merah", "size": "M"}' />
+                            <label class="form-label">Atribut Varian</label>
+
+                            <input type="hidden"
+                                name="variants[{{ $index }}][attribute_options]"
+                                class="variant-attr-json"
+                                value='{{ isset($variant['attribute_options']) ? json_encode($variant['attribute_options']) : "{}" }}'>
+
+                            <div class="variant-attr-fields" data-index="{{ $index }}">
+                                @php
+                                    $attrs = isset($variant['attribute_options']) && is_array($variant['attribute_options'])
+                                        ? $variant['attribute_options'] : [];
+                                @endphp
+
+                                @foreach($attrs as $k => $v)
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text">{{ $k }}</span>
+                                        <input type="text" class="form-control variant-attr-input" data-key="{{ $k }}" value="{{ $v }}">
+                                    </div>
+                                @endforeach
+                            </div>
+
                             <small class="text-muted">Format JSON: {"attribute": "value"}</small>
                         </div>
                     </div>
@@ -112,14 +125,22 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Gambar Varian</label>
-                            <input type="file" class="form-control" 
-                                   name="variant_images[{{ $index }}]" 
-                                   accept="image/*" />
-                            @if(isset($variant['image']) && $variant['image'])
+                            <input type="hidden" name="variants[${index}][image_id]" class="variant-image-id">
+
+                            <button type="button" class="btn btn-sm btn-light select-variant-image">
+                                Pilih Gambar
+                            </button>
+
+                            <div class="variant-image-preview"></div>
+
+                            @if(isset($variant['image_id']))
                             <div class="mt-2">
-                                <img src="{{ asset('storage/variants/' . $variant['image']) }}" 
-                                     class="img-thumbnail" 
-                                     style="max-height: 50px;">
+                                <input type="hidden" 
+                                    name="variants[{{ $index }}][image_id]" 
+                                    value="{{ $variant['image_id'] }}" 
+                                    class="variant-image-id">
+
+                                <img src="{{ $variant['image_url'] ?? '' }}" class="img-thumbnail" style="max-height:50px">
                             </div>
                             @endif
                         </div>
@@ -203,10 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                        placeholder="SKU-VARIAN-001" />
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Atribut (JSON)</label>
-                                <input type="text" class="form-control variant-attributes-input" 
-                                       name="variants[${variantIndex}][attribute_options]" 
-                                       placeholder='{"color": "Merah", "size": "M"}' />
+                                <label class="form-label">Atribut Varian</label>
+                                <input type="hidden" name="variants[${variantIndex}][attribute_options]" 
+                                    class="variant-attr-json" value="{}">
+
+                                <div class="variant-attr-fields" data-index="${variantIndex}"></div>
                                 <small class="text-muted">Format JSON: {"attribute": "value"}</small>
                             </div>
                         </div>
@@ -251,9 +273,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Gambar Varian</label>
-                                <input type="file" class="form-control" 
-                                       name="variant_images[${variantIndex}]" 
-                                       accept="image/*" />
+                                <input type="hidden" name="variants[${index}][image_id]" class="variant-image-id">
+
+                                <button type="button" class="btn btn-sm btn-light select-variant-image">
+                                    Pilih Gambar
+                                </button>
+
+                                <div class="variant-image-preview"></div>
+
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check mt-5">
@@ -347,6 +374,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            document.querySelectorAll('.remove-variant').forEach(btn => {
+                if(btn.dataset.variantId){
+                    deletedVariants.push(btn.dataset.variantId);
+                }
+            });
+            document.getElementById('deleted_variants').value = JSON.stringify(deletedVariants);
+
             // Clear previous options
             optionsContainer.innerHTML = '';
             
@@ -401,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add generated variants
             combinations.forEach((combination, index) => {
                 const variantName = Object.values(combination).join(' ');
-                const attributeOptions = JSON.stringify(combination);
+                const attributeOptions = '{}';
                 
                 const variantHTML = `
                     <div class="variant-item card mb-5" data-variant-index="${index}">
@@ -427,9 +461,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Atribut (JSON)</label>
-                                    <input type="text" class="form-control variant-attributes-input" 
-                                           name="variants[${index}][attribute_options]" 
-                                           value='${attributeOptions}' />
+                                    <input type="hidden"
+                                        name="variants[${index}][attribute_options]"
+                                        class="variant-attr-json"
+                                        value="{}">
+
+                                    <div class="variant-attr-fields" data-index="${index}">
+                                    ${
+                                    Object.entries(combination).map(([k,v]) => `
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text">${k}</span>
+                                            <input class="form-control variant-attr-input" data-key="${k}" value="${v}">
+                                        </div>
+                                    `).join('')
+                                    }
+                                    </div>
                                 </div>
                             </div>
                             
@@ -473,9 +519,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Gambar Varian</label>
-                                    <input type="file" class="form-control" 
-                                           name="variant_images[${index}]" 
-                                           accept="image/*" />
+                                    <input type="hidden" name="variants[${index}][image_id]" class="variant-image-id">
+
+                                    <button type="button" class="btn btn-sm btn-light select-variant-image">
+                                    Pilih Gambar
+                                    </button>
+
+                                    <div class="variant-image-preview"></div>
+
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-check mt-5">
@@ -495,6 +546,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 
                 document.getElementById('variants-list').insertAdjacentHTML('beforeend', variantHTML);
+                document.querySelectorAll('.variant-item').forEach(item => {
+                    const inputs = item.querySelectorAll('.variant-attr-input');
+                    const jsonInput = item.querySelector('.variant-attr-json');
+
+                    const data = {};
+                    inputs.forEach(i => data[i.dataset.key] = i.value);
+                    jsonInput.value = JSON.stringify(data);
+                });
             });
             
             variantCount = combinations.length;
@@ -533,5 +592,34 @@ document.addEventListener('DOMContentLoaded', function() {
         return combinations;
     }
 });
+
+document.addEventListener('click', function(e){
+    if(e.target.classList.contains('select-variant-image')){
+        const variant = e.target.closest('.variant-item');
+        const input = variant.querySelector('.variant-image-id');
+        const preview = variant.querySelector('.variant-image-preview');
+
+        window.openMediaPicker(function(media){
+            input.value = media.id;
+            preview.innerHTML = `<img src="${media.url}" class="img-thumbnail" style="max-height:60px">`;
+        });
+    }
+});
+
+document.addEventListener('input', function(e){
+    if(e.target.classList.contains('variant-attr-input')){
+        const wrapper = e.target.closest('.variant-item');
+        const inputs = wrapper.querySelectorAll('.variant-attr-input');
+        const jsonInput = wrapper.querySelector('.variant-attr-json');
+
+        const data = {};
+        inputs.forEach(i => {
+            data[i.dataset.key] = i.value;
+        });
+
+        jsonInput.value = JSON.stringify(data);
+    }
+});
+
 </script>
 @endpush

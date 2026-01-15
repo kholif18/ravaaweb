@@ -27,10 +27,10 @@
     </div>
     
     <div class="card-body">
+        @if(($mode ?? 'manager') !== 'picker')
         <!-- Filters -->
         <div class="row mb-5 align-items-center">
             <div class="col-md-6 d-flex align-items-center gap-3">
-
                 <!-- Select All -->
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="selectAllMedia">
@@ -58,6 +58,7 @@
                 </button>
             </div>
         </div>
+        @endif
 
         <!-- Info jika belum ada media -->
         @if(!isset($media) || $media->isEmpty())
@@ -88,11 +89,13 @@
                                 loading="lazy"
                                 onerror="this.src='{{ asset('images/default-image.png') }}'">
 
-                            <!-- Selection checkbox -->
-                            <div class="position-absolute top-0 start-0 m-2">
-                                <input type="checkbox" class="form-check-input media-checkbox" value="{{ $item->id ?? '' }}">
-                            </div>
-                            
+                            <!-- Selection checkbox -->                         
+                            @if(($mode ?? 'manager') !== 'picker')
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <input type="checkbox" class="form-check-input media-checkbox" value="{{ $item->id }}">
+                                </div>
+                            @endif
+
                             <!-- Usage badge -->
                             @if(isset($item->usage_count) && $item->usage_count > 0)
                             <span class="position-absolute top-0 end-0 m-2 badge bg-info">
@@ -129,56 +132,53 @@
                                 </small>
                             </div>
                             
-                            <!-- Action buttons -->
                             <div class="d-flex gap-2 mt-auto">
-                                <button class="btn btn-light btn-sm btn-select-media flex-fill" 
-                                        data-media-id="{{ $item->id ?? '' }}"
-                                        data-media-url="{{ $item->url ?? '' }}"
-                                        data-media-name="{{ $item->name ?? '' }}">
+
+                            {{-- TOMBOL PILIH (hanya muncul di picker) --}}
+                            @if(($mode ?? 'manager') === 'picker')
+                                <button class="btn btn-primary btn-sm w-100 btn-select-media"
+                                        data-media-id="{{ $item->id }}"
+                                        data-media-url="{{ $item->url }}"
+                                        data-media-name="{{ $item->name }}">
                                     <i class="bi bi-check-circle me-1"></i> Pilih
                                 </button>
-                                
-                                <div class="dropdown">
-                                    <button class="btn btn-light btn-sm" 
-                                            type="button" 
-                                            data-bs-toggle="dropdown" 
-                                            data-bs-boundary="viewport"
-                                            data-bs-display="static"
-                                            aria-expanded="false">
-                                        <i class="bi bi-three-dots"></i>
+
+                            {{-- MODE MANAGER (media library normal) --}}
+                            @else
+                                <div class="d-flex gap-1 w-100 mt-2">
+
+                                    <a href="{{ route('admin.media.download', $item->id) }}"
+                                    class="btn btn-sm btn-light flex-fill"
+                                    title="Download">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+
+                                    <button type="button"
+                                        class="btn btn-sm btn-light flex-fill"
+                                        onclick="copyUrl('{{ $item->url }}')"
+                                        title="Copy URL">
+                                        <i class="bi bi-link"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg">
-                                        <li>
-                                            <a class="dropdown-item" 
-                                            href="{{ route('admin.media.download', $item->id) }}">
-                                                <i class="bi bi-download me-2"></i> Download
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" 
-                                               href="#" 
-                                               onclick="copyUrl('{{ $item->url }}')">
-                                                <i class="bi bi-link me-2"></i> Copy URL
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" 
-                                               href="{{ $item->url }}" 
-                                               target="_blank">
-                                                <i class="bi bi-eye me-2"></i> Preview
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" 
-                                               href="#" 
-                                               onclick="deleteMedia({{ $item->id ?? 0 }}, '{{ $item->name ?? '' }}')">
-                                                <i class="bi bi-trash me-2"></i> Hapus
-                                            </a>
-                                        </li>
-                                    </ul>
+
+                                    <a href="{{ $item->url }}"
+                                    target="_blank"
+                                    class="btn btn-sm btn-light flex-fill"
+                                    title="Preview">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    <button type="button"
+                                        class="btn btn-sm btn-danger flex-fill"
+                                        onclick="deleteMedia({{ $item->id }}, '{{ $item->name }}')"
+                                        title="Hapus">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
                                 </div>
-                            </div>
+                            @endif
+
+                        </div>
+
                         </div>
                     </div>
                 </div>
@@ -334,6 +334,25 @@
     height: 180px;
     overflow: hidden;   /* tetap untuk crop gambar */
 }
+
+.media-item.selected .media-thumb img {
+    filter: brightness(0.7);
+}
+
+.media-item.selected .media-thumb::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    background: rgba(13,110,253,.35);
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
 /* Preview image styles */
 .preview-image {
     position: relative;
@@ -445,6 +464,7 @@
 
 @push('scripts')
 <script>
+    window.MEDIA_MODE = "{{ $mode ?? 'manager' }}";
 // Toast notification system
 function showToast(type, message, title = '') {
     const toastId = 'toast-' + Date.now();
@@ -1103,6 +1123,21 @@ $(document).on('click', '.btn-select-media', function() {
     window.dispatchEvent(event);
     
     showToast('success', `"${mediaName}" telah dipilih`, 'Media Dipilih');
+});
+
+document.querySelectorAll('.media-item').forEach(item => {
+    item.addEventListener('click', function (e) {
+
+        // Jangan trigger kalau klik tombol
+        if (e.target.closest('button,a')) return;
+
+        // mode picker?
+        if (window.MEDIA_MODE !== 'picker') return;
+
+        document.querySelectorAll('.media-item').forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+
+    });
 });
 
 // Initialize when page loads
