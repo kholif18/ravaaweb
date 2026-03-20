@@ -35,7 +35,7 @@ h1, h2, h3, h4 {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -339,6 +339,75 @@ header {
 .mobile-contact p {
     color: var(--gray);
     margin-bottom: 15px;
+}
+
+/* ========== HERO BANNER (produk unggulan) ========== */
+.hero-showcase {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    padding: 50px 0 40px;
+}
+
+.hero-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 40px;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-text .badge {
+    background: var(--secondary);
+    color: #ffffff;
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+.hero-text h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+.hero-text p {
+    font-size: 1.05rem;
+    color: #ffffff;
+    margin-bottom: 32px;
+    max-width: 90%;
+}
+.btn-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.hero-banner-card {
+    flex: 1;
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.hero-banner-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+.hero-offer {
+    padding: 20px;
+    background: #fff3e8;
+    text-align: center;
+}
+.hero-offer strong {
+    font-size: 1.2rem;
+    color: var(--primary);
 }
 
 /* Banner */
@@ -3876,6 +3945,57 @@ footer {
 
 /* Tablet */
 @media (max-width: 768px) {
+     .hero-showcase {
+        padding: 40px 0 30px;
+    }
+
+    .hero-grid {
+        flex-direction: column;
+        gap: 25px;
+        text-align: center;
+    }
+
+    .hero-text {
+        order: 2;
+    }
+
+    .hero-banner-card {
+        order: 1;
+        border-radius: 20px;
+    }
+
+    .hero-text h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-text p {
+        font-size: 0.95rem;
+        max-width: 100%;
+    }
+
+    .btn-group {
+        justify-content: center;
+    }
+
+    .btn-group .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-offer {
+        font-size: 0.9rem;
+        padding: 15px;
+    }
+
+    .hero-offer strong {
+        font-size: 1rem;
+    }
+
+    .hero-banner-card img {
+        height: 220px;
+        object-fit: cover;
+    }
+
     .header-container {
         padding: 15px 0;
     }

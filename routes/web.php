@@ -224,6 +224,7 @@ Route::prefix('admin')
             Route::get('/stats/summary', [MediaController::class, 'getStats'])->name('stats.summary');
             Route::get('/download/{media}', [MediaController::class, 'download'])->name('download');
             Route::post('/regenerate-thumbnails', [MediaController::class, 'regenerateThumbnails'])->name('regenerate.thumbnails');
+             Route::get('/get-batch', [MediaController::class, 'getBatch'])->name('get-batch');
         });
 
         // Products tetap ada

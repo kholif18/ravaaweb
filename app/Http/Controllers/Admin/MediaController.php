@@ -71,69 +71,89 @@ class MediaController extends Controller
 
     public function picker(Request $request)
     {
-        try {
-            $query = Media::query()->latest();
+        $search = $request->get('search');
+        $page = $request->get('page', 1);
 
-            if ($request->search) {
-                $query->where('name', 'like', "%{$request->search}%");
-            }
+        $media = Media::query()
+            ->when($search, function ($q) use ($search) {
+                return $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('original_name', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(20);
 
-            if ($request->type && $request->type !== 'all') {
-                if ($request->type === 'image') {
-                    $query->whereIn('extension', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']);
-                }
-            }
+        $media->each(function ($item) {
+            $item->url = asset('storage/media/' . $item->filename);
+            $item->thumbnail_url = $item->thumbnail_path 
+                ? asset('storage/' . $item->thumbnail_path)
+                : $item->url;
+            $item->formatted_size = $this->formatBytes($item->size);
+        });
 
-            $media = $query->paginate(24);
-
-            // Transform data
-            $media->each(function ($m) {
-                $m->url = asset('storage/media/'.$m->filename);
-                $m->thumbnail_url = $m->thumbnail_path
-                    ? asset('storage/'.$m->thumbnail_path)
-                    : $m->url;
-
-                $m->formatted_size = $this->formatBytes($m->size);
-            });
-
-            // Jika request ajax (untuk modal dan pagination)
-            if ($request->ajax()) {
-                // Return HTML untuk dimasukkan ke modal
-                return response()->make(view('admin.media.picker-content', compact('media'))->render());
-            }
-
-            // Jika request embedded (dalam modal full page)
-            if ($request->embedded === 'true') {
-                return view('admin.media.picker', [
-                    'media' => $media,
-                    'mode' => 'picker'
-                ]);
-            }
-
-            // Normal page - redirect ke media index
-            return redirect()->route('admin.media.index');
-
-        } catch (\Exception $e) {
-            Log::error('Media picker error: ' . $e->getMessage());
-            
-            // Jika ajax request, return error
-            if ($request->ajax()) {
-                return response()->json([
-                    'error' => 'Failed to load media',
-                    'message' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-                ], 500);
-            }
-            
-            // Jika embedded, show error page
-            if ($request->embedded === 'true') {
-                return view('admin.media.picker-error', [
-                    'message' => 'Failed to load media library'
-                ]);
-            }
-            
-            abort(500, 'Failed to load media library');
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.media.partials.media-grid', compact('media'))->render(),
+                'currentPage' => $media->currentPage(),
+                'totalPages' => $media->lastPage(),
+            ]);
         }
+
+        return view('admin.media.picker', compact('media'));
     }
+
+    // public function picker(Request $request)
+    // {
+    //     $search = $request->get('search');
+    //     $page = $request->get('page', 1);
+    //     $perPage = 20;
+        
+    //     $query = Media::query();
+        
+    //     if ($search) {
+    //         $query->where('name', 'like', "%{$search}%")
+    //             ->orWhere('original_name', 'like', "%{$search}%");
+    //     }
+        
+    //     $media = $query->orderBy('created_at', 'desc')
+    //                 ->paginate($perPage, ['*'], 'page', $page);
+        
+    //     // Transform data
+    //     $media->each(function ($item) {
+    //         $item->url = asset('storage/media/'.$item->filename);
+    //         $item->thumbnail_url = $item->thumbnail_path
+    //             ? asset('storage/'.$item->thumbnail_path)
+    //             : $item->url;
+            
+    //         $item->formatted_size = $this->formatBytes($item->size);
+    //     });
+        
+    //     if ($request->ajax()) {
+    //         // Return JSON dengan data untuk modal
+    //         return response()->json([
+    //             'success' => true,
+    //             'html' => view('admin.media.partials.media-grid', compact('media'))->render(),
+    //             'totalPages' => $media->lastPage(),
+    //             'currentPage' => $media->currentPage(),
+    //             'total' => $media->total()
+    //         ]);
+    //     }
+        
+    //     return view('admin.media.picker', [
+    //         'media' => $media,
+    //         'mode' => 'picker'
+    //     ]);
+    // }
+
+    public function getBatch(Request $request)
+    {
+        $ids = explode(',', $request->get('ids', ''));
+        
+        $media = Media::whereIn('id', $ids)
+                    ->get(['id', 'name', 'path', 'thumbnail_path as thumbnail']);
+        
+        return response()->json($media);
+    }
+
     /* =========================
        SHOW
     ========================= */

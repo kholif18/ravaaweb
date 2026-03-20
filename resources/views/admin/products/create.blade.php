@@ -626,13 +626,13 @@
     </div>
 </div>
 
-<!-- Modal Media Picker -->
+<!-- Modal Media Picker - SIMPLIFIED VERSION -->
 <div class="modal fade" id="mediaPickerModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content border-0">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
             <!-- Modal Header -->
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">
                     <i class="bi bi-images me-2"></i>
                     Pilih Media
                     <span id="pickerTargetBadge" class="badge bg-primary ms-2">Gambar Utama</span>
@@ -642,82 +642,87 @@
             
             <!-- Modal Body -->
             <div class="modal-body p-0">
-                <!-- Bulk selection info -->
-                <div id="bulkSelectionInfo" class="bulk-selection-info" style="display: none;">
-                    <div>
-                        <strong id="selectedCount">0</strong> media dipilih
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" onclick="clearSelection()">
-                            <i class="bi bi-x-circle me-1"></i> Batal
-                        </button>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="insertSelectedMedia()">
-                            <i class="bi bi-check-circle me-1"></i> Pilih Media
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Tabs -->
-                <ul class="nav nav-tabs nav-tabs-wordpress px-3 pt-2 mb-0" id="mediaPickerTabs" role="tablist">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs nav-tabs-line" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="media-library-tab" data-bs-toggle="tab" 
-                                data-bs-target="#media-library" type="button" role="tab">
-                            <i class="bi bi-grid me-1"></i> Media Library
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#media-library-tab">
+                            <i class="bi bi-grid-3x3-gap me-2"></i> Media Library
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="upload-tab" data-bs-toggle="tab" 
-                                data-bs-target="#upload" type="button" role="tab">
-                            <i class="bi bi-cloud-upload me-1"></i> Upload Files
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#upload-tab">
+                            <i class="bi bi-cloud-upload me-2"></i> Upload
                         </button>
                     </li>
                 </ul>
                 
                 <!-- Tab Content -->
-                <div class="tab-content p-3" id="mediaPickerTabContent">
+                <div class="tab-content p-3">
                     <!-- Tab 1: Media Library -->
-                    <div class="tab-pane fade show active" id="media-library" role="tabpanel">
-                        <div id="mediaLibraryContent">
-                            <div class="text-center py-5">
+                    <div class="tab-pane fade show active" id="media-library-tab">
+                        <!-- Search Bar -->
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" 
+                                   id="mediaSearch" 
+                                   placeholder="Cari media...">
+                            <button class="btn btn-outline-secondary" type="button" 
+                                    onclick="searchMediaLibrary()">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Media Grid - Gunakan class yang sama dengan picker -->
+                        <div class="row g-3" id="mediaLibraryGrid">
+                            <!-- Loading state -->
+                            <div class="col-12 text-center py-5">
                                 <div class="spinner-border text-primary" role="status"></div>
-                                <p class="mt-3 text-muted">Memuat media...</p>
+                                <p class="mt-3 text-muted">Memuat media library...</p>
                             </div>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <nav aria-label="Media pagination" id="mediaPagination" class="d-flex justify-content-center mt-3">
+                            <!-- Pagination akan diisi via JS -->
+                        </nav>
                     </div>
                     
                     <!-- Tab 2: Upload -->
-                    <div class="tab-pane fade" id="upload" role="tabpanel">
-                        <div class="upload-tab-content">
-                            <div class="upload-dropzone" id="uploadDropzone">
-                                <i class="bi bi-cloud-arrow-up" style="font-size: 48px; color: #6c757d; margin-bottom: 16px;"></i>
-                                <h4>Drop files to upload</h4>
-                                <p class="text-muted mb-4">or</p>
-                                <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                                    <i class="bi bi-folder2-open me-2"></i> Select Files
-                                </button>
-                                <p class="text-muted mt-3 mb-1">Maximum upload file size: 5MB</p>
-                                <p class="text-muted">Allowed: JPG, JPEG, PNG, GIF, WebP, SVG</p>
+                    <div class="tab-pane fade" id="upload-tab">
+                        <div class="text-center p-5 border rounded">
+                            <i class="bi bi-cloud-arrow-up text-muted display-5 d-block mb-3"></i>
+                            <h5 class="mb-3">Upload File Baru</h5>
+                            <p class="text-muted mb-4">
+                                Seret file ke sini atau klik untuk memilih
+                            </p>
+                            <input type="file" id="fileUpload" class="d-none" 
+                                   multiple accept="image/*" onchange="handleFileSelection(this.files)">
+                            <button type="button" class="btn btn-primary" 
+                                    onclick="document.getElementById('fileUpload').click()">
+                                <i class="bi bi-folder2-open me-2"></i> Pilih File
+                            </button>
+                            <div class="mt-3 text-muted small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Ukuran maks: 5MB • Format: JPG, PNG, GIF, WebP, SVG
                             </div>
-                            
-                            <input type="file" id="fileInput" class="d-none" multiple accept="image/*">
-                            
-                            <!-- Upload Progress -->
-                            <div id="uploadProgressContainer" class="mt-4" style="display: none;">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Uploading...</span>
-                                    <span class="text-muted" id="uploadProgressText">0%</span>
-                                </div>
-                                <div class="progress" style="height: 8px;">
-                                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
-                                         style="width: 0%"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Upload Queue -->
-                            <div id="uploadQueue" class="mt-4"></div>
                         </div>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <div id="selectionInfo" class="me-auto" style="display: none;">
+                    <span class="text-muted">
+                        <span id="selectedCount">0</span> gambar dipilih
+                    </span>
+                </div>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <button type="button" class="btn btn-primary" id="insertMediaBtn" 
+                        onclick="insertSelectedMedia()" disabled>
+                    <i class="bi bi-check-circle me-1"></i> Pilih
+                </button>
             </div>
         </div>
     </div>
@@ -726,371 +731,89 @@
 
 @push('styles')
 <style>
-    .form-check-input:checked {
-        background-color: #009ef7;
-        border-color: #009ef7;
-    }
-    .card-bordered {
-        border: 1px solid #e4e6ef;
-    }
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e4e6ef;
-    }
+/* ========== STYLING UNTUK FORM PRODUK ========== */
+/* Gallery Preview */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
 
+.gallery-item {
+    position: relative;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1/1;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.gallery-item .remove-gallery-item {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 2;
+}
+
+.gallery-item:hover .remove-gallery-item {
+    opacity: 1;
+}
+
+/* Main Image Preview */
+.image-preview {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Toolbar (jika ada) */
+.toolbar {
+    background-color: #f8f9fa;
+}
+
+/* Responsive untuk form */
+@media (max-width: 768px) {
     .image-preview {
-        width: 160px;
-        height: 160px;
-        border: 2px dashed #ccc;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        background: #f8f9fa;
+        width: 150px;
+        height: 150px;
     }
-
-    .image-preview img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
+    
     .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
-        margin-bottom: 15px;
     }
-
-    .gallery-item {
-        position: relative;
-        border-radius: 6px;
-        overflow: hidden;
-        border: 1px solid #ddd;
-    }
-
-    .gallery-item img {
-        width: 100%;
-        height: 120px;
-        object-fit: cover;
-    }
-
-    .gallery-item button {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        width: 24px;
-        height: 24px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-    }
-
-    .tox-tinymce {
-        border-radius: 6px !important;
-        border: 1px solid #e4e6ef !important;
-    }
-
-    .required:after {
-        content: " *";
-        color: #f1416c;
-    }
-    
-    /* Gallery Grid */
-    .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 12px;
-        margin-bottom: 16px;
-    }
-
-    .gallery-item {
-        position: relative;
-        border: 1px solid #e4e6ef;
-        border-radius: 8px;
-        overflow: hidden;
-        aspect-ratio: 1/1;
-    }
-
-    .gallery-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s;
-    }
-
-    .gallery-item:hover img {
-        transform: scale(1.05);
-    }
-
-    .gallery-item .btn {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        width: 28px;
-        height: 28px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .gallery-item:hover .btn {
-        opacity: 1;
-    }
-
-    /* Main Image Preview */
-    .image-preview {
-        width: 200px;
-        height: 200px;
-        border: 2px dashed #e4e6ef;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        background-color: #f8f9fa;
-    }
-
-    .image-preview img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-
-    .image-preview .text-muted {
-        color: #a1a5b7;
-    }
-
-    /* Style untuk modal media picker */
-    #mediaPickerModal .modal-dialog {
-        max-width: 1200px;
-    }
-
-    #mediaPickerModal .modal-body {
-        min-height: 600px;
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-
-    /* Bulk selection info */
-    .bulk-selection-info {
-        background: #e7f1ff;
-        border: 1px solid #b6d4fe;
-        border-radius: 6px;
-        padding: 12px 16px;
-        margin: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    /* Selected state */
-    .media-item.selected .card {
-        border-color: #198754;
-        box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.2);
-    }
-
-    .media-item.selected .card::after {
-        content: "✓";
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 24px;
-        height: 24px;
-        background: #198754;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        z-index: 10;
-    }
-
-      .gallery-item.loading .placeholder {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-    }
-
-    @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
-
-    /* Selected state untuk media picker */
-    .media-item.selected {
-        position: relative;
-    }
-
-    .media-item.selected::after {
-        content: "✓";
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 24px;
-        height: 24px;
-        background: #198754;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        z-index: 2;
-    }
-
-        /* Style untuk modal picker */
-    .modal-content {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-    
-    .modal-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-    }
-    
-    .nav-tabs-wordpress {
-        border-bottom: 2px solid #dee2e6;
-    }
-    
-    .nav-tabs-wordpress .nav-link {
-        border: none;
-        border-radius: 0;
-        color: #495057;
-        padding: 12px 20px;
-        font-weight: 500;
-    }
-    
-    .nav-tabs-wordpress .nav-link.active {
-        color: #0d6efd;
-        border-bottom: 2px solid #0d6efd;
-        background: transparent;
-    }
-    
-    .nav-tabs-wordpress .nav-link:hover {
-        border-color: transparent;
-    }
-    
-    /* Media grid dalam modal */
-    .media-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 15px;
-        max-height: 500px;
-        overflow-y: auto;
-        padding: 5px;
-    }
-    
-    .media-item {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .media-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    .media-item.selected .card {
-        border-color: #198754;
-        box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.2);
-    }
-    
-    .fixed-thumbnail {
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-    
-    /* Pagination dalam modal */
-    .pagination {
-        margin-bottom: 0;
-    }
-    
-    .page-link {
-        border: none;
-        color: #495057;
-    }
-    
-    .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-    
-    /* Upload area */
-    .upload-dropzone {
-        border: 2px dashed #dee2e6;
-        border-radius: 8px;
-        padding: 60px 20px;
-        text-align: center;
-        background: #f8f9fa;
-        transition: all 0.3s;
-        cursor: pointer;
-    }
-    
-    .upload-dropzone:hover {
-        border-color: #0d6efd;
-        background: #e7f1ff;
-    }
-    
-    .upload-dropzone i {
-        font-size: 48px;
-        color: #6c757d;
-        margin-bottom: 16px;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .media-grid {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        }
-        
-        .fixed-thumbnail {
-            height: 120px;
-        }
-    }
-
-    /* Style untuk bulk selection info */
-    .bulk-selection-info {
-        background: #e7f1ff;
-        border: 1px solid #b6d4fe;
-        border-radius: 6px;
-        padding: 12px 16px;
-        margin: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        animation: fadeIn 0.3s;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    /* Gallery preview style */
-    #galleryImages .card {
-        transition: transform 0.2s;
-    }
-
-    #galleryImages .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    /* Button styles */
-    #selectMainImageBtn .btn {
-        min-width: 200px;
-        padding: 10px 20px;
-    }
+}
 </style>
 @endpush
 
@@ -1098,462 +821,567 @@
 <!-- TinyMCE -->
 {{-- <script src="https://cdn.tiny.cloud/1/YOUR_API_KEY/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script> --}}
 <script>
-    function loadPage(page) {
-        const search = document.getElementById('searchInput')?.value || '';
-        let url = `{{ route('admin.media.picker') }}?page=${page}&ajax=true&embedded=true`;
-        
-        if (search) {
-            url += `&search=${encodeURIComponent(search)}`;
+    // ========== MEDIA PICKER FUNCTIONS ==========
+    let selectedMediaItems = [];
+    let currentPickerTarget = 'main';
+    let currentPage = 1;
+    let totalPages = 1;
+    let searchQuery = '';
+
+    function openMediaPicker(target) {
+        currentPickerTarget = target;
+        selectedMediaItems = [];
+
+        // Update UI
+        const badge = document.getElementById('pickerTargetBadge');
+        const modalTitle = document.getElementById('modalTitle');
+        const insertBtn = document.getElementById('insertMediaBtn');
+        const selectionInfo = document.getElementById('selectionInfo');
+
+        if (badge && modalTitle && insertBtn) {
+            if (target === 'main') {
+                badge.textContent = 'Gambar Utama';
+                badge.className = 'badge bg-primary ms-2';
+                modalTitle.textContent = 'Pilih Gambar Utama';
+                insertBtn.textContent = 'Pilih Gambar';
+                if (selectionInfo) selectionInfo.style.display = 'none';
+            } else {
+                badge.textContent = 'Gallery';
+                badge.className = 'badge bg-success ms-2';
+                modalTitle.textContent = 'Pilih Gambar Gallery';
+                insertBtn.textContent = 'Tambah ke Gallery';
+                if (selectionInfo) selectionInfo.style.display = 'block';
+            }
         }
-        
-        // Show loading
-        const content = document.getElementById('mediaLibraryContent');
-        if (content) {
-            content.innerHTML = `
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3 text-muted">Memuat media...</p>
-                </div>
-            `;
-            
-            // Load page via AJAX
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    content.innerHTML = html;
-                    initializeMediaPickerEvents();
-                })
-                .catch(error => {
-                    console.error('Error loading page:', error);
-                    content.innerHTML = `
-                        <div class="alert alert-danger">
-                            Gagal memuat halaman
-                        </div>
-                    `;
-                });
+
+        // Show modal
+        const modalElement = document.getElementById('mediaPickerModal');
+        if (!modalElement) {
+            console.error('Modal element not found!');
+            return;
         }
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modal.show();
+
+        // Load media library when modal is shown
+        loadMediaLibrary(1);
     }
 
-    function refreshMediaList() {
-        const search = document.getElementById('searchInput')?.value || '';
-        let url = `{{ route('admin.media.picker') }}?ajax=true&embedded=true`;
-        
-        if (search) {
-            url += `&search=${encodeURIComponent(search)}`;
+    // Load media library via AJAX
+    function loadMediaLibrary(page = 1) {
+        currentPage = page;
+
+        const grid = document.getElementById('mediaLibraryGrid');
+        if (!grid) {
+            console.error('Media library grid not found!');
+            return;
         }
-        
-        // Show loading
-        const content = document.getElementById('mediaLibraryContent');
-        if (content) {
-            content.innerHTML = `
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-3 text-muted">Memuat media...</p>
+
+        // Loading state
+        grid.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Memuat media library...</p>
+            </div>
+        `;
+
+        fetch(`/admin/media/picker?page=${page}&search=${encodeURIComponent(searchQuery)}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Media data received:', data);
+            
+            // Update grid dengan HTML dari server
+            grid.innerHTML = data.html;
+            
+            // Setup click events untuk semua media items
+            setupMediaClickEvents();
+            
+            // Update pagination
+            currentPage = data.currentPage || 1;
+            totalPages = data.totalPages || 1;
+            
+            // Update pagination controls
+            updatePaginationControls();
+            
+        })
+        .catch(error => {
+            console.error('Error loading media:', error);
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 48px;"></i>
+                    <p class="mt-3 text-danger">Gagal memuat media library</p>
                 </div>
             `;
-            
-            // Load via AJAX
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    content.innerHTML = html;
-                    initializeMediaPickerEvents();
-                })
-                .catch(error => {
-                    console.error('Error refreshing media:', error);
-                    content.innerHTML = `
-                        <div class="alert alert-danger">
-                            Gagal memuat media
-                        </div>
-                    `;
-                });
-        }
+        });
     }
 
-    function searchMedia() {
-        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    // Update pagination controls
+    function updatePaginationControls() {
+        const paginationContainer = document.querySelector('.pagination');
+        if (!paginationContainer || totalPages <= 1) return;
+        
+        const paginationLinks = paginationContainer.querySelectorAll('a.page-link');
+        
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const href = this.getAttribute('href');
+                if (!href) return;
+                
+                // Extract page number from URL
+                const match = href.match(/page=(\d+)/);
+                if (match) {
+                    const page = parseInt(match[1]);
+                    loadMediaLibrary(page);
+                    
+                    // Scroll to top of grid
+                    const grid = document.getElementById('mediaLibraryGrid');
+                    if (grid) {
+                        grid.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    }
+
+    // Update pagination links untuk handle AJAX
+    function updatePaginationLinks() {
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const href = this.getAttribute('href');
+                if (!href) return;
+                
+                // Extract page number from URL
+                const match = href.match(/page=(\d+)/);
+                if (match) {
+                    const page = parseInt(match[1]);
+                    loadMediaLibrary(page);
+                }
+            });
+        });
+    }
+
+    // Setup click events untuk media items
+    function setupMediaClickEvents() {
         const mediaItems = document.querySelectorAll('.media-item');
         
         mediaItems.forEach(item => {
-            const searchData = item.dataset.search || '';
-            if (searchTerm === '' || searchData.includes(searchTerm)) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
+            // Setup single click untuk pilih
+            item.addEventListener('click', function(e) {
+                // Skip jika klik pada child tertentu
+                if (e.target.tagName === 'BUTTON' || 
+                    e.target.closest('.btn-select-media')) {
+                    return;
+                }
+                
+                toggleMediaSelection(this);
+            });
         });
     }
 
-    function selectAllMedia() {
-        const btn = document.getElementById('selectAllBtn');
-        if (!btn) return;
+    // Render media cards
+    function renderMediaCards(mediaItems) {
+        const grid = document.getElementById('mediaLibraryGrid');
+        if (!grid) return;
         
-        const mediaItems = document.querySelectorAll('.media-item:not([style*="display: none"])');
-        const allSelected = Array.from(mediaItems).every(item => 
-            item.classList.contains('selected')
-        );
+        console.log('Rendering media cards:', mediaItems); // Debug log
         
-        if (allSelected) {
-            // Deselect all
-            mediaItems.forEach(item => {
-                item.classList.remove('selected');
-            });
-            btn.innerHTML = '<i class="bi bi-check-square me-1"></i> Pilih Semua';
-        } else {
-            // Select all visible
-            mediaItems.forEach(item => {
-                item.classList.add('selected');
-            });
-            btn.innerHTML = '<i class="bi bi-square me-1"></i> Batal Semua';
-        }
+        let html = '';
         
-        // Update selection count
-        updateSelectionCount();
+        mediaItems.forEach(item => {
+            const isSelected = selectedMediaItems.some(sel => sel.id === item.id);
+            
+            html += `
+                <div class="col-xxl-2 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6">
+                    <div class="media-card-item ${isSelected ? 'selected' : ''}"
+                        data-id="${item.id}"
+                        data-url="${item.url}"
+                        data-thumbnail="${item.thumbnail_url || item.url}"
+                        data-name="${item.name}">
+                        
+                        <div class="media-card-img position-relative">
+                            <img src="${item.thumbnail_url || item.url}" 
+                                alt="${item.name}"
+                                class="img-fluid"
+                                loading="lazy">
+                            
+                            ${isSelected ? '<div class="media-check-badge"><i class="bi bi-check"></i></div>' : ''}
+                            
+                            <div class="media-card-overlay">
+                                <button type="button" class="btn btn-primary btn-select-media"
+                                        data-media-id="${item.id}">
+                                    <i class="bi bi-check-lg me-1"></i> Pilih
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="media-card-body">
+                            <h6 class="media-card-title" title="${item.name}">
+                                ${item.name.length > 20 ? item.name.substring(0, 20) + '...' : item.name}
+                            </h6>
+                            <p class="media-card-meta">
+                                ${item.extension ? item.extension.toUpperCase() : ''} 
+                                ${item.formatted_size ? '• ' + item.formatted_size : ''}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        grid.innerHTML = html;
+        setupMediaCardEvents();
     }
 
-    function updateSelectionCount() {
-        const selectedCount = document.querySelectorAll('.media-item.selected').length;
-        const bulkInfo = document.getElementById('bulkSelectionInfo');
-        const countElement = document.getElementById('selectedCount');
+    // Function untuk tampilan kosong
+    function renderNoMediaFound() {
+        const grid = document.getElementById('mediaLibraryGrid');
+        if (!grid) return;
         
-        if (countElement) {
-            countElement.textContent = selectedCount;
-        }
-        
-        if (bulkInfo) {
-            if (selectedCount > 0) {
-                bulkInfo.style.display = 'flex';
-            } else {
-                bulkInfo.style.display = 'none';
-            }
-        }
+        grid.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-image text-muted" style="font-size: 48px;"></i>
+                <h5 class="text-muted mt-3">Tidak ada media ditemukan</h5>
+                <p class="text-muted">
+                    ${searchQuery ? `Tidak ada hasil untuk "${searchQuery}"` : 'Upload file baru menggunakan tab upload'}
+                </p>
+            </div>
+        `;
     }
 
-    let selectedMediaItems = [];
-    let currentPickerTarget = 'main';
-
-    // Function untuk membuka media picker
-    function openMediaPicker(target) {
-        currentPickerTarget = target;
+    // Function untuk error state
+    function renderErrorState(errorMessage) {
+        const grid = document.getElementById('mediaLibraryGrid');
+        if (!grid) return;
         
-        // Update UI
-        const badge = document.getElementById('pickerTargetBadge');
-        const bulkInfo = document.getElementById('bulkSelectionInfo');
-        
-        if (target === 'main') {
-            badge.textContent = 'Gambar Utama (Klik untuk Pilih)';
-            badge.className = 'badge bg-primary ms-2';
-            if (bulkInfo) {
-                bulkInfo.style.display = 'none';
-            }
-        } else if (target === 'gallery') {
-            badge.textContent = 'Gallery Produk (Pilih Banyak)';
-            badge.className = 'badge bg-success ms-2';
-            if (bulkInfo) {
-                bulkInfo.style.display = 'flex';
-            }
-        }
-        
-        // Clear selection sebelumnya
-        selectedMediaItems = [];
-        updateSelectionUI();
-        
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('mediaPickerModal'));
-        modal.show();
-        
-        // Reset ke tab media library setiap kali modal dibuka
-        setTimeout(() => {
-            const mediaTab = document.getElementById('media-library-tab');
-            if (mediaTab) {
-                // Active tab media library
-                mediaTab.classList.add('active');
-                mediaTab.setAttribute('aria-selected', 'true');
-                
-                // Remove active dari tab upload
-                const uploadTab = document.getElementById('upload-tab');
-                if (uploadTab) {
-                    uploadTab.classList.remove('active');
-                    uploadTab.setAttribute('aria-selected', 'false');
-                }
-                
-                // Show media library content, hide upload content
-                const mediaContent = document.getElementById('media-library');
-                if (mediaContent) {
-                    mediaContent.classList.add('show', 'active');
-                }
-                
-                const uploadContent = document.getElementById('upload');
-                if (uploadContent) {
-                    uploadContent.classList.remove('show', 'active');
-                }
-                
-                // Load media library
-                loadMediaLibrary();
-            }
-        }, 100);
+        grid.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Gagal memuat media: ${errorMessage}
+                </div>
+            </div>
+        `;
     }
 
-    // Function untuk handle select button click
-    function handleSelectButtonClick(button) {
-        const mediaId = parseInt(button.dataset.mediaId);
-        const mediaUrl = button.dataset.mediaUrl;
-        const mediaThumbnail = button.dataset.mediaThumbnail || mediaUrl;
-        const mediaName = button.dataset.mediaName;
-        
-        if (currentPickerTarget === 'main') {
-            // Untuk main image, langsung insert dan close modal
-            const mediaData = {
-                id: mediaId,
+// Setup event listeners untuk media cards
+function setupMediaCardEvents() {
+    console.log('Setting up media card events...');
+    
+    // Karena server mengembalikan HTML dengan class yang berbeda,
+    // kita perlu menyesuaikan selector
+    
+    // CARA 1: Coba selector untuk HTML dari server
+    document.querySelectorAll('.media-card-item, .media-item, .media-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Skip if clicking on button inside
+            if (e.target.closest('.btn-select-media, .btn-select')) return;
+            
+            // Cari data-id dari berbagai kemungkinan atribut
+            const mediaId = this.dataset.id || this.getAttribute('data-id');
+            const mediaUrl = this.dataset.url || this.getAttribute('data-url');
+            const mediaThumbnail = this.dataset.thumbnail || this.getAttribute('data-thumbnail') || mediaUrl;
+            const mediaName = this.dataset.name || this.getAttribute('data-name') || '';
+            
+            if (!mediaId) {
+                console.warn('No media ID found on element:', this);
+                return;
+            }
+            
+            toggleMediaSelection({
+                id: parseInt(mediaId),
                 url: mediaUrl,
                 thumbnail: mediaThumbnail,
                 name: mediaName
-            };
-            
-            insertMainImageToForm(mediaData);
-            
-            // Close modal
-            const modalElement = document.getElementById('mediaPickerModal');
-            if (modalElement) {
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                if (modal) {
-                    modal.hide();
-                }
-            }
-            
-        } else if (currentPickerTarget === 'gallery') {
-            // Untuk gallery, toggle selection
-            const mediaCard = button.closest('.media-item');
-            if (mediaCard) {
-                toggleMediaSelection(mediaCard);
-            }
-        }
-    }
-
-    // Function untuk insert main image langsung ke form
-    function insertMainImageToForm(media) {
-        console.log('Inserting main image:', media);
-        
-        // Update preview
-        const previewDiv = document.getElementById('mainImagePreview');
-        if (previewDiv) {
-            previewDiv.innerHTML = `
-                <img src="${media.url}" alt="${media.name}" class="img-fluid" style="max-height: 200px; object-fit: contain;">
-            `;
-        }
-        
-        // Update hidden input
-        const mainImageInput = document.getElementById('main_image_id');
-        if (mainImageInput) {
-            mainImageInput.value = media.id;
-        }
-        
-        // Show remove button
-        const removeBtn = document.getElementById('removeMainImage');
-        if (removeBtn) {
-            removeBtn.style.display = 'block';
-        }
-    }
+            }, this);
+        });
+    });
     
-    // Load media library via AJAX
-    function loadMediaLibrary() {
-        fetch(`{{ route('admin.media.picker') }}?ajax=true&embedded=true`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('mediaLibraryContent').innerHTML = html;
-                initializeMediaPickerEvents();
-            })
-            .catch(error => {
-                console.error('Error loading media:', error);
-                document.getElementById('mediaLibraryContent').innerHTML = `
-                    <div class="alert alert-danger">
-                        Gagal memuat media library
-                    </div>
-                `;
-            });
-    }
-
-    // Initialize events setelah load media
-    function initializeMediaPickerEvents() {
-        // Handle select button click
-        document.querySelectorAll('.btn-select-media').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                handleSelectButtonClick(this);
-            });
-        });
-        
-        // Handle media item click
-        document.getElementById('mediaLibraryContent')?.addEventListener('click', function(e) {
-            const mediaCard = e.target.closest('.media-item');
-            if (!mediaCard) return;
+    // CARA 2: Handle semua select buttons
+    document.querySelectorAll('.btn-select-media, .btn-select, [data-media-id]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
             
-            // Skip jika klik tombol langsung
-            if (e.target.closest('.btn-select-media')) return;
+            // Cari card parent
+            const mediaCard = this.closest('.media-card-item, .media-item, .media-card, [data-id]');
+            if (!mediaCard) {
+                console.warn('No media card found for button:', this);
+                return;
+            }
             
-            toggleMediaSelection(mediaCard);
-        });
-        
-        // Setup search input
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    refreshMediaList();
-                } else {
-                    searchMedia();
-                }
-            });
-        }
-        
-        // Setup select all button
-        const selectAllBtn = document.getElementById('selectAllBtn');
-        if (selectAllBtn) {
-            selectAllBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                selectAllMedia();
-            });
-        }
-        
-        // Setup upload (jika ada)
-        setupUpload();
-    }
-    // Function untuk toggle selection
-    function toggleMediaSelection(mediaCard) {
-        const mediaId = parseInt(mediaCard.dataset.id);
-        const mediaUrl = mediaCard.dataset.url;
-        const mediaThumbnail = mediaCard.dataset.thumbnail || mediaUrl;
-        const mediaName = mediaCard.dataset.name;
-        const isSelected = mediaCard.classList.contains('selected');
-        
-        if (currentPickerTarget === 'gallery') {
-            // Multiple selection mode (untuk gallery)
-            if (isSelected) {
-                // Remove from selection
-                mediaCard.classList.remove('selected');
-                selectedMediaItems = selectedMediaItems.filter(item => item.id !== mediaId);
-            } else {
-                // Add to selection
-                mediaCard.classList.add('selected');
-                selectedMediaItems.push({
-                    id: mediaId,
+            // Ambil data dari berbagai sumber
+            const mediaId = mediaCard.dataset.id || mediaCard.getAttribute('data-id') || 
+                           this.dataset.mediaId || this.getAttribute('data-media-id');
+            const mediaUrl = mediaCard.dataset.url || mediaCard.getAttribute('data-url');
+            const mediaThumbnail = mediaCard.dataset.thumbnail || mediaCard.getAttribute('data-thumbnail') || mediaUrl;
+            const mediaName = mediaCard.dataset.name || mediaCard.getAttribute('data-name') || '';
+            
+            if (!mediaId) {
+                console.warn('No media ID found for button:', this);
+                return;
+            }
+            
+            if (currentPickerTarget === 'main') {
+                // Single selection for main image
+                selectSingleMedia({
+                    id: parseInt(mediaId),
                     url: mediaUrl,
                     thumbnail: mediaThumbnail,
                     name: mediaName
                 });
+            } else {
+                // Toggle selection for gallery
+                toggleMediaSelection({
+                    id: parseInt(mediaId),
+                    url: mediaUrl,
+                    thumbnail: mediaThumbnail,
+                    name: mediaName
+                }, mediaCard);
             }
-            updateSelectionUI();
+        });
+    });
+    
+    console.log(`Found ${document.querySelectorAll('.media-card-item, .media-item, .media-card').length} media cards`);
+    console.log(`Found ${document.querySelectorAll('.btn-select-media, .btn-select, [data-media-id]').length} select buttons`);
+}
+
+    // Toggle media selection
+    function toggleMediaSelection(element) {
+        const mediaId = parseInt(element.dataset.id);
+        const mediaUrl = element.dataset.url;
+        const mediaThumbnail = element.dataset.thumbnail || mediaUrl;
+        const mediaName = element.dataset.name;
+        
+        const media = {
+            id: mediaId,
+            url: mediaUrl,
+            thumbnail: mediaThumbnail,
+            name: mediaName
+        };
+        
+        if (currentPickerTarget === 'main') {
+            // Untuk main image: hanya satu yang bisa dipilih
+            // Hapus selection dari yang lain
+            document.querySelectorAll('.media-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select yang baru
+            element.classList.add('selected');
+            selectedMediaItems = [media];
+        } else {
+            // Untuk gallery: multiple selection
+            if (element.classList.contains('selected')) {
+                // Unselect
+                element.classList.remove('selected');
+                selectedMediaItems = selectedMediaItems.filter(item => item.id !== mediaId);
+            } else {
+                // Select
+                element.classList.add('selected');
+                selectedMediaItems.push(media);
+            }
         }
+        
+        updateSelectionUI();
+    }
+    // Select single media (for main image)
+    function selectSingleMedia(media) {
+        selectedMediaItems = [media];
+        
+        // Close modal and insert immediately for main image
+        insertSelectedMedia();
     }
 
     // Update selection UI
     function updateSelectionUI() {
         const selectedCount = selectedMediaItems.length;
-        const bulkInfo = document.getElementById('bulkSelectionInfo');
-        const countElement = document.getElementById('selectedCount');
+        const insertBtn = document.getElementById('insertMediaBtn');
+        const selectionInfo = document.getElementById('selectionInfo');
+        const selectedCountEl = document.getElementById('selectedCount');
         
-        if (countElement) {
-            countElement.textContent = selectedCount;
+        if (selectedCountEl) {
+            selectedCountEl.textContent = selectedCount;
         }
         
-        // Untuk gallery, tampilkan bulk info
-        if (bulkInfo && currentPickerTarget === 'gallery') {
-            if (selectedCount > 0) {
-                bulkInfo.style.display = 'flex';
-            } else {
-                bulkInfo.style.display = 'none';
-            }
+        if (selectionInfo) {
+            selectionInfo.style.display = selectedCount > 0 && currentPickerTarget === 'gallery' ? 'block' : 'none';
+        }
+        
+        if (insertBtn) {
+            insertBtn.disabled = selectedCount === 0;
         }
     }
 
-    // Clear selection
-    function clearSelection() {
-        selectedMediaItems = [];
-        document.querySelectorAll('.media-item').forEach(item => {
-            item.classList.remove('selected');
-        });
-        updateSelectionUI();
-    }
 
-    // Insert selected media ke form
+    // Insert selected media to form
     function insertSelectedMedia() {
-        console.log('Inserting media for:', currentPickerTarget, selectedMediaItems);
+        if (selectedMediaItems.length === 0) return;
         
         if (currentPickerTarget === 'main') {
-            // Untuk gambar utama (single) - seharusnya tidak sampai sini
-            if (selectedMediaItems.length > 0) {
-                const media = selectedMediaItems[0];
-                insertMainImageToForm(media);
-            }
-        } else if (currentPickerTarget === 'gallery') {
-            // Untuk gallery (multiple)
-            if (selectedMediaItems.length === 0) {
-                alert('Pilih media terlebih dahulu');
-                return;
-            }
-            
-            const galleryContainer = document.getElementById('galleryPreview');
-            const galleryInput = document.getElementById('gallery_images');
-            
-            if (!galleryContainer || !galleryInput) {
-                console.error('Gallery elements not found!');
-                return;
-            }
-            
-            // Parse existing gallery images
-            let existingImages = [];
-            try {
-                existingImages = JSON.parse(galleryInput.value || '[]');
-            } catch (e) {
-                console.error('Error parsing gallery images:', e);
-                existingImages = [];
-            }
-            
-            selectedMediaItems.forEach(media => {
-                // Cek apakah sudah ada
-                if (existingImages.includes(media.id)) {
-                    console.log('Image already exists:', media.id);
-                    return;
-                }
-                
-                // Add to array
+            // Insert main image
+            const media = selectedMediaItems[0];
+            insertMainImageToForm(media);
+        } else {
+            // Insert gallery images
+            insertGalleryImagesToForm(selectedMediaItems);
+        }
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('mediaPickerModal'));
+        if (modal) modal.hide();
+    }
+
+    // Insert main image to form
+    function insertMainImageToForm(media) {
+        const previewDiv = document.getElementById('mainImagePreview');
+        const mainImageInput = document.getElementById('main_image_id');
+        const removeBtn = document.getElementById('removeMainImage');
+        
+        if (previewDiv) {
+            previewDiv.innerHTML = `
+                <img src="${media.url}" alt="${media.name}" 
+                    class="img-fluid rounded" 
+                    style="max-height: 200px; object-fit: contain;">
+            `;
+        }
+        
+        if (mainImageInput) {
+            mainImageInput.value = media.id;
+        }
+        
+        if (removeBtn) {
+            removeBtn.style.display = 'block';
+        }
+    }
+
+    // Insert gallery images to form
+    function insertGalleryImagesToForm(mediaList) {
+        const galleryContainer = document.getElementById('galleryPreview');
+        const galleryInput = document.getElementById('gallery_images');
+        
+        if (!galleryContainer || !galleryInput) return;
+        
+        // Parse existing images
+        let existingImages = [];
+        try {
+            existingImages = JSON.parse(galleryInput.value || '[]');
+        } catch (e) {
+            console.error('Error parsing gallery images:', e);
+            existingImages = [];
+        }
+        
+        // Add new images
+        mediaList.forEach(media => {
+            if (!existingImages.includes(media.id)) {
                 existingImages.push(media.id);
                 
-                // Add to preview
                 const galleryItem = document.createElement('div');
                 galleryItem.className = 'gallery-item';
                 galleryItem.setAttribute('data-id', media.id);
                 galleryItem.innerHTML = `
-                    <img src="${media.thumbnail}" alt="${media.name}" style="width: 100%; height: 120px; object-fit: cover;">
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeGalleryImage(${media.id})">
+                    <img src="${media.thumbnail}" alt="${media.name}" 
+                        class="img-fluid rounded"
+                        style="width: 100%; height: 120px; object-fit: cover;">
+                    <button type="button" class="btn btn-sm btn-danger remove-gallery-item"
+                            onclick="removeGalleryImage(${media.id})">
                         <i class="bi bi-x"></i>
                     </button>
                 `;
                 galleryContainer.appendChild(galleryItem);
-            });
-            
-            // Update hidden input
-            galleryInput.value = JSON.stringify(existingImages);
-            console.log('Updated gallery images:', existingImages);
+            }
+        });
+        
+        // Update hidden input
+        galleryInput.value = JSON.stringify(existingImages);
+    }
+
+    // Search media library
+    function searchMediaLibrary() {
+        const searchInput = document.getElementById('mediaSearch');
+        const query = searchInput ? searchInput.value.trim() : '';
+        
+        fetch(`/admin/media/picker?search=${encodeURIComponent(query)}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            const modalBody = document.querySelector('#media-library-tab .tab-content');
+            if (modalBody) {
+                modalBody.innerHTML = html;
+                setupMediaClickEvents();
+                updatePaginationLinks();
+            }
+        })
+        .catch(error => {
+            console.error('Error searching media:', error);
+            showToast('error', 'Gagal mencari media');
+        });
+    }
+
+    // Update pagination
+    function updatePagination() {
+        const paginationContainer = document.getElementById('mediaPagination');
+        if (!paginationContainer || totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
         }
         
-        // Close modal
-        const modalElement = document.getElementById('mediaPickerModal');
-        if (modalElement) {
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
+        let paginationHTML = '<ul class="pagination justify-content-center mb-0">';
+        
+        // Previous button
+        if (currentPage > 1) {
+            paginationHTML += `
+                <li class="page-item">
+                    <button class="page-link" onclick="loadMediaLibrary(${currentPage - 1})">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </li>
+            `;
+        }
+        
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                paginationHTML += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <button class="page-link" onclick="loadMediaLibrary(${i})">${i}</button>
+                    </li>
+                `;
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
             }
         }
         
-        // Reset selection
-        clearSelection();
+        // Next button
+        if (currentPage < totalPages) {
+            paginationHTML += `
+                <li class="page-item">
+                    <button class="page-link" onclick="loadMediaLibrary(${currentPage + 1})">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </li>
+            `;
+        }
+        
+        paginationHTML += '</ul>';
+        paginationContainer.innerHTML = paginationHTML;
     }
 
-    // Function untuk menghapus gambar utama
+    // Remove main image
     function removeMainImage() {
-        console.log('Removing main image...');
-        
         const previewDiv = document.getElementById('mainImagePreview');
         const mainImageInput = document.getElementById('main_image_id');
         const removeBtn = document.getElementById('removeMainImage');
@@ -1571,191 +1399,64 @@
         }
     }
 
-    // Function untuk menghapus gambar gallery
+    // Remove gallery image
     function removeGalleryImage(mediaId) {
-        console.log('Removing gallery image:', mediaId);
-        
-        // Hapus dari preview
+        const galleryInput = document.getElementById('gallery_images');
         const galleryItem = document.querySelector(`.gallery-item[data-id="${mediaId}"]`);
+        
         if (galleryItem) {
             galleryItem.remove();
         }
         
-        // Update hidden input
-        const galleryInput = document.getElementById('gallery_images');
-        try {
-            let galleryImages = JSON.parse(galleryInput.value || '[]');
-            galleryImages = galleryImages.filter(id => id !== mediaId);
-            galleryInput.value = JSON.stringify(galleryImages);
-            console.log('Updated gallery after removal:', galleryImages);
-        } catch (e) {
-            console.error('Error removing gallery image:', e);
+        if (galleryInput) {
+            try {
+                let galleryImages = JSON.parse(galleryInput.value || '[]');
+                galleryImages = galleryImages.filter(id => id !== mediaId);
+                galleryInput.value = JSON.stringify(galleryImages);
+            } catch (e) {
+                console.error('Error removing gallery image:', e);
+            }
         }
     }
 
-    // Setup upload functionality
-    function setupUpload() {
-        const dropzone = document.getElementById('uploadDropzone');
-        const fileInput = document.getElementById('fileInput');
-        
-        if (!dropzone || !fileInput) return;
-        
-        // Drag and drop handlers
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, preventDefaults, false);
-        });
-        
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => {
-                dropzone.classList.add('dragover');
-            }, false);
-        });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => {
-                dropzone.classList.remove('dragover');
-            }, false);
-        });
-        
-        dropzone.addEventListener('drop', handleDrop, false);
-        
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            handleFiles(files);
-        }
-        
-        fileInput.addEventListener('change', function(e) {
-            handleFiles(e.target.files);
-        });
-        
-        function handleFiles(files) {
-            if (files.length === 0) return;
-            
-            // Switch to upload tab
-            const uploadTab = document.getElementById('upload-tab');
-            if (uploadTab) {
-                const tab = new bootstrap.Tab(uploadTab);
-                tab.show();
-            }
-            
-            // Start upload
-            uploadFiles(files);
-        }
-    }
-
-    // Upload files
-    async function uploadFiles(files) {
-        const formData = new FormData();
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-        
-        // Add files - gunakan field 'file' untuk single file
-        Array.from(files).forEach((file, index) => {
-            formData.append(`file`, file); // Ganti dari files[${index}] menjadi file
-        });
-        
-        formData.append('_token', csrfToken);
-        
-        // Show progress
-        const progressContainer = document.getElementById('uploadProgressContainer');
-        const progressBar = document.getElementById('uploadProgressBar');
-        const progressText = document.getElementById('uploadProgressText');
-        const queueElement = document.getElementById('uploadQueue');
-        
-        if (progressContainer) progressContainer.style.display = 'block';
-        if (progressBar) progressBar.style.width = '0%';
-        if (progressText) progressText.textContent = '0%';
-        if (queueElement) queueElement.innerHTML = '';
-        
-        try {
-            const response = await fetch('{{ route("admin.media.upload") }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok && result.success) {
-                // Show success message
-                if (queueElement) {
-                    queueElement.innerHTML = `
-                        <div class="alert alert-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            ${result.message || 'File berhasil diupload'}
-                        </div>
-                    `;
-                }
-                
-                // Refresh media library setelah 1.5 detik
-                setTimeout(() => {
-                    // Kembali ke tab media library
-                    const mediaTab = document.getElementById('media-library-tab');
-                    if (mediaTab) {
-                        mediaTab.click();
-                        loadMediaLibrary();
-                    }
-                }, 1500);
-            } else {
-                throw new Error(result.message || 'Upload failed');
-            }
-        } catch (error) {
-            if (queueElement) {
-                queueElement.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        Gagal mengupload file: ${error.message}
-                    </div>
-                `;
-            }
-        } finally {
-            if (progressContainer) {
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                }, 1000);
-            }
-        }
-    }
-    // Initialize gallery dari data lama
+    // Initialize gallery from old data
     function initializeGalleryFromOldData() {
         const galleryInput = document.getElementById('gallery_images');
-        if (galleryInput && galleryInput.value) {
-            try {
-                const galleryImages = JSON.parse(galleryInput.value);
-                const galleryContainer = document.getElementById('galleryPreview');
-                
-                if (galleryContainer && galleryImages.length > 0) {
-                    // Hapus loading atau placeholder jika ada
-                    galleryContainer.innerHTML = '';
-                    
-                    // Tambahkan loading state
-                    galleryImages.forEach(imageId => {
-                        const galleryItem = document.createElement('div');
-                        galleryItem.className = 'gallery-item loading';
-                        galleryItem.setAttribute('data-id', imageId);
-                        galleryItem.innerHTML = `
-                            <div class="placeholder" style="width: 100%; height: 120px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                                <div class="spinner-border spinner-border-sm" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        `;
-                        galleryContainer.appendChild(galleryItem);
+        if (!galleryInput || !galleryInput.value) return;
+        
+        try {
+            const galleryImages = JSON.parse(galleryInput.value);
+            if (galleryImages.length > 0) {
+                // Fetch images data from server
+                fetch(`/admin/media/get-batch?ids=${galleryImages.join(',')}`)
+                    .then(response => response.json())
+                    .then(images => {
+                        const galleryContainer = document.getElementById('galleryPreview');
+                        if (galleryContainer && images.length > 0) {
+                            galleryContainer.innerHTML = '';
+                            images.forEach(image => {
+                                const galleryItem = document.createElement('div');
+                                galleryItem.className = 'gallery-item';
+                                galleryItem.setAttribute('data-id', image.id);
+                                galleryItem.innerHTML = `
+                                    <img src="${image.thumbnail || image.url}" alt="${image.name}" 
+                                        class="img-fluid rounded"
+                                        style="width: 100%; height: 120px; object-fit: cover;">
+                                    <button type="button" class="btn btn-sm btn-danger remove-gallery-item"
+                                            onclick="removeGalleryImage(${image.id})">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                `;
+                                galleryContainer.appendChild(galleryItem);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading gallery images:', error);
                     });
-                    
-                    // Load images dari server (optional)
-                    // Anda bisa menambahkan AJAX request untuk mendapatkan URL gambar
-                }
-            } catch (e) {
-                console.error('Error parsing gallery images:', e);
             }
+        } catch (e) {
+            console.error('Error parsing gallery images:', e);
         }
     }
 
@@ -1790,48 +1491,31 @@
         `;
 
         const container = document.getElementById('toastContainer');
-        container.insertAdjacentHTML('beforeend', toastHTML);
-        
-        const toastElement = document.getElementById(toastId);
-        const toast = new bootstrap.Toast(toastElement, {
-            delay: 5000,
-            autohide: true
-        });
-        toast.show();
+        if (container) {
+            container.insertAdjacentHTML('beforeend', toastHTML);
+            
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: 5000,
+                autohide: true
+            });
+            toast.show();
 
-        toastElement.addEventListener('hidden.bs.toast', function () {
-            this.remove();
-        });
+            toastElement.addEventListener('hidden.bs.toast', function () {
+                this.remove();
+            });
+        }
     }
 
-    // Show session messages as toast
-    @if(session('success'))
-        showToast('success', '{{ session('success') }}', 'Sukses!');
-    @endif
 
-    @if(session('error'))
-        showToast('error', '{{ session('error') }}', 'Error!');
-    @endif
-
-    @if($errors->any())
-        @foreach($errors->all() as $error)
-            showToast('error', '{{ $error }}', 'Validasi Error!');
-        @endforeach
-    @endif
-
-    
     // Initialize ketika DOM siap
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize gallery dari old data
+    document.addEventListener('DOMContentLoaded', function() {     
         initializeGalleryFromOldData();
         
-        // Setup tombol hapus main image
+        // Setup remove main image button
         const removeMainImageBtn = document.getElementById('removeMainImage');
         if (removeMainImageBtn) {
-            removeMainImageBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                removeMainImage();
-            });
+            removeMainImageBtn.addEventListener('click', removeMainImage);
         }
         
         // Cek jika ada main image dari old data
@@ -1913,8 +1597,8 @@
                 newAttribute.className = 'input-group mb-2';
                 newAttribute.innerHTML = `
                     <input type="text" class="form-control" 
-                           name="variant_attributes[]" 
-                           placeholder="Contoh: ukuran" />
+                        name="variant_attributes[]" 
+                        placeholder="Contoh: ukuran" />
                     <button type="button" class="btn btn-light-danger remove-attribute">
                         <i class="bi bi-trash"></i>
                     </button>
@@ -2126,5 +1810,20 @@
             });
         }
     });
+
+    // Show session messages as toast
+    @if(session('success'))
+        showToast('success', '{{ session('success') }}', 'Sukses!');
+    @endif
+
+    @if(session('error'))
+        showToast('error', '{{ session('error') }}', 'Error!');
+    @endif
+
+    @if($errors->any())
+        @foreach($errors->all() as $error)
+            showToast('error', '{{ $error }}', 'Validasi Error!');
+        @endforeach
+    @endif
 </script>
 @endpush

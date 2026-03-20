@@ -2,128 +2,363 @@
 <html lang="id">
 <head>
     <style>
-        .picker-mode {
-            background: #f5f8fa;
-            min-height: 100vh;
+        /* ========== STYLING UNTUK MEDIA PICKER MODAL ========== */
+        #mediaPickerModal .modal-xxl {
+            max-width: 1200px;
         }
-        
-        .picker-header {
-            position: sticky;
-            top: 0;
-            border-radius: 10px 10px 0 0;
-            z-index: 100;
-            background: white;
-            border-bottom: 1px solid #e4e6ef;
-            padding: 1rem 1.5rem;
+
+        #mediaPickerModal .modal-body {
+            min-height: 600px;
+            max-height: 70vh;
         }
-        
-        .picker-content {
-            padding: 1.5rem;
-            max-height: calc(100vh - 70px);
-            overflow-y: auto;
+
+        /* Nav tabs */
+        .nav-tabs-line {
+            border-bottom: 1px solid #dee2e6;
         }
-        
-        .media-item.selected .card {
-            border-color: #198754;
-            box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.2);
-        }
-        
-        .media-item.selected .card::before {
-            content: "✓";
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 24px;
-            height: 24px;
-            background: #198754;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            z-index: 10;
-        }
-        
-        /* Fixed height untuk thumbnail */
-        .fixed-thumbnail {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        
-        /* Grid untuk media items */
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-        }
-        
-        /* Tab style seperti WordPress */
-        .nav-tabs-wordpress {
-            border-bottom: 2px solid #dee2e6;
-        }
-        
-        .nav-tabs-wordpress .nav-link {
+
+        .nav-tabs-line .nav-link {
             border: none;
+            border-bottom: 3px solid transparent;
             color: #6c757d;
             font-weight: 500;
-            padding: 10px 20px;
-            margin-bottom: -2px;
         }
-        
-        .nav-tabs-wordpress .nav-link:hover {
-            border: none;
+
+        .nav-tabs-line .nav-link:hover {
             color: #0d6efd;
+            border-bottom-color: #dee2e6;
         }
-        
-        .nav-tabs-wordpress .nav-link.active {
-            background: none;
-            border: none;
-            border-bottom: 2px solid #0d6efd;
+
+        .nav-tabs-line .nav-link.active {
             color: #0d6efd;
+            border-bottom-color: #0d6efd;
+            background: transparent;
         }
-        
-        /* Bulk selection */
-        .bulk-selection-info {
+
+        /* ========== FIXED HEIGHT UNTUK MEDIA PICKER ========== */
+#mediaLibraryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.media-item {
+    position: relative;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background: white;
+    height: 250px; /* FIXED HEIGHT TOTAL */
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+}
+
+.media-item:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.media-item.selected {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Image container dengan fixed height */
+.media-img-container {
+    position: relative;
+    width: 100%;
+    height: 160px; /* Fixed height untuk gambar */
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e5e7eb;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Gambar dengan object-fit cover */
+.media-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* PASTIKAN gambar proporsional dan mengisi container */
+    transition: transform 0.3s ease;
+}
+
+.media-item:hover .media-img {
+    transform: scale(1.05);
+}
+
+/* Info section dengan fixed height */
+.media-info {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 90px; /* Fixed height untuk info */
+}
+
+.media-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.3;
+}
+
+.media-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: auto;
+}
+
+/* Check indicator untuk selected */
+.media-item.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 10;
+}
+
+/* Hapus semua class yang bentrok */
+.media-card-img,
+.media-card-item,
+.media-card-overlay,
+.media-card-body,
+.media-card-title,
+.media-card-meta,
+.media-check-badge,
+.fixed-thumbnail {
+    display: none !important;
+}
+
+/* Hapus style untuk row grid lama */
+#mediaLibraryGrid.row.g-3,
+#mediaLibraryGrid.row.g-3 > div {
+    all: unset !important;
+}
+
+        /* Select button - hidden karena akan klik gambar langsung */
+        .btn-select-media {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: none; /* Sembunyikan karena kita akan klik gambar langsung */
+        }
+
+        /* Selection Info */
+        .selection-info {
             background: #e7f1ff;
             border: 1px solid #b6d4fe;
             border-radius: 6px;
             padding: 12px 16px;
-            margin-bottom: 16px;
-            display: none;
-        }
-        
-        .bulk-selection-info.show {
+            margin: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: fadeIn 0.3s;
         }
-        
-        /* Upload tab content */
-        .upload-tab-content {
-            padding: 30px;
-            text-align: center;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        
-        .upload-dropzone {
+
+        /* Upload Zone */
+        .upload-zone {
             border: 2px dashed #dee2e6;
-            border-radius: 10px;
-            padding: 40px 20px;
-            background: #f8f9fa;
-            cursor: pointer;
             transition: all 0.3s;
         }
-        
-        .upload-dropzone:hover {
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
             border-color: #0d6efd;
             background: #e7f1ff;
+            transform: translateY(-2px);
         }
-        
-        .upload-dropzone.dragover {
-            border-color: #198754;
-            background: #d1e7dd;
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            #mediaPickerModal .modal-dialog {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+        }
+
+        /* ========== GRID LAYOUT UNTUK MEDIA PICKER ========== */
+        /* Row container untuk grid */
+        #mediaLibraryGrid.row.g-3 {
+            --bs-gutter-x: 0.75rem;
+            --bs-gutter-y: 0.75rem;
+            margin-top: calc(-1 * var(--bs-gutter-y));
+            margin-right: calc(-.5 * var(--bs-gutter-x));
+            margin-left: calc(-.5 * var(--bs-gutter-x));
+        }
+
+        #mediaLibraryGrid.row.g-3 > .col-xl-2,
+        #mediaLibraryGrid.row.g-3 > .col-lg-3,
+        #mediaLibraryGrid.row.g-3 > .col-md-4,
+        #mediaLibraryGrid.row.g-3 > .col-sm-6 {
+            padding-right: calc(var(--bs-gutter-x) * .5);
+            padding-left: calc(var(--bs-gutter-x) * .5);
+            padding-top: var(--bs-gutter-y);
+        }
+
+        /* Media Card - khusus untuk picker */
+        .media-card-item {
+            position: relative;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: white;
+            height: 100%;
+        }
+
+        .media-card-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .media-card-item.selected {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Image Container */
+        .media-card-item:hover .media-card-img img {
+            transform: scale(1.05);
+        }
+
+        /* Check Indicator */
+        .media-check-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            font-size: 12px;
+        }
+
+        .media-card-item.selected .media-check-badge {
+            display: flex;
+        }
+
+        /* Overlay untuk select button */
+        .media-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(59, 130, 246, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .media-card-item:hover .media-card-overlay {
+            display: flex;
+        }
+
+        .media-card-overlay .btn {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* Card Body (Info) */
+        .media-card-body {
+            padding: 0.75rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .media-card-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: #1f2937;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .media-card-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0;
+            line-height: 1.2;
+        }
+
+        /* Responsive Columns untuk picker */
+        @media (min-width: 1400px) {
+            .col-xxl-2 {
+                flex: 0 0 auto;
+                width: 16.66666667%;
+            }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1399.98px) {
+            .col-xl-3 {
+                flex: 0 0 auto;
+                width: 25%;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            .col-lg-4 {
+                flex: 0 0 auto;
+                width: 33.333333%;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .col-md-6 {
+                flex: 0 0 auto;
+                width: 50%;
+            }
+        }
+
+        @media (min-width: 576px) and (max-width: 767.98px) {
+            .col-sm-6 {
+                flex: 0 0 auto;
+                width: 50%;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .col-6 {
+                flex: 0 0 auto;
+                width: 50%;
+            }
         }
     </style>
 </head>

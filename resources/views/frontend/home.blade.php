@@ -3,8 +3,31 @@
 @section('title', 'Home')
 
 @section('content')
+    <!-- HERO dengan spotlight produk unggulan (banner promo + produk terbaik) -->
+    <section class="hero-showcase">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <span class="badge"><i class="fas fa-star"></i> PROMO BULAN INI</span>
+                    <h1>Solusi Kreatif untuk Bisnis & Kebutuhan Anda</h1>
+                    <p>Desain grafis modern, cetak berkualitas, dan perlengkapan ATK lengkap. Nikmati diskon spesial + free konsultasi!</p>
+                    <div class="btn-group">
+                        <a href="{{ url('/produk') }}" class="btn">Lihat Produk Unggulan <i class="fas fa-arrow-right"></i></a>
+                        <a href="https://wa.me/6282233377661?text=Halo%20Ravaa%20Creative,%20saya%20ingin%20konsultasi%20terkait%20desain%20/%20cetak.%20mohon%20info%20ya%20😊" class="btn btn-outline" target="_blank">Konsultasi Gratis</a>
+                    </div>
+                </div>
+                <div class="hero-banner-card">
+                    <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Koleksi desain dan cetak">
+                    <div class="hero-offer">
+                        <strong><i class="fas fa-tag"></i> Paket Desain Logo + Stationery</strong> mulai Rp399k
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Banner -->
-    <section class="banner">
+    {{-- <section class="banner">
         <div class="container banner-content">
             <div class="banner-text">
                 <h1>Solusi Kreatif untuk Desain, Print & ATK Anda</h1>
@@ -16,7 +39,7 @@
                 <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Desain Kreatif">
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Categories -->
     <section class="categories">
