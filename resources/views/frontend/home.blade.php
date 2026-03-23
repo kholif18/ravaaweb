@@ -8,7 +8,6 @@
         <div class="container">
             <div class="hero-grid">
                 <div class="hero-text">
-                    <span class="badge"><i class="fas fa-star"></i> PROMO BULAN INI</span>
                     <h1>Solusi Kreatif untuk Bisnis & Kebutuhan Anda</h1>
                     <p>Desain grafis modern, cetak berkualitas, dan perlengkapan ATK lengkap. Nikmati diskon spesial + free konsultasi!</p>
                     <div class="btn-group">
