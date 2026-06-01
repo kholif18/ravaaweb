@@ -40,18 +40,11 @@
 
                     @hasSection('breadcrumb')
                         <span class="h-20px border-gray-200 border-start mx-4"></span>
-
                         <!-- BREADCRUMB -->
                         <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
                             @yield('breadcrumb')
                         </ul>
-
-                        <span class="h-20px border-gray-200 border-start mx-4"></span>
                     @endif
-
-                    <span class="text-muted">
-                        @yield('page-description')
-                    </span>
                 </div>
                 <!--end::Page title & breadcrumb-->
             </div>

@@ -312,15 +312,20 @@ class MediaController extends Controller
 
         // Generate thumbnail untuk non-SVG
         if ($ext !== 'svg') {
-            $img = $this->image->read(Storage::disk('public')->path("media/$filename"));
-            $width = $img->width();
-            $height = $img->height();
+            try {
+                $img = $this->image->read(Storage::disk('public')->path("media/$filename"));
+                $width = $img->width();
+                $height = $img->height();
 
-            $thumb = $img->scaleDown(width: 300);
-            $thumbPath = "media/thumbnails/$filename";
-            Storage::disk('public')->put($thumbPath, (string) $thumb->toJpeg(80));
-            
-            $thumbnailUrl = asset('storage/' . $thumbPath);
+                $thumb = $img->scaleDown(width: 300);
+                $thumbPath = "media/thumbnails/$filename";
+                Storage::disk('public')->put($thumbPath, (string) $thumb->toJpeg(80));
+                
+                $thumbnailUrl = asset('storage/' . $thumbPath);
+            } catch (\Throwable $e) {
+                Log::error('Thumbnail generation failed in processSingleFile: ' . $e->getMessage());
+                $thumbnailUrl = $fileUrl;
+            }
         } else {
             // Untuk SVG, gunakan file asli sebagai thumbnail
             $thumbnailUrl = $fileUrl;
@@ -465,3 +470,4 @@ class MediaController extends Controller
         return round($bytes/pow(1024,$i),2).' '.$units[$i];
     }
 }
+

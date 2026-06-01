@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Stats Counter')
-@section('page-description', 'Stats Counter — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

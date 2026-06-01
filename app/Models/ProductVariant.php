@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class ProductVariant extends Model
 {
     protected $fillable = [
@@ -16,11 +15,12 @@ class ProductVariant extends Model
         'attribute_options', // JSON: {color: 'Merah', size: 'M'}
         'price',
         'discount_price',
-        'discount_start',
-        'discount_end',
-        'stock_quantity',
+        'discount_start_at',
+        'discount_end_at',
+        'stock_status',
         'weight',
-        'image',
+        'unit',
+        'image_id',
         'is_default',
         'sort_order'
     ];
@@ -29,89 +29,59 @@ class ProductVariant extends Model
         'attribute_options' => 'array',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
-        'discount_start' => 'datetime',
-        'discount_end' => 'datetime',
-        'stock_quantity' => 'integer',
+        'discount_start_at' => 'datetime',
+        'discount_end_at' => 'datetime',
         'weight' => 'decimal:2',
         'is_default' => 'boolean',
         'sort_order' => 'integer',
+        'image_id' => 'integer',
     ];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
-    
-    // Scope untuk diskon aktif
-    public function scopeActiveDiscount($query)
+
+    public function media(): BelongsTo
     {
-        return $query->whereNotNull('discount_price')
-            ->where('discount_start', '<=', now())
-            ->where('discount_end', '>=', now());
-    }   
-    
-    // Mendapatkan harga jual
-    public function getSellingPriceAttribute()
+        return $this->belongsTo(Media::class, 'image_id');
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
     {
-        if ($this->hasActiveDiscount()) {
-            return $this->discount_price;
-        }
-        return $this->price;
+        parent::boot();
+
+        static::creating(function ($variant) {
+            if (empty($variant->sku)) {
+                $variant->sku = 'SKU-' . strtoupper(\Illuminate\Support\Str::random(6)) . '-' . time();
+            }
+        });
     }
     
-    // Cek apakah diskon aktif
     public function hasActiveDiscount(): bool
     {
-        return $this->discount_price && 
-               $this->discount_start && 
-               $this->discount_end &&
-               now()->between($this->discount_start, $this->discount_end);
+        return !is_null($this->discount_price) && 
+               $this->discount_start_at && 
+               $this->discount_end_at &&
+               now()->between($this->discount_start_at, $this->discount_end_at);
     }
     
-    // Mendapatkan persentase diskon
-    public function getDiscountPercentageAttribute()
+    public function getSellingPriceAttribute()
     {
-        if (!$this->hasActiveDiscount() || $this->price <= 0) {
-            return 0;
-        }
-        
-        $discountAmount = $this->price - $this->discount_price;
-        return round(($discountAmount / $this->price) * 100, 2);
+        return $this->hasActiveDiscount() ? $this->discount_price : $this->price;
     }
-
-    /**
-     * Get variant image URL.
-     */
+    
     public function getImageUrlAttribute(): ?string
     {
-        if (!$this->image) {
-            return null;
+        if ($this->media) {
+            return $this->media->url;
         }
-        
-        // Cek apakah full URL
-        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return $this->image;
-        }
-        
-        $path = 'variants/' . $this->image;
-        
-        // Cek di storage
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->url($path);
-        }
-        
-        // Cek di public path
-        $publicPath = 'storage/' . $path;
-        if (file_exists(public_path($publicPath))) {
-            return asset($publicPath);
-        }
-        
-        return null;
+        return asset('images/default-product.png');
     }
 
-    /**
-     * Get formatted attribute options.
-     */
     public function getFormattedAttributesAttribute(): string
     {
         if (empty($this->attribute_options)) {

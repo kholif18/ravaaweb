@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Portfolio Items')
-@section('page-description', 'Portfolio Items — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

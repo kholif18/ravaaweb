@@ -7,34 +7,24 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\PromoBannerController;
 use App\Http\Controllers\Admin\HomeCategoryController;
+use App\Http\Controllers\Admin\PortfolioItemController;
+use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\ContactSubmissionController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\FeaturedProductController;
+use App\Http\Controllers\Admin\ServiceCategoryController;
+use App\Http\Controllers\Admin\ServiceController;
 
-Route::get('/', function () {
-    return view('frontend/home');
-});
+use App\Http\Controllers\FrontendController;
 
-Route::get('/layanan', function () {
-    return view('frontend/layanan');
-});
-
-Route::get('/product', function () {
-    return view('frontend/product');
-});
-
-Route::get('/detail-product', function () {
-    return view('frontend/detail-product');
-});
-
-Route::get('/portofolio', function () {
-    return view('frontend/portofolio');
-});
-
-Route::get('/software-house', function () {
-    return view('frontend/software-house');
-});
-
-Route::get('/contact', function () {
-    return view('frontend/contact');
-});
+Route::get('/', [FrontendController::class, 'home'])->name('home');
+Route::get('/layanan', [FrontendController::class, 'layanan'])->name('layanan');
+Route::get('/product', [FrontendController::class, 'product'])->name('product');
+Route::get('/detail-product', [FrontendController::class, 'detailProduct'])->name('detail-product');
+Route::get('/portofolio', [FrontendController::class, 'portofolio'])->name('portofolio');
+Route::get('/software-house', [FrontendController::class, 'softwareHouse'])->name('software-house');
+Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 
 Route::prefix('admin')
     ->name('admin.')
@@ -69,84 +59,52 @@ Route::prefix('admin')
             Route::post('/promo/reset', [PromoBannerController::class, 'reset'])->name('promo.reset');
             
             // Featured Products
-            Route::get('/featured', function () {
-                return view('admin.home.featured');
-            })->name('featured');
-            
-            Route::put('/featured', function () {
-                // Update featured products logic here
-                return redirect()->back()->with('success', 'Featured products updated successfully');
-            })->name('featured.update');
+            Route::get('/featured', [FeaturedProductController::class, 'index'])->name('featured');
+            Route::put('/featured', [FeaturedProductController::class, 'update'])->name('featured.update');
         });
         
         // Layanan Page Management
         Route::prefix('services')->name('services.')->group(function () {
             // Service Categories Tabs
-            Route::get('/categories', function () {
-                return view('admin.services.categories');
-            })->name('categories');
-            
-            Route::put('/categories', function () {
-                return redirect()->back()->with('success', 'Service categories updated successfully');
-            })->name('categories.update');
+            Route::get('/categories', [ServiceCategoryController::class, 'index'])->name('categories');
+            Route::put('/categories', [ServiceCategoryController::class, 'update'])->name('categories.update');
             
             // Service Content (5 layanan)
-            Route::get('/content', function () {
-                return view('admin.services.content');
-            })->name('content');
-            
-            Route::put('/content', function () {
-                return redirect()->back()->with('success', 'Service content updated successfully');
-            })->name('content.update');
+            Route::get('/content', [ServiceController::class, 'index'])->name('content');
+            Route::get('/content/create', [ServiceController::class, 'create'])->name('content.create');
+            Route::post('/content', [ServiceController::class, 'store'])->name('content.store');
+            Route::get('/content/{service}/edit', [ServiceController::class, 'edit'])->name('content.edit');
+            Route::put('/content/{service}', [ServiceController::class, 'update'])->name('content.update');
+            Route::delete('/content/{service}', [ServiceController::class, 'destroy'])->name('content.destroy');
             
             // FAQ Section
-            Route::get('/faq', function () {
-                return view('admin.services.faq');
-            })->name('faq');
-            
-            Route::put('/faq', function () {
-                return redirect()->back()->with('success', 'FAQ updated successfully');
-            })->name('faq.update');
+            Route::get('/faq', [FaqController::class, 'index'])->name('faq');
             
             // Process Section
             Route::get('/process', function () {
                 return view('admin.services.process');
             })->name('process');
-            
-            Route::put('/process', function () {
-                return redirect()->back()->with('success', 'Process section updated successfully');
-            })->name('process.update');
         });
         
         // Produk Page Management
         Route::prefix('products-page')->name('products-page.')->group(function () {
             // Product Categories
-            Route::get('/categories', function () {
-                return view('admin.products-page.categories');
-            })->name('categories');
+            Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
 
             // Promo Banner
-            Route::get('/promo', function () {
-                return view('admin.products-page.promo');
-            })->name('promo');
+            Route::get('/promo', [PromoBannerController::class, 'index'])->name('promo');
         });
         
         // Portfolio Page Management
         Route::prefix('portfolio-page')->name('portfolio-page.')->group(function () {
             // Portfolio Items Settings
-            Route::get('/items', function () {
-                return view('admin.portfolio-page.items');
-            })->name('items');
+            Route::get('/items', [PortfolioItemController::class, 'index'])->name('items');
             
             // Portfolio Filter Settings
-            Route::get('/filter', function () {
-                return view('admin.portfolio-page.filter');
-            })->name('filter');
+            Route::get('/filter', [ServiceCategoryController::class, 'index'])->name('filter');
             
             // Testimonials Slider
-            Route::get('/testimonials', function () {
-                return view('admin.portfolio-page.testimonials');
-            })->name('testimonials');
+            Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials');
             
             // Stats Counter
             Route::get('/stats', function () {
@@ -162,39 +120,25 @@ Route::prefix('admin')
         // Software House Page Management
         Route::prefix('software')->name('software.')->group(function () {
             // Hero Section
-            Route::get('/hero', function () {
-                return view('admin.software.hero');
-            })->name('hero');
+            Route::get('/hero', [SettingController::class, 'index'])->name('hero');
             
             // Tech Services
-            Route::get('/services', function () {
-                return view('admin.software.services');
-            })->name('services');
+            Route::get('/services', [ServiceController::class, 'index'])->name('services');
             
             // Tech Stack
-            Route::get('/stack', function () {
-                return view('admin.software.stack');
-            })->name('stack');
+            Route::get('/stack', [SettingController::class, 'index'])->name('stack');
             
             // Development Process
-            Route::get('/process', function () {
-                return view('admin.software.process');
-            })->name('process');
+            Route::get('/process', [SettingController::class, 'index'])->name('process');
             
             // Tech Portfolio
-            Route::get('/portfolio', function () {
-                return view('admin.software.portfolio');
-            })->name('portfolio');
+            Route::get('/portfolio', [PortfolioItemController::class, 'index'])->name('portfolio');
             
             // Pricing Plans
-            Route::get('/pricing', function () {
-                return view('admin.software.pricing');
-            })->name('pricing');
+            Route::get('/pricing', [SettingController::class, 'index'])->name('pricing');
             
             // CTA Section
-            Route::get('/cta', function () {
-                return view('admin.software.cta');
-            })->name('cta');
+            Route::get('/cta', [SettingController::class, 'index'])->name('cta');
         });
         
         // Contact Page Management (single page)
@@ -265,186 +209,36 @@ Route::prefix('admin')
         // ========== MANAJEMEN KONTEN ==========
         
         // Portfolio Items CRUD
-        Route::prefix('portfolio-items')->name('portfolio-items.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.portfolio-items.index');
-            })->name('index');
-            
-            Route::get('/create', function () {
-                return view('admin.portfolio-items.create');
-            })->name('create');
-            
-            Route::post('/', function () {
-                return redirect()->route('admin.portfolio-items.index')->with('success', 'Portfolio item created');
-            })->name('store');
-            
-            Route::get('/{id}/edit', function ($id) {
-                return view('admin.portfolio-items.edit', compact('id'));
-            })->name('edit');
-            
-            Route::put('/{id}', function ($id) {
-                return redirect()->route('admin.portfolio-items.index')->with('success', 'Portfolio item updated');
-            })->name('update');
-            
-            Route::delete('/{id}', function ($id) {
-                return redirect()->route('admin.portfolio-items.index')->with('success', 'Portfolio item deleted');
-            })->name('destroy');
-        });
+        Route::resource('portfolio-items', PortfolioItemController::class)->except(['show']);
         
         // Testimonials CRUD
-        Route::prefix('testimonials')->name('testimonials.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.testimonials.index');
-            })->name('index');
-            
-            Route::get('/create', function () {
-                return view('admin.testimonials.create');
-            })->name('create');
-            
-            Route::post('/', function () {
-                return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial created');
-            })->name('store');
-            
-            Route::get('/{id}/edit', function ($id) {
-                return view('admin.testimonials.edit', compact('id'));
-            })->name('edit');
-            
-            Route::put('/{id}', function ($id) {
-                return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial updated');
-            })->name('update');
-            
-            Route::delete('/{id}', function ($id) {
-                return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial deleted');
-            })->name('destroy');
-            
-            // Approve testimonial
-            Route::patch('/{id}/approve', function ($id) {
-                return redirect()->back()->with('success', 'Testimonial approved');
-            })->name('approve');
-            
-            // Feature testimonial
-            Route::patch('/{id}/feature', function ($id) {
-                return redirect()->back()->with('success', 'Testimonial featured');
-            })->name('feature');
-        });
+        Route::resource('testimonials', TestimonialController::class)->except(['show']);
         
         // FAQ Management
-        Route::prefix('faq')->name('faq.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.faq.index');
-            })->name('index');
-            
-            Route::post('/', function () {
-                return redirect()->back()->with('success', 'FAQ added');
-            })->name('store');
-            
-            Route::put('/{id}', function ($id) {
-                return redirect()->back()->with('success', 'FAQ updated');
-            })->name('update');
-            
-            Route::delete('/{id}', function ($id) {
-                return redirect()->back()->with('success', 'FAQ deleted');
-            })->name('destroy');
-            
-            // Reorder FAQs
-            Route::post('/reorder', function () {
-                return response()->json(['success' => true]);
-            })->name('reorder');
-        });
+        Route::resource('faq', FaqController::class)->except(['show', 'create', 'edit']);
+        Route::post('faq/reorder', [FaqController::class, 'reorder'])->name('faq.reorder');
         
         // Form Submissions
         Route::prefix('form-submissions')->name('form-submissions.')->group(function () {
-            Route::get('/', function () {
-                return view('admin.form-submissions.index');
-            })->name('index');
-            
-            Route::get('/{id}', function ($id) {
-                return view('admin.form-submissions.show', compact('id'));
-            })->name('show');
-            
-            Route::patch('/{id}/mark-read', function ($id) {
-                return redirect()->back()->with('success', 'Marked as read');
-            })->name('mark-read');
-            
-            Route::patch('/{id}/mark-replied', function ($id) {
-                return redirect()->back()->with('success', 'Marked as replied');
-            })->name('mark-replied');
-            
-            Route::delete('/{id}', function ($id) {
-                return redirect()->route('admin.form-submissions.index')->with('success', 'Submission deleted');
-            })->name('destroy');
-            
-            // Bulk actions
-            Route::post('/bulk-mark-read', function () {
-                return redirect()->back()->with('success', 'Selected submissions marked as read');
-            })->name('bulk-mark-read');
-            
-            Route::post('/bulk-delete', function () {
-                return redirect()->back()->with('success', 'Selected submissions deleted');
-            })->name('bulk-delete');
+            Route::get('/', [ContactSubmissionController::class, 'index'])->name('index');
+            Route::get('/{contact_submission}', [ContactSubmissionController::class, 'show'])->name('show');
+            Route::put('/{contact_submission}', [ContactSubmissionController::class, 'update'])->name('update');
+            Route::delete('/{contact_submission}', [ContactSubmissionController::class, 'destroy'])->name('destroy');
         });
         
         // ========== PENGATURAN ==========
         
         // Website Settings
         Route::prefix('settings')->name('settings.')->group(function () {
-            // General Settings
-            Route::get('/general', function () {
-                return view('admin.settings.general');
-            })->name('general');
+            Route::get('/{group?}', [SettingController::class, 'index'])->name('index');
+            Route::put('/update', [SettingController::class, 'update'])->name('update');
             
-            Route::put('/general', function () {
-                return redirect()->back()->with('success', 'General settings updated');
-            })->name('general.update');
-            
-            // Contact Information
-            Route::get('/contact', function () {
-                return view('admin.settings.contact');
-            })->name('contact');
-            
-            Route::put('/contact', function () {
-                return redirect()->back()->with('success', 'Contact information updated');
-            })->name('contact.update');
-            
-            // Social Media
-            Route::get('/social', function () {
-                return view('admin.settings.social');
-            })->name('social');
-            
-            Route::put('/social', function () {
-                return redirect()->back()->with('success', 'Social media links updated');
-            })->name('social.update');
-            
-            // Promo & Discounts
-            Route::get('/promo', function () {
-                return view('admin.settings.promo');
-            })->name('promo');
-            
-            Route::put('/promo', function () {
-                return redirect()->back()->with('success', 'Promo settings updated');
-            })->name('promo.update');
-            
-            // Email Settings
-            Route::get('/email', function () {
-                return view('admin.settings.email');
-            })->name('email');
-            
-            Route::put('/email', function () {
-                return redirect()->back()->with('success', 'Email settings updated');
-            })->name('email.update');
-            
-            // Backup & Restore
-            Route::get('/backup', function () {
-                return view('admin.settings.backup');
-            })->name('backup');
-            
-            Route::post('/backup/create', function () {
-                return redirect()->back()->with('success', 'Backup created successfully');
-            })->name('backup.create');
-            
-            Route::post('/backup/restore', function () {
-                return redirect()->back()->with('success', 'Backup restored successfully');
-            })->name('backup.restore');
+            // Legacy/Specific routes if needed
+            Route::get('/general', [SettingController::class, 'index'])->name('general');
+            Route::get('/contact', [SettingController::class, 'index'])->name('contact');
+            Route::get('/social', [SettingController::class, 'index'])->name('social');
+            Route::get('/promo', [SettingController::class, 'index'])->name('promo');
+            Route::get('/email', [SettingController::class, 'index'])->name('email');
         });
         
         // ========== STATISTIK ==========

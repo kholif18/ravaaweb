@@ -524,8 +524,8 @@
                 </div>
 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.statistics.analytics') ? 'active' : '' }}"
-                        href="#">
+                    <a class="menu-link {{ request()->routeIs('admin.statistics.page-views') ? 'active' : '' }}"
+                        href="{{ route('admin.statistics.page-views') }}">
                         <span class="menu-icon">
                             <i class="bi bi-eye fs-2"></i>
                         </span>

@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Service Content')
-@section('page-description', 'Kelola Konten Detail — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

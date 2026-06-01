@@ -16,26 +16,32 @@ return new class extends Migration
             $table->json('attribute_options')->nullable();
             $table->decimal('price', 15, 2)->default(0);
             $table->decimal('discount_price', 15, 2)->nullable();
-            $table->timestamp('discount_start')->nullable();
-            $table->timestamp('discount_end')->nullable();
-            $table->integer('stock_quantity')->default(0);
+            $table->timestamp('discount_start_at')->nullable();
+            $table->timestamp('discount_end_at')->nullable();
+            $table->enum('stock_status', ['in_stock', 'out_of_stock', 'pre_order'])->default('in_stock');
             $table->decimal('weight', 10, 2)->nullable();
+            $table->string('unit')->default('pcs');
             $table->string('image')->nullable();
+            $table->unsignedBigInteger('image_id')->nullable();
             $table->boolean('is_default')->default(false);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             // Indexes
             $table->index('product_id');
             $table->index('sku');
             $table->index('is_default');
-            $table->index(['discount_start', 'discount_end']);
-            
+
             // Foreign key TANPA nama constraint otomatis
             $table->foreign('product_id', 'fk_product_variants_product')
                 ->references('id')
                 ->on('products')
                 ->cascadeOnDelete();
+
+            $table->foreign('image_id')
+                ->references('id')
+                ->on('media')
+                ->nullOnDelete();
         });
     }
 

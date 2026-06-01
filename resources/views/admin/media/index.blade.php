@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Media Gallery')
-@section('page-description', 'Kelola semua media/gambar website')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

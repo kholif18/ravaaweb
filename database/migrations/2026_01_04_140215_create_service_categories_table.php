@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('data_service')->unique();
             $table->text('description')->nullable();
-            $table->string('icon')->default('fas fa-cube');
+            $table->string('icon')->default('fas fa-icons');
             $table->string('color')->default('#3B82F6');
             $table->boolean('is_active')->default(true);
             $table->integer('order')->default(0);

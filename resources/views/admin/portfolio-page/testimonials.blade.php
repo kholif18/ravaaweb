@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Testimonials Slider')
-@section('page-description', 'Testimonials Slider — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

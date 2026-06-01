@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Kategori Produk')
-@section('page-description', 'Manajemen Kategori Produk — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">
@@ -32,14 +31,50 @@
     <div class="card-header border-0 pt-6">
         <!--begin::Card title-->
         <div class="card-title">
-            <h2>Manajemen Kategori Produk</h2>
+            <!--begin::Search-->
+            <div class="d-flex align-items-center position-relative my-1 me-5">
+                <i class="bi bi-search fs-3 position-absolute ms-6"></i>
+                <input type="text" 
+                       data-kt-category-table-filter="search" 
+                       class="form-control form-control-solid w-250px ps-15" 
+                       placeholder="Cari Kategori..." 
+                       name="search"
+                       value="{{ $filters['search'] ?? '' }}" />
+            </div>
+            <!--end::Search-->
         </div>
         <!--end::Card title-->
         
         <!--begin::Card toolbar-->
         <div class="card-toolbar">
             <!--begin::Toolbar-->
-            <div class="d-flex justify-content-end" data-kt-category-table-toolbar="base">
+            <div class="d-flex justify-content-end align-items-center" data-kt-category-table-toolbar="base">
+                <!--begin::Filter-->
+                <div class="me-3">
+                    <select name="status" data-control="select2" data-hide-search="true" class="form-select form-select-solid w-125px" data-placeholder="Status">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                </div>
+                
+                <div class="me-3">
+                    <select name="parent" data-control="select2" class="form-select form-select-solid w-200px" data-placeholder="Parent">
+                        <option value="">Semua Parent</option>
+                        <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Tanpa Parent (Root)</option>
+                        @foreach($parentCategories as $parent)
+                            <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-light-primary me-3" id="kt_category_reset_filter">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </button>
+                <!--end::Filter-->
+
                 <!--begin::Add category-->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
                     <i class="bi bi-plus-circle"></i>
@@ -55,166 +90,11 @@
     
     <!--begin::Card body-->
     <div class="card-body pt-0">
-        <!--begin::Alert-->
-        <div class="alert alert-info d-flex align-items-center p-5 mb-10">
-            <i class="bi bi-tags fs-2hx text-info me-4"></i>
-            <div class="d-flex flex-column">
-                <h4 class="mb-1 text-info">Manajemen Kategori Produk</h4>
-                <span>Kelola kategori produk untuk mengorganisir produk Anda. Anda dapat menambahkan, mengedit, atau menghapus kategori sesuai kebutuhan.</span>
-            </div>
+        <!--begin::Category Table Container-->
+        <div id="kt_category_table_container">
+            @include('admin.categories._table')
         </div>
-        <!--end::Alert-->
-        
-        @if($categories->count() > 0)
-        <!--begin::Table-->
-        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_categories_table">
-            <thead>
-                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                    <th class="w-10px pe-2">
-                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                            <input class="form-check-input" type="checkbox" id="select-all" />
-                        </div>
-                    </th>
-                    <th class="min-w-150px">Nama Kategori</th>
-                    <th class="min-w-150px">Slug</th>
-                    <th class="min-w-100px">Icon</th>
-                    <th class="min-w-100px">Status</th>
-                    <th class="min-w-100px">Urutan</th>
-                    <th class="min-w-100px">Jumlah Produk</th>
-                    <th class="min-w-100px">Parent</th>
-                    <th class="min-w-100px text-end">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="fw-semibold text-gray-600">
-                @foreach($categories as $category)
-                <tr>
-                    <td>
-                        <div class="form-check form-check-sm form-check-custom form-check-solid">
-                            <input class="form-check-input select-item" type="checkbox" value="{{ $category->id }}" />
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <div class="symbol-label">
-                                    <i class="{{ $category->icon }} fs-2 text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column">
-                                <a href="#" class="text-gray-800 text-hover-primary fw-bold" 
-                                   onclick="editCategory({{ $category->id }})" 
-                                   data-bs-toggle="modal" data-bs-target="#kt_modal_edit_category">
-                                    {{ $category->name }}
-                                </a>
-                                @if($category->description)
-                                <span class="text-muted fw-semibold fs-7">{{ Str::limit($category->description, 50) }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge badge-light">{{ $category->slug }}</span>
-                    </td>
-                    <td>
-                        <i class="{{ $category->icon }} fs-3 text-primary"></i>
-                    </td>
-                    <td>
-                        @if($category->status == 'active')
-                        <span class="badge badge-light-success">Aktif</span>
-                        @else
-                        <span class="badge badge-light-danger">Tidak Aktif</span>
-                        @endif
-                    </td>
-                    <td>
-                        <span class="badge badge-circle badge-light">{{ $category->order }}</span>
-                    </td>
-                    <td>
-                        <span class="badge badge-light">{{ $category->products_count }} Produk</span>
-                    </td>
-                    <td>
-                        @if($category->parent)
-                            <span class="badge badge-light-info">{{ $category->parent->name }}</span>
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
-                    <td class="text-end">
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-light btn-active-light-primary dropdown-toggle" 
-                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Aksi
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="#" 
-                                       onclick="editCategory({{ $category->id }})" 
-                                       data-bs-toggle="modal" data-bs-target="#kt_modal_edit_category">
-                                        <i class="bi bi-pencil me-2"></i> Edit
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="#" 
-                                       onclick="deleteCategory({{ $category->id }}, '{{ $category->name }}')">
-                                        <i class="bi bi-trash me-2"></i> Hapus
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    @if($category->status == 'active')
-                                    <a class="dropdown-item text-danger" href="#" 
-                                       onclick="updateStatus({{ $category->id }}, 'inactive', '{{ $category->name }}')">
-                                        <i class="bi bi-x-circle me-2"></i> Nonaktifkan
-                                    </a>
-                                    @else
-                                    <a class="dropdown-item text-success" href="#" 
-                                       onclick="updateStatus({{ $category->id }}, 'active', '{{ $category->name }}')">
-                                        <i class="bi bi-check-circle me-2"></i> Aktifkan
-                                    </a>
-                                    @endif
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <!--end::Table-->
-        
-        <!--begin::Pagination and Bulk Actions-->
-        <div class="d-flex flex-stack flex-wrap pt-10">
-            <div class="fs-6 fw-semibold text-gray-700">
-                Menampilkan {{ $categories->firstItem() }} - {{ $categories->lastItem() }} dari {{ $categories->total() }} kategori
-            </div>
-            
-            <div class="d-flex align-items-center">
-                <!-- Bulk Actions -->
-                <div class="me-5">
-                    <button type="button" class="btn btn-light-danger btn-sm" id="bulk-delete-btn" style="display: none;">
-                        <i class="bi bi-trash"></i> Hapus Terpilih
-                    </button>
-                </div>
-                
-                <!-- Pagination -->
-                {{ $categories->links('vendor.pagination.custom') }}
-            </div>
-        </div>
-        <!--end::Pagination and Bulk Actions-->
-        
-        @else
-        <!--begin::Empty State-->
-        <div class="text-center py-10">
-            <i class="bi bi-tags fs-4hx text-gray-400 mb-5"></i>
-            <h3 class="text-gray-600">Tidak Ada Kategori</h3>
-            <p class="text-muted">Belum ada kategori produk. Tambahkan kategori pertama Anda.</p>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
-                <i class="bi bi-plus-circle"></i> Tambah Kategori Pertama
-            </button>
-        </div>
-        <!--end::Empty State-->
-        @endif
+        <!--end::Category Table Container-->
     </div>
     <!--end::Card body-->
 </div>
@@ -254,16 +134,16 @@
                     <div class="row mb-7">
                         <div class="col-md-6 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Icon</label>
+
                             <div class="input-group">
                                 <span class="input-group-text">
-                                    <i class="fas fa-icons"></i>
+                                    <i id="add_icon_preview" class="fas fa-icons"></i>
                                 </span>
-                                <select class="form-select form-select-solid" 
-                                        name="icon" 
-                                        data-control="select2" 
-                                        data-placeholder="Pilih icon"
-                                        required>
-                                    <option></option>
+                                <select
+                                    class="form-select form-select-solid"
+                                    id="add_category_icon"
+                                    name="icon">
+
                                     <option value="fas fa-print">Print</option>
                                     <option value="fas fa-paint-brush">Paint Brush</option>
                                     <option value="fas fa-paperclip">Paperclip</option>
@@ -273,7 +153,24 @@
                                     <option value="fas fa-palette">Palette</option>
                                     <option value="fas fa-tools">Tools</option>
                                     <option value="fas fa-box">Box</option>
-                                    <option value="fas fa-tags" selected>Tags</option>
+                                    <option value="fas fa-tags">Tags</option>
+                                    <option value="fas fa-shopping-bag">Shopping Bag</option>
+                                    <option value="fas fa-shopping-cart">Shopping Cart</option>
+                                    <option value="fas fa-tshirt">T-Shirt</option>
+                                    <option value="fas fa-laptop">Laptop</option>
+                                    <option value="fas fa-mobile-alt">Mobile</option>
+                                    <option value="fas fa-camera">Camera</option>
+                                    <option value="fas fa-book">Book</option>
+                                    <option value="fas fa-utensils">Utensils</option>
+                                    <option value="fas fa-home">Home</option>
+                                    <option value="fas fa-heart">Heart</option>
+                                    <option value="fas fa-star">Star</option>
+                                    <option value="fas fa-cog">Gear</option>
+                                    <option value="fas fa-user">User</option>
+                                    <option value="fas fa-image">Image</option>
+                                    <option value="fas fa-music">Music</option>
+                                    <option value="fas fa-film">Film</option>
+                                    <option value="fas fa-gamepad">Gamepad</option>
                                 </select>
                             </div>
                         </div>
@@ -374,7 +271,7 @@
             </div>
             
             <div class="modal-body py-10 px-lg-17">
-                <form id="kt_modal_edit_category_form" class="form" method="POST">
+                <form id="kt_modal_edit_category_form" class="form" method="POST" data-update-url="{{ route('admin.categories.update', ':id') }}">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="id" id="edit_category_id" />
@@ -403,12 +300,11 @@
                             <label class="required fs-6 fw-semibold mb-2">Icon</label>
                             <div class="input-group">
                                 <span class="input-group-text">
-                                    <i class="fas fa-icons"></i>
+                                    <i id="icon_preview" class="fas fa-icons"></i>
                                 </span>
                                 <select class="form-select form-select-solid" 
                                         name="icon" 
                                         id="edit_category_icon" 
-                                        data-control="select2" 
                                         data-placeholder="Pilih icon"
                                         required>
                                     <option></option>
@@ -422,6 +318,23 @@
                                     <option value="fas fa-tools">Tools</option>
                                     <option value="fas fa-box">Box</option>
                                     <option value="fas fa-tags">Tags</option>
+                                    <option value="fas fa-shopping-bag">Shopping Bag</option>
+                                    <option value="fas fa-shopping-cart">Shopping Cart</option>
+                                    <option value="fas fa-tshirt">T-Shirt</option>
+                                    <option value="fas fa-laptop">Laptop</option>
+                                    <option value="fas fa-mobile-alt">Mobile</option>
+                                    <option value="fas fa-camera">Camera</option>
+                                    <option value="fas fa-book">Book</option>
+                                    <option value="fas fa-utensils">Utensils</option>
+                                    <option value="fas fa-home">Home</option>
+                                    <option value="fas fa-heart">Heart</option>
+                                    <option value="fas fa-star">Star</option>
+                                    <option value="fas fa-cog">Gear</option>
+                                    <option value="fas fa-user">User</option>
+                                    <option value="fas fa-image">Image</option>
+                                    <option value="fas fa-music">Music</option>
+                                    <option value="fas fa-film">Film</option>
+                                    <option value="fas fa-gamepad">Gamepad</option>
                                 </select>
                             </div>
                         </div>
@@ -512,12 +425,12 @@
 <!--end::Modal - Edit Category-->
 
 <!-- Hidden Forms for Actions -->
-<form id="delete-form" method="POST" style="display: none;">
+<form id="delete-form" method="POST" data-delete-url="{{ route('admin.categories.destroy', ':id') }}" style="display: none;">
     @csrf
     @method('DELETE')
 </form>
 
-<form id="status-form" method="POST" style="display: none;">
+<form id="status-form" method="POST" data-status-url="{{ route('admin.categories.status.update', ':id') }}" style="display: none;">
     @csrf
     @method('PUT')
     <input type="hidden" name="status" id="status-input">
@@ -629,11 +542,35 @@ function showToast(type, message, title = '') {
     @endforeach
 @endif
 
+// Add Modal
+const addIconSelect = document.getElementById('add_category_icon');
+const addIconPreview = document.getElementById('add_icon_preview');
+
+// Edit Modal
+const editIconSelect = document.getElementById('edit_category_icon');
+const editIconPreview = document.getElementById('icon_preview');
+
+function updateIconPreview(selectId, previewId) {
+    const select = document.getElementById(selectId);
+    const preview = document.getElementById(previewId);
+
+    if (!select || !preview) return;
+
+    preview.className = select.value;
+
+    select.addEventListener('change', () => {
+        preview.className = select.value;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateIconPreview('add_category_icon', 'add_icon_preview');
+    updateIconPreview('edit_category_icon', 'icon_preview');
+});
+
 // Edit Category Function
 async function editCategory(id) {
     try {
-        showToast('info', 'Memuat data kategori...', 'Loading');
-        
         const response = await fetch(`/admin/categories/${id}/edit`, {
             headers: {
                 'Accept': 'application/json',
@@ -655,6 +592,7 @@ async function editCategory(id) {
             document.getElementById('edit_category_name').value = category.name;
             document.getElementById('edit_category_description').value = category.description || '';
             document.getElementById('edit_category_icon').value = category.icon;
+            document.getElementById('icon_preview').className = category.icon;
             document.getElementById('edit_category_order').value = category.order;
             document.getElementById('edit_category_status').value = category.status;
             document.getElementById('edit_category_parent').value = category.parent_id || '';
@@ -662,10 +600,7 @@ async function editCategory(id) {
             document.getElementById('edit_category_meta_title').value = category.meta_title || '';
             document.getElementById('edit_category_meta_description').value = category.meta_description || '';
             document.getElementById('edit_category_meta_keywords').value = category.meta_keywords || '';
-            
-            // Update select2
-            $('#edit_category_icon').val(category.icon).trigger('change');
-            
+
             // Update parent categories dropdown jika ada data
             if (data.parent_categories) {
                 const parentSelect = document.getElementById('edit_category_parent');
@@ -685,9 +620,9 @@ async function editCategory(id) {
             }
             
             // Set form action
-            document.getElementById('kt_modal_edit_category_form').action = `/admin/categories/${category.id}`;
-            
-            showToast('success', 'Data kategori berhasil dimuat', 'Sukses!');
+            const form = document.getElementById('kt_modal_edit_category_form');
+
+            form.action = form.dataset.updateUrl.replace(':id', category.id);
         } else {
             showToast('error', data.message || 'Gagal memuat data kategori', 'Error!');
         }
@@ -711,8 +646,7 @@ async function editCategory(id) {
 function deleteCategory(id, name) {
     Swal.fire({
         title: 'Hapus Kategori?',
-        html: `Kategori <strong>"${name}"</strong> akan dihapus permanen.`,
-        text: "Tindakan ini tidak dapat dibatalkan!",
+        text: `Kategori "${name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ya, Hapus!',
@@ -724,7 +658,7 @@ function deleteCategory(id, name) {
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.getElementById('delete-form');
-            form.action = `/admin/categories/${id}`;
+            form.action = form.dataset.deleteUrl.replace(':id', id);
             form.submit();
         }
     });
@@ -736,7 +670,7 @@ function updateStatus(id, status, name) {
     
     Swal.fire({
         title: `${action} Kategori?`,
-        html: `Kategori <strong>"${name}"</strong> akan di${action.toLowerCase()}.`,
+        text: `Kategori "${name}" akan di${action.toLowerCase()}.`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: `Ya, ${action}!`,
@@ -748,7 +682,7 @@ function updateStatus(id, status, name) {
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.getElementById('status-form');
-            form.action = `/admin/categories/${id}/status`;
+            form.action = form.dataset.statusUrl.replace(':id', id);
             document.getElementById('status-input').value = status;
             form.submit();
         }
@@ -757,11 +691,6 @@ function updateStatus(id, status, name) {
 
 // Form Submission with AJAX
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Select2
-    $('[data-control="select2"]').select2({
-        minimumResultsForSearch: 10
-    });
-    
     // Add Category Form
     const addForm = document.getElementById('kt_modal_add_category_form');
     const addSubmitButton = document.getElementById('kt_modal_add_category_submit');
@@ -773,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addSubmitButton.disabled = true;
         
         // Clear previous errors
-        document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+        document.querySelectorAll('[id$="-error"]').forEach(el => el.textContent = '');
         
         fetch(this.action, {
             method: 'POST',
@@ -799,7 +728,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('error', 'Terdapat kesalahan validasi', 'Validasi Error!');
             } else if (data.success) {
                 // Close modal and refresh page
-                $('#kt_modal_add_category').modal('hide');
+                bootstrap.Modal.getInstance(
+                    document.getElementById('kt_modal_add_category')
+                ).hide();
                 addForm.reset();
                 showToast('success', data.message, 'Sukses!');
                 setTimeout(() => location.reload(), 1500);
@@ -812,7 +743,29 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('error', 'Terjadi kesalahan saat menyimpan data', 'Error!');
         });
     });
+
+    document.getElementById('kt_modal_add_category')
+    .addEventListener('hidden.bs.modal', () => {
+
+        addForm.reset();
+
+        document
+            .querySelectorAll('[id$="-error"]')
+            .forEach(el => {
+                el.textContent = '';
+            });
+    });
     
+    document.getElementById('kt_modal_edit_category')
+    .addEventListener('hidden.bs.modal', () => {
+
+        document
+            .querySelectorAll('[id$="-error"]')
+            .forEach(el => {
+                el.textContent = '';
+            });
+    });
+
     // Edit Category Form
     const editForm = document.getElementById('kt_modal_edit_category_form');
     const editSubmitButton = document.getElementById('kt_modal_edit_category_submit');
@@ -824,7 +777,7 @@ document.addEventListener('DOMContentLoaded', function() {
         editSubmitButton.disabled = true;
         
         // Clear previous errors
-        document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+        document.querySelectorAll('[id$="-error"]').forEach(el => el.textContent = '');
         
         fetch(this.action, {
             method: 'POST',
@@ -850,7 +803,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('error', 'Terdapat kesalahan validasi', 'Validasi Error!');
             } else if (data.success) {
                 // Close modal and refresh page
-                $('#kt_modal_edit_category').modal('hide');
+                bootstrap.Modal.getInstance(
+                    document.getElementById('kt_modal_edit_category')
+                ).hide();
                 showToast('success', data.message, 'Sukses!');
                 setTimeout(() => location.reload(), 1500);
             }
@@ -864,33 +819,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Bulk Actions
-    const selectAll = document.getElementById('select-all');
-    const selectItems = document.querySelectorAll('.select-item');
     const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
-    
-    // Select All
-    if (selectAll) {
-        selectAll.addEventListener('change', function() {
-            selectItems.forEach(item => {
-                item.checked = this.checked;
-            });
-            updateBulkDeleteButton();
-        });
-    }
-    
-    // Individual item selection
-    selectItems.forEach(item => {
-        item.addEventListener('change', updateBulkDeleteButton);
-    });
     
     // Update bulk delete button visibility
     function updateBulkDeleteButton() {
-        const selectedIds = Array.from(selectItems)
-            .filter(item => item.checked)
-            .map(item => item.value);
+        if (!bulkDeleteBtn) return;
+        
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
         
         if (selectedIds.length > 0) {
             bulkDeleteBtn.style.display = 'inline-block';
+            bulkDeleteBtn.innerHTML = `<i class="bi bi-trash"></i> Hapus Terpilih (${selectedIds.length})`;
         } else {
             bulkDeleteBtn.style.display = 'none';
         }
@@ -899,9 +839,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Bulk delete
     if (bulkDeleteBtn) {
         bulkDeleteBtn.addEventListener('click', function() {
-            const selectedIds = Array.from(selectItems)
-                .filter(item => item.checked)
-                .map(item => item.value);
+            const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+            const selectedIds = Array.from(selectedItems).map(item => item.value);
             
             if (selectedIds.length === 0) {
                 showToast('warning', 'Silakan pilih kategori yang akan dihapus', 'Peringatan!');
@@ -946,11 +885,153 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    const addNameInput = document.querySelector(
+        '#kt_modal_add_category_form input[name="name"]'
+    );
+
+    const addSlugInput = document.querySelector(
+        '#kt_modal_add_category_form input[name="slug"]'
+    );
+
+    if (addNameInput && addSlugInput) {
+        addNameInput.addEventListener('input', function() {
+            if (!addSlugInput.value) {
+                addSlugInput.value = this.value
+                    .toLowerCase()
+                    .replace(/[^\w\s]/gi, '')
+                    .replace(/\s+/g, '-');
+            }
+        });
+    }
+
     // Initialize tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+
+    // Handle Filters
+    const tableContainer = document.getElementById('kt_category_table_container');
+    const searchInput = document.querySelector('[data-kt-category-table-filter="search"]');
+    const statusFilter = document.querySelector('select[name="status"]');
+    const parentFilter = document.querySelector('select[name="parent"]');
+    const resetBtn = document.getElementById('kt_category_reset_filter');
+
+    async function applyFilters(page = 1) {
+        // Show loading state
+        tableContainer.style.opacity = '0.5';
+        tableContainer.style.pointerEvents = 'none';
+
+        const url = new URL(window.location.href);
+        const search = searchInput.value;
+        const status = statusFilter.value;
+        const parent = parentFilter.value;
+
+        if (search) url.searchParams.set('search', search);
+        else url.searchParams.delete('search');
+
+        if (status) url.searchParams.set('status', status);
+        else url.searchParams.delete('status');
+
+        if (parent) url.searchParams.set('parent', parent);
+        else url.searchParams.delete('parent');
+
+        if (page > 1) url.searchParams.set('page', page);
+        else url.searchParams.delete('page');
+
+        try {
+            const response = await fetch(url.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const html = await response.text();
+            tableContainer.innerHTML = html;
+            
+            // Update URL in browser
+            window.history.pushState({}, '', url.toString());
+
+            // Re-initialize any components if needed (like checkboxes)
+            initializeTableEvents();
+
+        } catch (error) {
+            console.error('Error filtering:', error);
+            showToast('error', 'Gagal memfilter data', 'Error!');
+        } finally {
+            tableContainer.style.opacity = '1';
+            tableContainer.style.pointerEvents = 'auto';
+        }
+    }
+
+    function initializeTableEvents() {
+        // Re-initialize select all checkbox
+        const selectAll = document.getElementById('select-all');
+        const selectItems = document.querySelectorAll('.select-item');
+        
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                selectItems.forEach(item => {
+                    item.checked = this.checked;
+                });
+                updateBulkDeleteButton();
+            });
+        }
+        
+        selectItems.forEach(item => {
+            item.addEventListener('change', updateBulkDeleteButton);
+        });
+
+        // Handle AJAX Pagination Links
+        const paginationLinks = tableContainer.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = new URL(this.href);
+                const page = url.searchParams.get('page');
+                applyFilters(page);
+            });
+        });
+
+        updateBulkDeleteButton();
+    }
+
+    // Debounce search
+    let searchTimer;
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                applyFilters();
+            }, 500);
+        });
+    }
+
+    if (statusFilter) {
+        $(statusFilter).on('change', function() {
+            applyFilters();
+        });
+    }
+
+    if (parentFilter) {
+        $(parentFilter).on('change', function() {
+            applyFilters();
+        });
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            $(statusFilter).val('').trigger('change.select2');
+            $(parentFilter).val('').trigger('change.select2');
+            applyFilters();
+        });
+    }
+
+    // Initial event binding
+    initializeTableEvents();
 });
 </script>
 @endpush

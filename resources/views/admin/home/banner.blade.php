@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Banner Hero')
-@section('page-description', 'Banner Home Content — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

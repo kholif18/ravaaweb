@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'FAQ Management')
-@section('page-description', 'Kelola FAQ Layanan — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

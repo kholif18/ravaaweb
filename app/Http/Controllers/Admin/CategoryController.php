@@ -47,11 +47,13 @@ class CategoryController extends Controller
         $categories = $query->paginate($request->input('per_page', 10))
             ->withQueryString();
 
-        // Get all parent categories for filter (hanya kategori utama)
-        $parentCategories = Category::root()
-            ->active()
-            ->ordered()
-            ->get(['id', 'name']);
+        // Get all active categories for dropdown with hierarchy
+        $allActiveCategories = Category::active()->ordered()->get(['id', 'name', 'parent_id']);
+        $parentCategories = $this->formatCategoriesForDropdown($allActiveCategories);
+
+        if ($request->ajax()) {
+            return view('admin.categories._table', compact('categories'))->render();
+        }
 
         return view('admin.categories.index', [
             'categories' => $categories,
@@ -69,7 +71,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories,name',
             'slug' => 'nullable|string|max:255|unique:categories,slug',
             'description' => 'nullable|string',
-            'icon' => 'required|string|max:100',
+            'icon' => 'nullable|string|max:100',
             'order' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
             'parent_id' => 'nullable|exists:categories,id',
@@ -81,6 +83,11 @@ class CategoryController extends Controller
         // Generate slug if not provided
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        // Default icon if not provided
+        if (empty($validated['icon'])) {
+            $validated['icon'] = 'fas fa-tags';
         }
 
         try {
@@ -136,12 +143,16 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         try {
-            // Get parent categories for dropdown (exclude self and its descendants)
-            $parentCategories = Category::root()
-                ->active()
-                ->where('id', '!=', $category->id)
+            // Get all active categories except self and its descendants for parent candidates
+            $descendantIds = $this->getDescendantIds($category);
+            $excludeIds = array_merge([$category->id], $descendantIds);
+            
+            $categories = Category::active()
+                ->whereNotIn('id', $excludeIds)
                 ->ordered()
-                ->get(['id', 'name']);
+                ->get(['id', 'name', 'parent_id']);
+            
+            $parentCategories = $this->formatCategoriesForDropdown($categories);
             
             // Always return JSON for this endpoint
             return response()->json([
@@ -181,7 +192,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'slug' => 'nullable|string|max:255|unique:categories,slug,' . $category->id,
             'description' => 'nullable|string',
-            'icon' => 'required|string|max:100',
+            'icon' => 'nullable|string|max:100',
             'order' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
             'parent_id' => 'nullable|exists:categories,id',
@@ -190,18 +201,29 @@ class CategoryController extends Controller
             'meta_keywords' => 'nullable|string',
         ]);
 
-        // Prevent circular reference
-        if ($validated['parent_id'] == $category->id) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kategori tidak dapat menjadi parent dari dirinya sendiri.'
-                ], 422);
+        // Prevent circular reference (check self and all descendants)
+        if ($validated['parent_id']) {
+            if ($validated['parent_id'] == $category->id) {
+                $errorMessage = 'Kategori tidak dapat menjadi parent dari dirinya sendiri.';
+            } else {
+                $descendantIds = $this->getDescendantIds($category);
+                if (in_array($validated['parent_id'], $descendantIds)) {
+                    $errorMessage = 'Kategori tidak dapat menjadi sub-kategori dari anaknya sendiri.';
+                }
             }
-            
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Kategori tidak dapat menjadi parent dari dirinya sendiri.');
+
+            if (isset($errorMessage)) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errorMessage
+                    ], 422);
+                }
+                
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', $errorMessage);
+            }
         }
 
         // Generate slug if not provided

@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Manajemen Promo Banner')
-@section('page-description', 'Kelola promo banner untuk homepage — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

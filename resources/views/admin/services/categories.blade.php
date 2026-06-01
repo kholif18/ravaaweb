@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Service Categories')
-@section('page-description', 'Kategori Layanan — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">
@@ -85,9 +84,9 @@
                                 <label class="form-label required">Icon</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i class="bi bi-paint-brush"></i>
+                                        <i class="fas fa-icons"></i>
                                     </span>
-                                    <select class="form-select" name="categories[1][icon]" data-control="select2">
+                                    <select class="form-select form-select-solid" name="categories[1][icon]">
                                         <option value="bi-paint-brush" selected>Paint Brush</option>
                                         <option value="bi-palette">Palette</option>
                                         <option value="bi-brush">Brush</option>
@@ -139,7 +138,7 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-printer"></i>
                                     </span>
-                                    <select class="form-select" name="categories[2][icon]" data-control="select2">
+                                    <select class="form-select form-select-solid" name="categories[2][icon]">
                                         <option value="bi-printer" selected>Printer</option>
                                         <option value="bi-printer-fill">Printer Fill</option>
                                         <option value="bi-file-earmark-text">File Text</option>
@@ -187,15 +186,15 @@
                                 <label class="form-label required">Icon</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i class="bi bi-pen-fancy"></i>
+                                        <i class="fas fa-icons"></i>
                                     </span>
-                                    <select class="form-select" name="categories[3][icon]" data-control="select2">
-                                        <option value="bi-pen-fancy" selected>Pen Fancy</option>
-                                        <option value="bi-pen">Pen</option>
-                                        <option value="bi-pencil">Pencil</option>
-                                        <option value="bi-pencil-fill">Pencil Fill</option>
-                                        <option value="bi-ruler">Ruler</option>
-                                        <option value="bi-scissors">Scissors</option>
+                                    <select class="form-select form-select-solid" name="categories[3][icon]">
+                                        <option value="fas fa-pen-fancy" selected>Pen Fancy</option>
+                                        <option value="fas fa-pen">Pen</option>
+                                        <option value="fas fa-pencil">Pencil</option>
+                                        <option value="fas fa-pencil-alt">Pencil Alt</option>
+                                        <option value="fas fa-ruler">Ruler</option>
+                                        <option value="fas fa-scissors">Scissors</option>
                                     </select>
                                 </div>
                             </div>
@@ -237,15 +236,15 @@
                                 <label class="form-label required">Icon</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i class="bi bi-tshirt"></i>
+                                        <i class="fas fa-icons"></i>
                                     </span>
-                                    <select class="form-select" name="categories[4][icon]" data-control="select2">
-                                        <option value="bi-tshirt" selected>T-Shirt</option>
-                                        <option value="bi-cup-straw">Cup Straw</option>
-                                        <option value="bi-cup">Cup</option>
-                                        <option value="bi-bag">Bag</option>
-                                        <option value="bi-gift">Gift</option>
-                                        <option value="bi-tag">Tag</option>
+                                    <select class="form-select form-select-solid" name="categories[4][icon]">
+                                        <option value="fas fa-tshirt" selected>T-Shirt</option>
+                                        <option value="fas fa-cup-straw">Cup Straw</option>
+                                        <option value="fas fa-cup">Cup</option>
+                                        <option value="fas fa-bag">Bag</option>
+                                        <option value="fas fa-gift">Gift</option>
+                                        <option value="fas fa-tag">Tag</option>
                                     </select>
                                 </div>
                             </div>
@@ -278,7 +277,7 @@
                     <div class="card card-bordered h-100">
                         <div class="card-header bg-light-info">
                             <h3 class="card-title text-gray-800">
-                                <i class="bi bi-laptop me-2"></i>
+                                <i class="fas fa-laptop me-2"></i>
                                 Kategori 5
                             </h3>
                         </div>
@@ -287,15 +286,15 @@
                                 <label class="form-label required">Icon</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
-                                        <i class="bi bi-laptop-code"></i>
+                                        <i class="fas fa-icons"></i>
                                     </span>
-                                    <select class="form-select" name="categories[5][icon]" data-control="select2">
-                                        <option value="bi-laptop-code" selected>Laptop Code</option>
-                                        <option value="bi-printer">Printer</option>
-                                        <option value="bi-code-slash">Code Slash</option>
-                                        <option value="bi-display">Display</option>
-                                        <option value="bi-tablet">Tablet</option>
-                                        <option value="bi-phone">Phone</option>
+                                    <select class="form-select form-select-solid" name="categories[5][icon]">
+                                        <option value="fas fa-laptop-code" selected>Laptop Code</option>
+                                        <option value="fas fa-printer">Printer</option>
+                                        <option value="fas fa-code-slash">Code Slash</option>
+                                        <option value="fas fa-display">Display</option>
+                                        <option value="fas fa-tablet">Tablet</option>
+                                        <option value="fas fa-phone">Phone</option>
                                     </select>
                                 </div>
                             </div>

@@ -44,7 +44,28 @@
         <div class="row mt-8">
             <div class="col-12">
                 <nav aria-label="Media pagination">
-                    {{ $media->links('pagination::bootstrap-4') }}
+                    <ul class="pagination pagination-outline justify-content-center">
+                        {{-- Previous Page Link --}}
+                        @if ($media->onFirstPage())
+                            <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+                        @else
+                            <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="loadMediaLibrary({{ $media->currentPage() - 1 }})"><i class="bi bi-chevron-left"></i></a></li>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach ($media->getUrlRange(max(1, $media->currentPage() - 2), min($media->lastPage(), $media->currentPage() + 2)) as $page => $url)
+                            <li class="page-item {{ $page == $media->currentPage() ? 'active' : '' }}">
+                                <a class="page-link" href="javascript:void(0)" onclick="loadMediaLibrary({{ $page }})">{{ $page }}</a>
+                            </li>
+                        @endforeach
+
+                        {{-- Next Page Link --}}
+                        @if ($media->hasMorePages())
+                            <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="loadMediaLibrary({{ $media->currentPage() + 1 }})"><i class="bi bi-chevron-right"></i></a></li>
+                        @else
+                            <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+                        @endif
+                    </ul>
                 </nav>
             </div>
         </div>

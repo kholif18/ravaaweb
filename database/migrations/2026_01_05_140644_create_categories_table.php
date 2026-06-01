@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('icon')->default('fas fa-tags');
+            $table->string('color')->default('primary');
             $table->integer('order')->default(1);
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('meta_title')->nullable();

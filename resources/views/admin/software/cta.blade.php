@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'CTA Section')
-@section('page-description', 'CTA Section — Ravaa Creative Tech')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">

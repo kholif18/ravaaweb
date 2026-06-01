@@ -101,7 +101,6 @@
                     <div class="product-info">
                         <div class="product-category">Desain Grafis</div>
                         <h3 class="product-title">Paket Desain Logo Profesional</h3>
-                        <p class="product-description">Paket lengkap pembuatan logo dengan 3 konsep desain, revisi tanpa batas, dan file final dalam berbagai format.</p>
                         <div class="product-price">
                             <span class="price">Rp 499.000</span>
                         </div>
@@ -120,7 +119,6 @@
                     <div class="product-info">
                         <div class="product-category">Percetakan</div>
                         <h3 class="product-title">Cetak Brosur A4 Full Color</h3>
-                        <p class="product-description">Cetak brosur A4 full color dengan kualitas premium. Minimal order 100 lembar, pilihan kertas art paper atau HVS.</p>
                         <div class="product-price">
                             <span class="price">Rp 1.200/lembar</span>
                         </div>
@@ -138,7 +136,6 @@
                     <div class="product-info">
                         <div class="product-category">ATK & Perlengkapan</div>
                         <h3 class="product-title">Notebook Custom Logo Perusahaan</h3>
-                        <p class="product-description">Notebook custom dengan cover hardcover dan logo perusahaan. Isi 100 halaman, ukuran A5, minimal order 50 pcs.</p>
                         <div class="product-price">
                             <span class="price">Rp 25.000/buku</span>
                         </div>
@@ -157,7 +154,6 @@
                     <div class="product-info">
                         <div class="product-category">Sablon & Merchandise</div>
                         <h3 class="product-title">Sablon Kaos Polo Custom</h3>
-                        <p class="product-description">Kaos polo berkualitas dengan sablon custom menggunakan teknik plastisol. Pilihan warna kaos dan sablon tersedia.</p>
                         <div class="product-price">
                             <span class="price">Rp 85.000/pcs</span>
                         </div>
@@ -176,7 +172,6 @@
                     <div class="product-info">
                         <div class="product-category">Digital Printing</div>
                         <h3 class="product-title">Stiker Vinyl Outdoor</h3>
-                        <p class="product-description">Stiker vinyl tahan cuaca untuk penggunaan outdoor. Tahan air, matahari, dan cuaca ekstrem. Cocok untuk kendaraan, signage, dll.</p>
                         <div class="product-price">
                             <span class="price">Rp 45.000/m²</span>
                         </div>
@@ -194,7 +189,6 @@
                     <div class="product-info">
                         <div class="product-category">Desain Grafis</div>
                         <h3 class="product-title">Paket Branding Lengkap</h3>
-                        <p class="product-description">Paket lengkap branding perusahaan: logo, kartu nama, kop surat, amplop, dan panduan penggunaan brand.</p>
                         <div class="product-price">
                             <span class="price">Rp 1.299.000</span>
                         </div>
@@ -213,7 +207,6 @@
                     <div class="product-info">
                         <div class="product-category">Percetakan</div>
                         <h3 class="product-title">Cetak Banner Flexi 3x1 Meter</h3>
-                        <p class="product-description">Cetak banner flexi outdoor tahan cuaca, ukuran 3x1 meter. Cocok untuk promosi, event, atau signage.</p>
                         <div class="product-price">
                             <span class="price">Rp 350.000</span>
                         </div>
@@ -232,7 +225,6 @@
                     <div class="product-info">
                         <div class="product-category">ATK & Perlengkapan</div>
                         <h3 class="product-title">Amplop Custom Logo Perusahaan</h3>
-                        <p class="product-description">Amplop custom dengan logo perusahaan, ukuran standar. Minimal order 200 pcs, pilihan warna amplop tersedia.</p>
                         <div class="product-price">
                             <span class="price">Rp 1.500/buah</span>
                         </div>

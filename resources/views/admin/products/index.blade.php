@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('page-title', 'Semua Produk')
-@section('page-description', 'Manajemen Produk — Ravaa Creative')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-muted">
@@ -62,41 +61,31 @@
     
     <!--begin::Card body-->
     <div class="card-body pt-0">
-        <!--begin::Alert-->
-        <div class="alert alert-info d-flex align-items-center p-5 mb-10">
-            <i class="bi bi-boxes fs-2hx text-info me-4"></i>
-            <div class="d-flex flex-column">
-                <h4 class="mb-1 text-info">Manajemen Produk</h4>
-                <span>Kelola semua produk Anda di sini. Filter, cari, dan kelola produk dengan mudah.</span>
-            </div>
-        </div>
-        <!--end::Alert-->
-        
         <!--begin::Search and Filters-->
         <div class="card card-bordered mb-10">
             <div class="card-body">
                 <form method="GET" action="{{ route('admin.products.index') }}">
-                    <div class="row g-8">
+                    <div class="row g-3 align-items-end">
                         <div class="col-md-3">
-                            <label class="form-label">Cari Produk</label>
-                            <input type="text" class="form-control" 
+                            <label class="form-label form-label-sm">Cari</label>
+                            <input type="text" class="form-control form-control-sm" 
                                    name="search" 
                                    value="{{ request('search') }}"
-                                   placeholder="Nama, SKU, deskripsi..." />
+                                   placeholder="Nama/SKU..." />
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" name="status">
-                                <option value="">Semua Status</option>
+                            <label class="form-label form-label-sm">Status</label>
+                            <select class="form-select form-select-sm" name="status">
+                                <option value="">Semua</option>
                                 <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
                                 <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                                 <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>Archived</option>
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Kategori</label>
-                            <select class="form-select" name="category">
-                                <option value="">Semua Kategori</option>
+                            <label class="form-label form-label-sm">Kategori</label>
+                            <select class="form-select form-select-sm" name="category">
+                                <option value="">Semua</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
@@ -105,59 +94,37 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Status Stok</label>
-                            <select class="form-select" name="stock_status">
+                            <label class="form-label form-label-sm">Status Stok</label>
+                            <select class="form-select form-select-sm" name="stock_status">
                                 <option value="">Semua</option>
                                 <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
                                 <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
                                 <option value="pre_order" {{ request('stock_status') == 'pre_order' ? 'selected' : '' }}>Pre Order</option>
-                                <option value="backorder" {{ request('stock_status') == 'backorder' ? 'selected' : '' }}>Backorder</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label">Harga Min</label>
-                                    <input type="number" class="form-control" 
-                                           name="min_price" 
-                                           value="{{ request('min_price') }}"
-                                           placeholder="Min" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Harga Max</label>
-                                    <input type="number" class="form-control" 
-                                           name="max_price" 
-                                           value="{{ request('max_price') }}"
-                                           placeholder="Max" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-8">
-                        <div class="col-md-12">
-                            <div class="form-check form-check-custom form-check-solid me-5">
+                        <div class="col-md-1">
+                            <div class="form-check form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" 
                                        name="featured" 
                                        value="1" 
                                        id="featured" 
                                        {{ request('featured') ? 'checked' : '' }} />
-                                <label class="form-check-label" for="featured">
-                                    Featured Only
+                                <label class="form-check-label form-check-label-sm" for="featured">
+                                    Featured
                                 </label>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mt-8">
-                        <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary me-2">
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="bi bi-search"></i> Filter
                             </button>
-                            <a href="{{ route('admin.products.index') }}" class="btn btn-light">
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-light btn-sm">
                                 <i class="bi bi-arrow-clockwise"></i> Reset
                             </a>
                         </div>
                     </div>
                 </form>
+
             </div>
         </div>
         <!--end::Search and Filters-->
@@ -176,10 +143,11 @@
                     <th class="min-w-100px">SKU</th>
                     <th class="min-w-100px">Kategori</th>
                     <th class="min-w-100px">Harga</th>
-                    <th class="min-w-100px">Stok</th>
-                    <th class="min-w-100px">Status</th>
-                    <th class="min-w-100px">Terjual</th>
+                    <th class="min-w-100px">Status Stok</th>
+                    <th class="min-w-100px">Status Produk</th>
+                    <th class="min-w-100px">View/Terjual</th>
                     <th class="min-w-100px text-end">Aksi</th>
+
                 </tr>
             </thead>
             <tbody class="fw-semibold text-gray-600">
@@ -238,7 +206,7 @@
                     </td>
                     <td>
                         <div class="d-flex flex-column">
-                            @if($product->hasDiscount())
+                            @if($product->hasActiveDiscount())
                                 <span class="text-decoration-line-through text-muted fs-7">
                                     {{ $product->formatted_price }}
                                 </span>
@@ -246,20 +214,20 @@
                                     {{ $product->formatted_discount_price }}
                                 </span>
                                 <span class="badge badge-light-danger badge-sm mt-1">
-                                    -{{ $product->discount_percentage }}%
+                                    Promo Aktif
                                 </span>
                             @else
                                 <span class="fw-bold">{{ $product->formatted_price }}</span>
                             @endif
+                            @if($product->unit)
+                                <span class="text-muted fs-7">per {{ $product->unit }}</span>
+                            @endif
                         </div>
                     </td>
                     <td>
-                        <div class="d-flex flex-column">
-                            <span class="fw-bold">{{ $product->stock_quantity }}</span>
-                            <span class="badge badge-light-{{ $product->stock_status_badge_class }} badge-sm">
-                                {{ $product->stock_status_text }}
-                            </span>
-                        </div>
+                        <span class="badge badge-light-{{ $product->stock_status_badge_class }}">
+                            {{ $product->stock_status_text }}
+                        </span>
                     </td>
                     <td>
                         @if($product->status == 'published')
@@ -270,6 +238,7 @@
                         <span class="badge badge-light-danger">Archived</span>
                         @endif
                     </td>
+
                     <td>
                         <div class="d-flex flex-column">
                             <span class="fw-bold">{{ $product->sold_count }}</span>
