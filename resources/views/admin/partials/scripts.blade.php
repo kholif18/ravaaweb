@@ -9,6 +9,8 @@
 <script src="{{ asset('admin/assets/js/scripts.bundle.js') }}"></script>
 <!--end::Global Javascript Bundle-->
 
+@include('admin.partials.ravaa-js')
+
 <!-- Fix untuk Metronic JS error -->
 <script>
     // Patch untuk error di scripts.bundle.js

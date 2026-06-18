@@ -8,10 +8,10 @@
             <label class="form-label required">Kategori</label>
             <select class="form-select" name="category_id" required>
                 <option value="">-- Pilih Kategori --</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" 
-                        {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
+                @foreach($formattedCategories as $id => $name)
+                    <option value="{{ $id }}" 
+                        {{ old('category_id', $product->category_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
                     </option>
                 @endforeach
             </select>

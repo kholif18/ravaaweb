@@ -13,13 +13,13 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::with('category')->orderBy('order')->paginate(10);
-        return view('admin.services.content', compact('services'));
+        $services = Service::with('category')->orderBy('order')->paginate(15);
+        return view('admin.services.index', compact('services'));
     }
 
     public function create()
     {
-        $categories = ServiceCategory::all();
+        $categories = ServiceCategory::active()->get();
         return view('admin.services.create', compact('categories'));
     }
 
@@ -30,6 +30,7 @@ class ServiceController extends Controller
             'category_id' => 'required|exists:service_categories,id',
             'description' => 'nullable|string',
             'price' => 'nullable|numeric',
+            'price_unit' => 'nullable|string|max:50',
             'is_active' => 'boolean',
             'order' => 'integer'
         ]);
@@ -39,12 +40,12 @@ class ServiceController extends Controller
         }
 
         Service::create($validated);
-        return redirect()->route('admin.services.content')->with('success', 'Layanan berhasil ditambahkan!');
+        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil ditambahkan!');
     }
 
     public function edit(Service $service)
     {
-        $categories = ServiceCategory::all();
+        $categories = ServiceCategory::active()->get();
         return view('admin.services.edit', compact('service', 'categories'));
     }
 
@@ -55,17 +56,29 @@ class ServiceController extends Controller
             'category_id' => 'required|exists:service_categories,id',
             'description' => 'nullable|string',
             'price' => 'nullable|numeric',
+            'price_unit' => 'nullable|string|max:50',
             'is_active' => 'boolean',
             'order' => 'integer'
         ]);
 
         $service->update($validated);
-        return redirect()->route('admin.services.content')->with('success', 'Layanan berhasil diperbarui!');
+        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil diperbarui!');
     }
 
     public function destroy(Service $service): RedirectResponse
     {
         $service->delete();
-        return redirect()->route('admin.services.content')->with('success', 'Layanan berhasil dihapus!');
+        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil dihapus!');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $ids = json_decode($request->input('ids'), true);
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Service::whereIn('id', $ids)->delete();
+        return redirect()->route('admin.services.index')->with('success', count($ids) . ' layanan berhasil dihapus!');
     }
 }

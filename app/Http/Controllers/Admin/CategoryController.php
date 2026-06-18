@@ -72,6 +72,7 @@ class CategoryController extends Controller
             'slug' => 'nullable|string|max:255|unique:categories,slug',
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:100',
+            'color' => 'nullable|string|max:50',
             'order' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
             'parent_id' => 'nullable|exists:categories,id',
@@ -163,6 +164,7 @@ class CategoryController extends Controller
                     'slug' => $category->slug,
                     'description' => $category->description,
                     'icon' => $category->icon,
+                    'color' => $category->color,
                     'order' => $category->order,
                     'status' => $category->status,
                     'parent_id' => $category->parent_id,
@@ -193,6 +195,7 @@ class CategoryController extends Controller
             'slug' => 'nullable|string|max:255|unique:categories,slug,' . $category->id,
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:100',
+            'color' => 'nullable|string|max:50',
             'order' => 'required|integer|min:1',
             'status' => 'required|in:active,inactive',
             'parent_id' => 'nullable|exists:categories,id',
@@ -306,13 +309,16 @@ class CategoryController extends Controller
      */
     public function bulkDestroy(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'exists:categories,id',
-        ]);
+        $ids = $request->input('ids');
+        
+        // Handle JSON string from hidden input
+        if (is_string($ids)) {
+            $ids = json_decode($ids, true);
+        }
 
-        // Convert JSON string to array if needed
-        $ids = is_string($validated['ids']) ? json_decode($validated['ids'], true) : $validated['ids'];
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada kategori yang dipilih.');
+        }
 
         // Check if any category has products or children
         $invalidCategories = Category::whereIn('id', $ids)

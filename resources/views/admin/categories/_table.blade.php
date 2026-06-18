@@ -30,7 +30,7 @@
                 <div class="d-flex align-items-center">
                     <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                         <div class="symbol-label">
-                            <i class="{{ $category->icon }} fs-2 text-primary"></i>
+                            <i class="{{ $category->icon }} fs-2 text-{{ $category->color ?? 'primary' }}"></i>
                         </div>
                     </div>
                     <div class="d-flex flex-column">
@@ -49,7 +49,7 @@
                 <span class="badge badge-light">{{ $category->slug }}</span>
             </td>
             <td>
-                <i class="{{ $category->icon }} fs-3 text-primary"></i>
+                <i class="{{ $category->icon }} fs-3 text-{{ $category->color ?? 'primary' }}"></i>
             </td>
             <td>
                 @if($category->status == 'active')

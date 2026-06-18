@@ -86,9 +86,9 @@
                             <label class="form-label form-label-sm">Kategori</label>
                             <select class="form-select form-select-sm" name="category">
                                 <option value="">Semua</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
+                                @foreach($categories as $id => $name)
+                                    <option value="{{ $id }}" {{ request('category') == $id ? 'selected' : '' }}>
+                                        {{ $name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -371,92 +371,29 @@
 
 @push('scripts')
 <script>
-// Toast Notification Function
-function showToast(type, message, title = '') {
-    const toastId = 'toast-' + Date.now();
-    const icon = {
-        'success': 'bi-check-circle',
-        'error': 'bi-x-circle',
-        'warning': 'bi-exclamation-triangle',
-        'info': 'bi-info-circle'
-    }[type] || 'bi-info-circle';
-
-    const color = {
-        'success': 'text-success',
-        'error': 'text-danger',
-        'warning': 'text-warning',
-        'info': 'text-info'
-    }[type] || 'text-info';
-
-    const toastHTML = `
-        <div id="${toastId}" class="toast toast-${type} mb-3" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <i class="bi ${icon} ${color} me-2"></i>
-                <strong class="me-auto">${title || type.charAt(0).toUpperCase() + type.slice(1)}</strong>
-                <small class="text-muted">baru saja</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                ${message}
-            </div>
-        </div>
-    `;
-
-    const container = document.getElementById('toastContainer');
-    if (!container) {
-        console.error('Toast container not found');
-        return;
-    }
-    
-    container.insertAdjacentHTML('beforeend', toastHTML);
-    
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, {
-        delay: 5000,
-        autohide: true
-    });
-    toast.show();
-
-    // Remove toast from DOM after hide
-    toastElement.addEventListener('hidden.bs.toast', function () {
-        this.remove();
-    });
-}
-
 // Show session messages as toast
 @if(session('success'))
-    showToast('success', '{{ session('success') }}', 'Sukses!');
+    Ravaa.toast('{{ session('success') }}', 'success');
 @endif
 
 @if(session('error'))
-    showToast('error', '{{ session('error') }}', 'Error!');
+    Ravaa.toast('{{ session('error') }}', 'error');
 @endif
 
 @if($errors->any())
     @foreach($errors->all() as $error)
-        showToast('error', '{{ $error }}', 'Validasi Error!');
+        Ravaa.toast('{{ $error }}', 'error');
     @endforeach
 @endif
 
 // Delete Confirmation Function
 function confirmDelete(id, name) {
-    Swal.fire({
-        title: 'Hapus Produk?',
-        html: `Produk <strong>"${name}"</strong> akan dihapus permanen beserta semua gambarnya.`,
-        text: "Tindakan ini tidak dapat dibatalkan!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal',
-        customClass: {
-            confirmButton: 'btn btn-danger',
-            cancelButton: 'btn btn-light'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById(`delete-form-${id}`).submit();
-        }
-    });
+    Ravaa.confirm('Hapus Produk?', `Produk <strong>"${name}"</strong> akan dihapus permanen beserta semua gambarnya.`)
+        .then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${id}`).submit();
+            }
+        });
 }
 
 // Bulk Actions
@@ -484,12 +421,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update bulk delete button visibility
     function updateBulkDeleteButton() {
+        if (!bulkDeleteBtn) return;
         const selectedIds = Array.from(selectItems)
             .filter(item => item.checked)
             .map(item => item.value);
         
         if (selectedIds.length > 0) {
             bulkDeleteBtn.style.display = 'inline-block';
+            bulkDeleteBtn.innerHTML = `<i class="bi bi-trash"></i> Hapus Terpilih (${selectedIds.length})`;
         } else {
             bulkDeleteBtn.style.display = 'none';
         }
@@ -503,28 +442,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 .map(item => item.value);
             
             if (selectedIds.length === 0) {
-                showToast('warning', 'Silakan pilih produk yang akan dihapus', 'Peringatan!');
+                Ravaa.toast('Silakan pilih produk yang akan dihapus', 'warning');
                 return;
             }
             
-            Swal.fire({
-                title: 'Hapus Produk Terpilih?',
-                html: `Anda akan menghapus <strong>${selectedIds.length}</strong> produk beserta semua gambarnya.`,
-                text: "Tindakan ini tidak dapat dibatalkan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal',
-                customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-light'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    bulkDeleteIds.value = JSON.stringify(selectedIds);
-                    bulkDeleteForm.submit();
-                }
-            });
+            Ravaa.confirm('Hapus Produk Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> produk beserta semua gambarnya.`)
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        bulkDeleteIds.value = JSON.stringify(selectedIds);
+                        bulkDeleteForm.submit();
+                    }
+                });
         });
     }
     
@@ -535,18 +463,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function handleImageError(img) {
-        // Coba fallback ke default image di storage
         img.onerror = null;
         img.src = '{{ asset("storage/images/default-product.png") }}';
-        
-        // Jika masih error, gunakan placeholder
         img.onerror = function() {
             img.style.display = 'none';
-            img.parentElement.innerHTML = `
-                <div class="symbol-label bg-light">
-                    <i class="bi bi-image text-gray-400 fs-2"></i>
-                </div>
-            `;
+            img.parentElement.innerHTML = `<div class="symbol-label bg-light"><i class="bi bi-image text-gray-400 fs-2"></i></div>`;
         };
     }
 });

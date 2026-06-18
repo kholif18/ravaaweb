@@ -132,9 +132,8 @@
                     </div>
                     
                     <div class="row mb-7">
-                        <div class="col-md-6 fv-row">
+                        <div class="col-md-4 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Icon</label>
-
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i id="add_icon_preview" class="fas fa-icons"></i>
@@ -143,7 +142,7 @@
                                     class="form-select form-select-solid"
                                     id="add_category_icon"
                                     name="icon">
-
+                                    <option value="fas fa-tags">Tags</option>
                                     <option value="fas fa-print">Print</option>
                                     <option value="fas fa-paint-brush">Paint Brush</option>
                                     <option value="fas fa-paperclip">Paperclip</option>
@@ -153,7 +152,6 @@
                                     <option value="fas fa-palette">Palette</option>
                                     <option value="fas fa-tools">Tools</option>
                                     <option value="fas fa-box">Box</option>
-                                    <option value="fas fa-tags">Tags</option>
                                     <option value="fas fa-shopping-bag">Shopping Bag</option>
                                     <option value="fas fa-shopping-cart">Shopping Cart</option>
                                     <option value="fas fa-tshirt">T-Shirt</option>
@@ -168,20 +166,29 @@
                                     <option value="fas fa-cog">Gear</option>
                                     <option value="fas fa-user">User</option>
                                     <option value="fas fa-image">Image</option>
-                                    <option value="fas fa-music">Music</option>
-                                    <option value="fas fa-film">Film</option>
-                                    <option value="fas fa-gamepad">Gamepad</option>
                                 </select>
                             </div>
                         </div>
                         
-                        <div class="col-md-6 fv-row">
+                        <div class="col-md-4 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Urutan</label>
                             <input type="number" class="form-control form-control-solid" 
                                    min="1" max="100" 
                                    value="1" 
                                    name="order" 
                                    required />
+                        </div>
+
+                        <div class="col-md-4 fv-row">
+                            <label class="fs-6 fw-semibold mb-2">Warna</label>
+                            <select class="form-select form-select-solid" name="color">
+                                <option value="primary" selected>Primary (Blue)</option>
+                                <option value="success">Success (Green)</option>
+                                <option value="info">Info (Cyan)</option>
+                                <option value="warning">Warning (Yellow)</option>
+                                <option value="danger">Danger (Red)</option>
+                                <option value="dark">Dark (Black)</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -296,7 +303,7 @@
                     </div>
                     
                     <div class="row mb-7">
-                        <div class="col-md-6 fv-row">
+                        <div class="col-md-4 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Icon</label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -307,7 +314,7 @@
                                         id="edit_category_icon" 
                                         data-placeholder="Pilih icon"
                                         required>
-                                    <option></option>
+                                    <option value="fas fa-tags">Tags</option>
                                     <option value="fas fa-print">Print</option>
                                     <option value="fas fa-paint-brush">Paint Brush</option>
                                     <option value="fas fa-paperclip">Paperclip</option>
@@ -317,7 +324,6 @@
                                     <option value="fas fa-palette">Palette</option>
                                     <option value="fas fa-tools">Tools</option>
                                     <option value="fas fa-box">Box</option>
-                                    <option value="fas fa-tags">Tags</option>
                                     <option value="fas fa-shopping-bag">Shopping Bag</option>
                                     <option value="fas fa-shopping-cart">Shopping Cart</option>
                                     <option value="fas fa-tshirt">T-Shirt</option>
@@ -332,20 +338,29 @@
                                     <option value="fas fa-cog">Gear</option>
                                     <option value="fas fa-user">User</option>
                                     <option value="fas fa-image">Image</option>
-                                    <option value="fas fa-music">Music</option>
-                                    <option value="fas fa-film">Film</option>
-                                    <option value="fas fa-gamepad">Gamepad</option>
                                 </select>
                             </div>
                         </div>
                         
-                        <div class="col-md-6 fv-row">
+                        <div class="col-md-4 fv-row">
                             <label class="required fs-6 fw-semibold mb-2">Urutan</label>
                             <input type="number" class="form-control form-control-solid" 
                                    min="1" max="100" 
                                    name="order" 
                                    id="edit_category_order"
                                    required />
+                        </div>
+
+                        <div class="col-md-4 fv-row">
+                            <label class="fs-6 fw-semibold mb-2">Warna</label>
+                            <select class="form-select form-select-solid" name="color" id="edit_category_color">
+                                <option value="primary">Primary (Blue)</option>
+                                <option value="success">Success (Green)</option>
+                                <option value="info">Info (Cyan)</option>
+                                <option value="warning">Warning (Yellow)</option>
+                                <option value="danger">Danger (Red)</option>
+                                <option value="dark">Dark (Black)</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -481,64 +496,18 @@
 
 @push('scripts')
 <script>
-// Toast Notification Function
-function showToast(type, message, title = '') {
-    const toastId = 'toast-' + Date.now();
-    const icon = {
-        'success': 'bi-check-circle',
-        'error': 'bi-x-circle',
-        'warning': 'bi-exclamation-triangle',
-        'info': 'bi-info-circle'
-    }[type] || 'bi-info-circle';
-
-    const color = {
-        'success': 'text-success',
-        'error': 'text-danger',
-        'warning': 'text-warning',
-        'info': 'text-info'
-    }[type] || 'text-info';
-
-    const toastHTML = `
-        <div id="${toastId}" class="toast toast-${type} mb-3" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <i class="bi ${icon} ${color} me-2"></i>
-                <strong class="me-auto">${title || type.charAt(0).toUpperCase() + type.slice(1)}</strong>
-                <small class="text-muted">baru saja</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                ${message}
-            </div>
-        </div>
-    `;
-
-    document.getElementById('toastContainer').insertAdjacentHTML('beforeend', toastHTML);
-    
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, {
-        delay: 5000,
-        autohide: true
-    });
-    toast.show();
-
-    // Remove toast from DOM after hide
-    toastElement.addEventListener('hidden.bs.toast', function () {
-        this.remove();
-    });
-}
-
 // Show session messages as toast
 @if(session('success'))
-    showToast('success', '{{ session('success') }}', 'Sukses!');
+    Ravaa.toast('{{ session('success') }}', 'success');
 @endif
 
 @if(session('error'))
-    showToast('error', '{{ session('error') }}', 'Error!');
+    Ravaa.toast('{{ session('error') }}', 'error');
 @endif
 
 @if($errors->any())
     @foreach($errors->all() as $error)
-        showToast('error', '{{ $error }}', 'Validasi Error!');
+        Ravaa.toast('{{ $error }}', 'error');
     @endforeach
 @endif
 
@@ -593,6 +562,7 @@ async function editCategory(id) {
             document.getElementById('edit_category_description').value = category.description || '';
             document.getElementById('edit_category_icon').value = category.icon;
             document.getElementById('icon_preview').className = category.icon;
+            document.getElementById('edit_category_color').value = category.color || 'primary';
             document.getElementById('edit_category_order').value = category.order;
             document.getElementById('edit_category_status').value = category.status;
             document.getElementById('edit_category_parent').value = category.parent_id || '';
@@ -621,72 +591,41 @@ async function editCategory(id) {
             
             // Set form action
             const form = document.getElementById('kt_modal_edit_category_form');
-
             form.action = form.dataset.updateUrl.replace(':id', category.id);
         } else {
-            showToast('error', data.message || 'Gagal memuat data kategori', 'Error!');
+            Ravaa.toast(data.message || 'Gagal memuat data kategori', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        
-        if (error.message.includes('JSON')) {
-            // Jika response bukan JSON, mungkin server error
-            showToast('error', 'Server mengembalikan response yang tidak valid. Coba refresh halaman.', 'Error!');
-        } else if (error.message.includes('404')) {
-            showToast('error', 'Kategori tidak ditemukan', 'Error!');
-        } else if (error.message.includes('500')) {
-            showToast('error', 'Terjadi kesalahan di server', 'Error!');
-        } else {
-            showToast('error', 'Terjadi kesalahan: ' + error.message, 'Error!');
-        }
+        Ravaa.toast('Terjadi kesalahan: ' + error.message, 'error');
     }
 }
 
 // Delete Category Function
 function deleteCategory(id, name) {
-    Swal.fire({
-        title: 'Hapus Kategori?',
-        text: `Kategori "${name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal',
-        customClass: {
-            confirmButton: 'btn btn-danger',
-            cancelButton: 'btn btn-light'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.getElementById('delete-form');
-            form.action = form.dataset.deleteUrl.replace(':id', id);
-            form.submit();
-        }
-    });
+    Ravaa.confirm('Hapus Kategori?', `Kategori "${name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`)
+        .then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('delete-form');
+                form.action = form.dataset.deleteUrl.replace(':id', id);
+                form.submit();
+            }
+        });
 }
 
 // Update Status Function
 function updateStatus(id, status, name) {
     const action = status === 'active' ? 'Aktifkan' : 'Nonaktifkan';
     
-    Swal.fire({
-        title: `${action} Kategori?`,
-        text: `Kategori "${name}" akan di${action.toLowerCase()}.`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: `Ya, ${action}!`,
-        cancelButtonText: 'Batal',
-        customClass: {
-            confirmButton: 'btn btn-primary',
-            cancelButton: 'btn btn-light'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.getElementById('status-form');
-            form.action = form.dataset.statusUrl.replace(':id', id);
-            document.getElementById('status-input').value = status;
-            form.submit();
-        }
-    });
+    Ravaa.confirm(`${action} Kategori?`, `Kategori "${name}" akan di${action.toLowerCase()}.`, 'question')
+        .then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('status-form');
+                form.action = form.dataset.statusUrl.replace(':id', id);
+                document.getElementById('status-input').value = status;
+                form.submit();
+            }
+        });
 }
 
 // Form Submission with AJAX

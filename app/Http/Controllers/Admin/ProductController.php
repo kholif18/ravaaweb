@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+use App\Http\Requests\Admin\ProductRequest;
+
 class ProductController extends Controller
 {
     public function index(Request $request)
@@ -43,27 +45,27 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate($request->input('per_page', 15))->withQueryString();
-        $categories = Category::ordered()->get(['id', 'name']);
+        $categoriesRaw = Category::ordered()->get(['id', 'name', 'parent_id']);
+        $categories = $this->formatCategoriesWithHierarchy($categoriesRaw);
 
         return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function create()
     {
-        $categories = Category::ordered()->with('children')->get(['id', 'name', 'parent_id']);
-        $formattedCategories = $this->formatCategoriesWithHierarchy($categories);
+        $categoriesRaw = Category::ordered()->get(['id', 'name', 'parent_id']);
+        $formattedCategories = $this->formatCategoriesWithHierarchy($categoriesRaw);
         $relatedProducts = Product::where('status', 'published')->orderBy('name')->get(['id', 'name', 'sku']);
         
-        return view('admin.products.create', compact('categories', 'formattedCategories', 'relatedProducts'));
+        return view('admin.products.create', compact('formattedCategories', 'relatedProducts'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ProductRequest $request): RedirectResponse
     {
-        $validated = $this->validateProduct($request);
-
         try {
             DB::beginTransaction();
 
+            $validated = $request->validated();
             $validated['tags'] = $this->cleanArray($request->input('tags'));
             $validated['quick_infos'] = $this->cleanArray($request->input('quick_infos'));
             
@@ -105,20 +107,19 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $categories = Category::ordered()->get(['id', 'name', 'parent_id']);
-        $formattedCategories = $this->formatCategoriesWithHierarchy($categories);
+        $categoriesRaw = Category::ordered()->get(['id', 'name', 'parent_id']);
+        $formattedCategories = $this->formatCategoriesWithHierarchy($categoriesRaw);
         $relatedProducts = Product::where('id', '!=', $product->id)->published()->orderBy('name')->get(['id', 'name', 'sku']);
         
-        return view('admin.products.edit', compact('product', 'categories', 'formattedCategories', 'relatedProducts'));
+        return view('admin.products.edit', compact('product', 'formattedCategories', 'relatedProducts'));
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(ProductRequest $request, Product $product): RedirectResponse
     {
-        $validated = $this->validateProduct($request, $product->id);
-
         try {
             DB::beginTransaction();
 
+            $validated = $request->validated();
             $validated['tags'] = $this->cleanArray($request->input('tags'));
             $validated['quick_infos'] = $this->cleanArray($request->input('quick_infos'));
             
@@ -242,64 +243,6 @@ class ProductController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
-    }
-
-    private function validateProduct(Request $request, $productId = null): array
-    {
-        $rules = [
-            'name' => 'required|string|max:255',
-            'sku' => 'nullable|string|max:100|unique:products,sku' . ($productId ? ',' . $productId : ''),
-            'slug' => 'nullable|string|max:255|unique:products,slug' . ($productId ? ',' . $productId : ''),
-            'description' => 'nullable|string',
-            'specifications' => 'nullable|string', 
-            'category_id' => 'nullable|exists:categories,id',
-            'price' => 'required_unless:has_variants,true|nullable|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0',
-            'discount_start_at' => 'nullable|date',
-            'discount_end_at' => 'nullable|date|after_or_equal:discount_start_at',
-            'stock_status' => 'required_unless:has_variants,true|nullable|in:in_stock,out_of_stock,pre_order',
-            'weight' => 'nullable|numeric|min:0',
-            'unit' => 'nullable|string|max:50',
-            'length' => 'nullable|numeric|min:0',
-            'width' => 'nullable|numeric|min:0',
-            'height' => 'nullable|numeric|min:0',
-            'status' => 'required|in:draft,published,archived',
-            'is_featured' => 'boolean',
-            'is_best_seller' => 'boolean',
-            'is_new_arrival' => 'boolean',
-            'is_digital' => 'boolean',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'main_media_id' => 'nullable|exists:media,id',
-            'gallery_images' => 'nullable|string', 
-            'has_variants' => 'boolean',
-            'variant_attributes' => 'nullable', 
-            'quick_infos' => 'nullable', 
-            'tags' => 'nullable', 
-            'variants' => 'required_if:has_variants,true|array',
-            'variants.*.id' => 'nullable|integer',
-            'variants.*.name' => 'required_if:has_variants,true|string|max:255',
-            'variants.*.sku' => 'nullable|string|max:100',
-            'variants.*.price' => 'required_if:has_variants,true|numeric|min:0',
-            'variants.*.discount_price' => 'nullable|numeric|min:0',
-            'variants.*.discount_start_at' => 'nullable|date',
-            'variants.*.discount_end_at' => 'nullable|date|after_or_equal:variants.*.discount_start_at',
-            'variants.*.stock_status' => 'required_if:has_variants,true|in:in_stock,out_of_stock,pre_order',
-            'variants.*.weight' => 'nullable|numeric|min:0',
-            'variants.*.unit' => 'nullable|string|max:50',
-            'variants.*.is_default' => 'boolean',
-            'variants.*.attribute_options' => 'nullable|string', 
-            'variants.*.image_id' => 'nullable|integer|exists:media,id',
-            'deleted_variants' => 'nullable|string', 
-        ];
-
-        $validated = $request->validate($rules);
-
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
-
-        return $validated;
     }
 
     private function handleProductVariants(Product $product, array $variants, $deletedVariantsJson = null): void {

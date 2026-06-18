@@ -1,3 +1,7 @@
+@php
+    $routeName = Route::currentRouteName();
+@endphp
+
 <div id="kt_aside"
     class="aside aside-dark aside-hoverable"
     data-kt-drawer="true"
@@ -19,7 +23,6 @@
 
     {{-- Menu --}}
     <div class="aside-menu flex-column-fluid">
-        <!-- PERBAIKAN DI SINI: Tambahkan ID pada wrapper -->
         <div id="kt_aside_menu_wrapper"
             class="hover-scroll-overlay-y my-5 my-lg-5"
             data-kt-scroll="true"
@@ -33,327 +36,36 @@
                 id="kt_aside_menu" 
                 data-kt-menu="true">
 
-                {{-- Dashboard --}}
-                <div class="menu-item">
-                    <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
-                    </div>
-                </div>
+                {{-- DASHBOARD --}}
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                         href="{{ route('admin.dashboard') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-speedometer2 fs-2"></i>
+                            <i class="bi bi-grid-fill fs-2"></i>
                         </span>
                         <span class="menu-title">Dashboard</span>
                     </a>
                 </div>
 
-                {{-- Konten Halaman --}}
+                {{-- KATALOG PRODUK --}}
                 <div class="menu-item">
                     <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Konten Halaman</span>
+                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Katalog Produk</span>
                     </div>
                 </div>
 
-                {{-- Home Page Accordion --}}
-                @php
-                    $homePageActive = request()->routeIs('admin.home.*');
-                @endphp
-                <div class="menu-item menu-accordion {{ $homePageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="bi bi-house fs-2"></i>
-                        </span>
-                        <span class="menu-title">Home Page</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg {{ $homePageActive ? 'show' : '' }}">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.home.banner') ? 'active' : '' }}"
-                                href="{{ route('admin.home.banner') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Banner Hero</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.home.categories.edit') ? 'active' : '' }}"
-                                href="{{ route('admin.home.categories.edit') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Service Categories</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.home.promo') ? 'active' : '' }}"
-                                href="{{ route('admin.home.promo') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Promo Banner</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.home.featured') ? 'active' : '' }}"
-                                href="{{ route('admin.home.featured') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Featured Products</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Layanan Page Accordion --}}
-                @php
-                    $servicesPageActive = request()->routeIs('admin.services.*');
-                @endphp
-                <div class="menu-item menu-accordion {{ $servicesPageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="bi bi-gear fs-2"></i>
-                        </span>
-                        <span class="menu-title">Layanan Page</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg {{ $servicesPageActive ? 'show' : '' }}">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.services.categories') ? 'active' : '' }}"
-                                href="{{ route('admin.services.categories') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Service Categories</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.services.content') ? 'active' : '' }}"
-                                href="{{ route('admin.services.content') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Service Content</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.services.faq') ? 'active' : '' }}"
-                                href="{{ route('admin.services.faq') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">FAQ Section</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.services.process') ? 'active' : '' }}"
-                                href="{{ route('admin.services.process') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Process Section</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Produk Page Accordion --}}
-                @php
-                    $productsPageActive = request()->routeIs('admin.products-page.*');
-                @endphp
-                <div class="menu-item menu-accordion {{ $productsPageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
-                    <span class="menu-link">
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
+                        href="{{ route('admin.products.index') }}">
                         <span class="menu-icon">
                             <i class="bi bi-box-seam fs-2"></i>
                         </span>
-                        <span class="menu-title">Produk Page</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.products-page.categories') ? 'active' : '' }}"
-                                href="{{ route('admin.products-page.categories') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Product Categories</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.products-page.promo') ? 'active' : '' }}"
-                                href="{{ route('admin.products-page.promo') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Promo Banner</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Portfolio Page Accordion --}}
-                @php
-                    $portfolioPageActive = request()->routeIs('admin.portfolio-page.*');
-                @endphp
-                <div class="menu-item menu-accordion {{ $portfolioPageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="bi bi-images fs-2"></i>
-                        </span>
-                        <span class="menu-title">Portfolio Page</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.portfolio-page.items') ? 'active' : '' }}"
-                                href="{{ route('admin.portfolio-page.items') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Portfolio Items</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.portfolio-page.filter') ? 'active' : '' }}"
-                                href="{{ route('admin.portfolio-page.filter') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Portfolio Filter</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.portfolio-page.testimonials') ? 'active' : '' }}"
-                                href="{{ route('admin.portfolio-page.testimonials') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Testimonials Slider</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.portfolio-page.stats') ? 'active' : '' }}"
-                                href="{{ route('admin.portfolio-page.stats') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Stats Counter</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.portfolio-page.cta') ? 'active' : '' }}"
-                                href="{{ route('admin.portfolio-page.cta') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">CTA Section</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Software House Page Accordion --}}
-                @php
-                    $softwarePageActive = request()->routeIs('admin.software.*');
-                @endphp
-                <div class="menu-item menu-accordion {{ $softwarePageActive ? 'show' : '' }}" data-kt-menu-trigger="click">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="bi bi-code-slash fs-2"></i>
-                        </span>
-                        <span class="menu-title">Software House</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg {{ $softwarePageActive ? 'show' : '' }}">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.hero') ? 'active' : '' }}"
-                                href="{{ route('admin.software.hero') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Hero Section</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.services') ? 'active' : '' }}"
-                                href="{{ route('admin.software.services') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Tech Services</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.stack') ? 'active' : '' }}"
-                                href="{{ route('admin.software.stack') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Tech Stack</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.process') ? 'active' : '' }}"
-                                href="{{ route('admin.software.process') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Development Process</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.portfolio') ? 'active' : '' }}"
-                                href="{{ route('admin.software.portfolio') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Tech Portfolio</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.pricing') ? 'active' : '' }}"
-                                href="{{ route('admin.software.pricing') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Pricing Plans</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.software.cta') ? 'active' : '' }}"
-                                href="{{ route('admin.software.cta') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">CTA Section</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Contact Page (Single Item) --}}
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.contact.*') ? 'active' : '' }}"
-                        href="{{ route('admin.contact.index') }}">
-                        <span class="menu-icon">
-                            <i class="bi bi-telephone fs-2"></i>
-                        </span>
-                        <span class="menu-title">Contact Page</span>
+                        <span class="menu-title">Semua Produk</span>
                     </a>
                 </div>
 
-                {{-- Manajemen Produk --}}
                 <div class="menu-item">
-                    <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Manajemen Produk</span>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}"
+                    <a class="menu-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"
                         href="{{ route('admin.categories.index') }}">
                         <span class="menu-icon">
                             <i class="bi bi-tags fs-2"></i>
@@ -361,195 +73,191 @@
                         <span class="menu-title">Kategori Produk</span>
                     </a>
                 </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.products.index') ? 'active' : '' }}"
-                        href="{{ route('admin.products.index') }}">
-                        <span class="menu-icon">
-                            <i class="bi bi-boxes fs-2"></i>
-                        </span>
-                        <span class="menu-title">Semua Produk</span>
-                    </a>
-                </div>
 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.products.create') ? 'active' : '' }}"
-                        href="{{ route('admin.products.create') }}">
-                        <span class="menu-icon">
-                            <i class="bi bi-plus-circle fs-2"></i>
-                        </span>
-                        <span class="menu-title">Tambah Produk</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.media.index') ? 'active' : '' }}"
+                    <a class="menu-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}"
                         href="{{ route('admin.media.index') }}">
                         <span class="menu-icon">
                             <i class="bi bi-images fs-2"></i>
                         </span>
-                        <span class="menu-title">Media</span>
+                        <span class="menu-title">Media Library</span>
                     </a>
                 </div>
 
-                {{-- Manajemen Konten --}}
+                {{-- LAYANAN & PORTFOLIO --}}
                 <div class="menu-item">
                     <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Manajemen Konten</span>
+                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Layanan & Portfolio</span>
+                    </div>
+                </div>
+
+                <div class="menu-item menu-accordion {{ request()->routeIs('admin.services.*') || request()->routeIs('admin.service-categories.*') ? 'show' : '' }}" data-kt-menu-trigger="click">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="bi bi-briefcase fs-2"></i>
+                        </span>
+                        <span class="menu-title">Layanan</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.services.*') ? 'active' : '' }}"
+                                href="{{ route('admin.services.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Semua Layanan</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.service-categories.*') ? 'active' : '' }}"
+                                href="{{ route('admin.service-categories.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Kategori Layanan</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.portfolio-items.index') ? 'active' : '' }}"
+                    <a class="menu-link {{ request()->routeIs('admin.portfolio-items.*') ? 'active' : '' }}"
                         href="{{ route('admin.portfolio-items.index') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-card-image fs-2"></i>
+                            <i class="bi bi-collection fs-2"></i>
                         </span>
                         <span class="menu-title">Portfolio Items</span>
                     </a>
                 </div>
 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.testimonials.index') ? 'active' : '' }}"
+                    <a class="menu-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}"
                         href="{{ route('admin.testimonials.index') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-chat-left-text fs-2"></i>
+                            <i class="bi bi-chat-square-text fs-2"></i>
                         </span>
-                        <span class="menu-title">Testimonials</span>
+                        <span class="menu-title">Testimonial</span>
                     </a>
                 </div>
 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.faq.index') ? 'active' : '' }}"
+                    <a class="menu-link {{ request()->routeIs('admin.faq.*') ? 'active' : '' }}"
                         href="{{ route('admin.faq.index') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-question-circle fs-2"></i>
+                            <i class="bi bi-patch-question fs-2"></i>
                         </span>
-                        <span class="menu-title">FAQ Management</span>
+                        <span class="menu-title">FAQ</span>
                     </a>
                 </div>
 
+                {{-- KONTEN WEBSITE (CMS) --}}
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.form-submissions.index') ? 'active' : '' }}"
+                    <div class="menu-content pb-2">
+                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Konten Website</span>
+                    </div>
+                </div>
+
+                @php
+                    $cmsActive = request()->routeIs('admin.cms.*') || request()->routeIs('admin.home.*') || request()->routeIs('admin.software.*');
+                @endphp
+                <div class="menu-item menu-accordion {{ $cmsActive ? 'show' : '' }}" data-kt-menu-trigger="click">
+                    <span class="menu-link">
+                        <span class="menu-icon">
+                            <i class="bi bi-window-sidebar fs-2"></i>
+                        </span>
+                        <span class="menu-title">Manajemen Halaman</span>
+                        <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion">
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.home.banner') ? 'active' : '' }}"
+                                href="{{ route('admin.home.banner') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Home Page</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.software.hero') ? 'active' : '' }}"
+                                href="{{ route('admin.software.hero') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Software House</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link {{ request()->routeIs('admin.contact.index') ? 'active' : '' }}"
+                                href="{{ route('admin.contact.index') }}">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Contact Page</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- INTERAKSI --}}
+                <div class="menu-item">
+                    <div class="menu-content pb-2">
+                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Interaksi</span>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.form-submissions.*') ? 'active' : '' }}"
                         href="{{ route('admin.form-submissions.index') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-inbox fs-2"></i>
+                            <i class="bi bi-envelope-open fs-2"></i>
                         </span>
-                        <span class="menu-title">Form Submissions</span>
+                        <span class="menu-title">Pesan Masuk</span>
                         <span class="menu-badge">
                             <span class="badge badge-light-danger">3</span>
                         </span>
                     </a>
                 </div>
 
-                {{-- Pengaturan --}}
                 <div class="menu-item">
-                    <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Pengaturan</span>
-                    </div>
-                </div>
-
-                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <i class="bi bi-gear fs-2"></i>
-                        </span>
-                        <span class="menu-title">Website Settings</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion menu-active-bg">
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.settings.general') ? 'active' : '' }}"
-                                href="{{ route('admin.settings.general') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">General Settings</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.settings.contact') ? 'active' : '' }}"
-                                href="{{ route('admin.settings.contact') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Contact Info</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.settings.social') ? 'active' : '' }}"
-                                href="{{ route('admin.settings.social') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Social Media</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.settings.promo') ? 'active' : '' }}"
-                                href="{{ route('admin.settings.promo') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Promo & Diskon</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a class="menu-link {{ request()->routeIs('admin.settings.email') ? 'active' : '' }}"
-                                href="{{ route('admin.settings.email') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Email Settings</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Statistik --}}
-                <div class="menu-item">
-                    <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Statistik</span>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.statistics.traffic') ? 'active' : '' }}"
+                    <a class="menu-link {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}"
                         href="{{ route('admin.statistics.traffic') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-bar-chart fs-2"></i>
+                            <i class="bi bi-graph-up-arrow fs-2"></i>
                         </span>
-                        <span class="menu-title">Website Traffic</span>
+                        <span class="menu-title">Statistik</span>
                     </a>
                 </div>
 
+                {{-- SISTEM --}}
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.statistics.page-views') ? 'active' : '' }}"
-                        href="{{ route('admin.statistics.page-views') }}">
+                    <div class="menu-content pb-2">
+                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Sistem</span>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                        href="{{ route('admin.settings.index') }}">
                         <span class="menu-icon">
-                            <i class="bi bi-eye fs-2"></i>
+                            <i class="bi bi-sliders fs-2"></i>
                         </span>
-                        <span class="menu-title">Page Views</span>
+                        <span class="menu-title">Pengaturan Web</span>
                     </a>
                 </div>
+
             </div>
         </div>
     </div>
-    <!--begin::Footer-->
+
+    {{-- Footer --}}
     <div class="aside-footer flex-column-auto pt-5 pb-7 px-5" id="kt_aside_footer">
-        <a href="{{ url('/') }}" class="btn btn-custom btn-primary w-100" target="_blank" 
-            data-bs-toggle="tooltip" 
-            data-bs-trigger="hover" 
-            data-bs-dismiss="click" 
-            title="View Ravaa Creative Website">
-            <span class="btn-label">Ravaa Creative</span>
+        <a href="{{ url('/') }}" class="btn btn-custom btn-primary w-100" target="_blank">
+            <span class="btn-label">Lihat Website</span>
             <span class="svg-icon btn-icon svg-icon-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path opacity="0.3" d="M19 22H5C4.4 22 4 21.6 4 21V3C4 2.4 4.4 2 5 2H14L20 8V21C20 21.6 19.6 22 19 22Z" fill="currentColor"/>
-                    <path d="M15 8H20L14 2V7C14 7.6 14.4 8 15 8Z" fill="currentColor"/>
-                </svg>
+                <i class="bi bi-arrow-up-right-square"></i>
             </span>
         </a>
     </div>
-    <!--end::Footer-->
 </div>

@@ -12,8 +12,8 @@ class ServiceCategoryController extends Controller
 {
     public function index()
     {
-        $categories = ServiceCategory::orderBy('order')->get();
-        return view('admin.services.categories', compact('categories'));
+        $categories = ServiceCategory::withCount('services')->orderBy('order')->get();
+        return view('admin.service-categories.index', compact('categories'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -52,7 +52,35 @@ class ServiceCategoryController extends Controller
 
     public function destroy(ServiceCategory $serviceCategory): RedirectResponse
     {
+        if ($serviceCategory->services()->exists()) {
+            return redirect()->back()->with('error', 'Kategori tidak bisa dihapus karena masih memiliki layanan.');
+        }
+
         $serviceCategory->delete();
         return redirect()->back()->with('success', 'Kategori layanan berhasil dihapus!');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $ids = json_decode($request->input('ids'), true);
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        $categories = ServiceCategory::whereIn('id', $ids)->get();
+        $canDelete = true;
+        foreach ($categories as $category) {
+            if ($category->services()->exists()) {
+                $canDelete = false;
+                break;
+            }
+        }
+
+        if (!$canDelete) {
+            return redirect()->back()->with('error', 'Beberapa kategori tidak bisa dihapus karena masih memiliki layanan.');
+        }
+
+        ServiceCategory::whereIn('id', $ids)->delete();
+        return redirect()->back()->with('success', count($ids) . ' kategori berhasil dihapus!');
     }
 }
