@@ -18,6 +18,8 @@
     @stack('styles')
 
     {{-- Global Styles --}}
+<link href="https://cdn.jsdelivr.net/npm/tabler@1.0.0-beta16/dist/css/tabler.min.css" rel="stylesheet">
 <link href="{{ asset('frontend/css/app.css') }}" rel="stylesheet">
+<link href="{{ asset('frontend/css/admin-glass.css') }}" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
