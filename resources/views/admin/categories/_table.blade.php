@@ -70,22 +70,22 @@
             </td>
             <td class="text-end">
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-light btn-active-light-primary dropdown-toggle" 
+                    <button class="btn-action-dropdown" 
                             type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Aksi
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="#" 
                                 onclick="editCategory({{ $category->id }})" 
                                 data-bs-toggle="modal" data-bs-target="#kt_modal_edit_category">
-                                <i class="bi bi-pencil me-2"></i> Edit
+                                <i class="bi bi-pencil"></i> Edit
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item text-danger" href="#" 
                                 onclick="deleteCategory({{ $category->id }}, '{{ $category->name }}')">
-                                <i class="bi bi-trash me-2"></i> Hapus
+                                <i class="bi bi-trash"></i> Hapus
                             </a>
                         </li>
                         <li>
@@ -95,12 +95,12 @@
                             @if($category->status == 'active')
                             <a class="dropdown-item text-danger" href="#" 
                                 onclick="updateStatus({{ $category->id }}, 'inactive', '{{ $category->name }}')">
-                                <i class="bi bi-x-circle me-2"></i> Nonaktifkan
+                                <i class="bi bi-x-circle"></i> Nonaktifkan
                             </a>
                             @else
                             <a class="dropdown-item text-success" href="#" 
                                 onclick="updateStatus({{ $category->id }}, 'active', '{{ $category->name }}')">
-                                <i class="bi bi-check-circle me-2"></i> Aktifkan
+                                <i class="bi bi-check-circle"></i> Aktifkan
                             </a>
                             @endif
                         </li>

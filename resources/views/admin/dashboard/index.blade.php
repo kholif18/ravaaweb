@@ -3,25 +3,24 @@
 @section('page-title', 'Dashboard')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-muted">
+    <li class="breadcrumb-item text-gray-400">
         <a href="{{ route('admin.dashboard') }}"
-           class="text-muted text-hover-primary">
+           class="text-gray-400 text-hover-primary">
             Home
         </a>
     </li>
-
-    <li class="breadcrumb-item">
+    <li class="breadcrumb-item text-gray-400">
         <span class="bullet bg-gray-300 w-5px h-2px"></span>
     </li>
-
     <li class="breadcrumb-item text-dark">
         Dashboard
     </li>
 @endsection
 
 @section('content')
-    {{-- QUICK STATS --}}
-    <div class="row g-6 mb-8">
+
+    {{-- ===== ROW 1: QUICK STATS (4 columns) ===== --}}
+    <div class="row mb-4">
 
         @php
             $stats = [
@@ -33,17 +32,15 @@
         @endphp
 
         @foreach($stats as [$label, $value, $icon, $color])
-            <div class="col-xl-3 col-md-6">
-                <div class="card card-flush h-100">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="symbol symbol-45px me-5">
-                            <span class="symbol-label bg-light-{{ $color }}">
-                                <i class="bi bi-{{ $icon }} fs-2 text-{{ $color }}"></i>
-                            </span>
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="glass-card h-100">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-light-{{ $color }} me-3">
+                            <i class="bi bi-{{ $icon }} fs-3 text-{{ $color }}"></i>
                         </div>
                         <div>
-                            <div class="fw-bold fs-4">{{ $value }}</div>
-                            <div class="text-muted fs-7">{{ $label }}</div>
+                            <div class="stat-value">{{ $value }}</div>
+                            <div class="stat-label">{{ $label }}</div>
                         </div>
                     </div>
                 </div>
@@ -52,113 +49,48 @@
 
     </div>
 
-    {{-- ACTION CARDS --}}
-    <div class="row g-6 mb-8">
-
-        <div class="col-xl-3 col-md-6">
-            <a href="#" class="card card-flush h-100 hover-elevate-up">
-                <div class="card-body">
-                    <i class="bi bi-box fs-2 text-primary mb-3"></i>
-                    <div class="fw-bold fs-5">Kelola Produk</div>
-                    <div class="text-muted fs-7">
-                        Tambah, edit, atau hapus produk
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <a href="#" class="card card-flush h-100 hover-elevate-up">
-                <div class="card-body">
-                    <i class="bi bi-tags fs-2 text-success mb-3"></i>
-                    <div class="fw-bold fs-5">Kelola Kategori</div>
-                    <div class="text-muted fs-7">
-                        Atur kategori produk & portfolio
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <a href="#" class="card card-flush h-100 hover-elevate-up">
-                <div class="card-body">
-                    <i class="bi bi-star fs-2 text-warning mb-3"></i>
-                    <div class="fw-bold fs-5">Kelola Testimoni</div>
-                    <div class="text-muted fs-7">
-                        Review & publikasi testimoni
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-            <a href="#" class="card card-flush h-100 hover-elevate-up">
-                <div class="card-body">
-                    <i class="bi bi-images fs-2 text-info mb-3"></i>
-                    <div class="fw-bold fs-5">Kelola Portfolio</div>
-                    <div class="text-muted fs-7">
-                        Manajemen proyek & galeri
-                    </div>
-                </div>
-            </a>
-        </div>
-
-    </div>
-
-    {{-- VISITOR ANALYTICS --}}
-    <div class="row g-6 mb-8">
+    {{-- ===== ROW 2: STATISTICS / CHARTS (2 columns) ===== --}}
+    <div class="row mb-4">
 
         {{-- AREA CHART: KUNJUNGAN HARIAN --}}
-        <div class="col-xl-6">
-            <div class="card card-flush h-100">
-                <div class="card-header">
-                    <h3 class="card-title fw-bold">
-                        Kunjungan Situs
-                    </h3>
-
-                    <div class="card-toolbar">
-                        <select class="form-select form-select-sm w-125px">
-                            <option>7 Hari</option>
-                            <option>30 Hari</option>
-                            <option>3 Bulan</option>
-                        </select>
-                    </div>
+        <div class="col-xl-6 col-lg-6 mb-4 mb-xl-0">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-semibold mb-0">Kunjungan Situs</h6>
+                    <select class="form-select form-select-sm w-auto">
+                        <option>7 Hari</option>
+                        <option>30 Hari</option>
+                        <option>3 Bulan</option>
+                    </select>
                 </div>
-
-                <div class="card-body">
-                    <div id="visitor_area_chart" style="height: 300px;"></div>
-                </div>
+                <div id="visitor_area_chart" style="height: 260px;"></div>
             </div>
         </div>
 
         {{-- BAR CHART: KUNJUNGAN PER HALAMAN --}}
-        <div class="col-xl-6">
-            <div class="card card-flush h-100">
-                <div class="card-header">
-                    <h3 class="card-title fw-bold">
-                        Halaman Paling Banyak Dikunjungi
-                    </h3>
+        <div class="col-xl-6 col-lg-6">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-semibold mb-0">Halaman Terpopuler</h6>
                 </div>
-
-                <div class="card-body">
-                    <div id="visitor_page_chart" style="height: 300px;"></div>
-                </div>
+                <div id="visitor_page_chart" style="height: 260px;"></div>
             </div>
         </div>
 
     </div>
 
-    {{-- TABLE + ACTIVITY --}}
-    <div class="row g-6">
+    {{-- ===== ROW 3: TABLE + ACTIVITY (2 columns) ===== --}}
+    <div class="row">
 
-        {{-- TABLE --}}
+        {{-- PRODUK TERBARU --}}
         <div class="col-xl-8">
-            <div class="card card-flush">
-                <div class="card-header">
-                    <h3 class="card-title fw-bold">Produk Terbaru</h3>
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h5 class="fw-semibold mb-0">Produk Terbaru</h5>
+                    <a href="#" class="btn btn-sm btn-light-primary">Lihat Semua</a>
                 </div>
-                <div class="card-body">
-                    <table class="table table-row-dashed align-middle">
+                <div class="table-responsive">
+                    <table class="table table-row-dashed align-middle mb-0">
                         <thead class="fs-7 text-muted">
                             <tr>
                                 <th>ID</th>
@@ -166,7 +98,7 @@
                                 <th>Kategori</th>
                                 <th>Status</th>
                                 <th>Tanggal</th>
-                                <th>Aksi</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="fs-7">
@@ -176,7 +108,7 @@
                                 <td>Design</td>
                                 <td><span class="badge badge-light-success">Aktif</span></td>
                                 <td>20 Nov 2023</td>
-                                <td>
+                                <td class="text-end">
                                     <a href="#" class="btn btn-sm btn-light-primary"><i class="bi bi-pencil"></i></a>
                                     <a href="#" class="btn btn-sm btn-light-danger"><i class="bi bi-trash"></i></a>
                                 </td>
@@ -187,7 +119,7 @@
                                 <td>Web Development</td>
                                 <td><span class="badge badge-light-success">Aktif</span></td>
                                 <td>18 Nov 2023</td>
-                                <td>
+                                <td class="text-end">
                                     <a href="#" class="btn btn-sm btn-light-primary"><i class="bi bi-pencil"></i></a>
                                     <a href="#" class="btn btn-sm btn-light-danger"><i class="bi bi-trash"></i></a>
                                 </td>
@@ -198,25 +130,44 @@
             </div>
         </div>
 
-        {{-- ACTIVITY --}}
+        {{-- AKTIVITAS TERBARU --}}
         <div class="col-xl-4">
-            <div class="card card-flush h-100">
-                <div class="card-header">
-                    <h3 class="card-title fw-bold">Aktivitas Terbaru</h3>
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h5 class="fw-semibold mb-0">Aktivitas Terbaru</h5>
                 </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-line w-40px"></div>
-                            <div class="timeline-icon symbol symbol-circle symbol-40px">
-                                <span class="symbol-label bg-light-primary">
-                                    <i class="bi bi-plus"></i>
-                                </span>
-                            </div>
-                            <div class="timeline-content ps-3">
-                                <div class="fw-bold">Produk Baru Ditambahkan</div>
-                                <div class="text-muted fs-7">2 jam yang lalu</div>
-                            </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon symbol symbol-circle symbol-40px">
+                            <span class="symbol-label bg-light-success">
+                                <i class="bi bi-plus fs-6 text-success"></i>
+                            </span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="fw-semibold">Produk Baru Ditambahkan</div>
+                            <div class="text-muted fs-7">2 jam yang lalu</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon symbol symbol-circle symbol-40px">
+                            <span class="symbol-label bg-light-warning">
+                                <i class="bi bi-pencil fs-6 text-warning"></i>
+                            </span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="fw-semibold">Kategori Diperbarui</div>
+                            <div class="text-muted fs-7">5 jam yang lalu</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon symbol symbol-circle symbol-40px">
+                            <span class="symbol-label bg-light-danger">
+                                <i class="bi bi-trash fs-6 text-danger"></i>
+                            </span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="fw-semibold">Testimoni Dihapus</div>
+                            <div class="text-muted fs-7">1 hari yang lalu</div>
                         </div>
                     </div>
                 </div>
@@ -224,20 +175,16 @@
         </div>
 
     </div>
+
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            if (typeof ApexCharts === 'undefined') {
-                console.warn('ApexCharts not loaded');
-                return;
-            }
+            if (typeof ApexCharts === 'undefined') return;
 
-            /* ===============================
-            AREA CHART - KUNJUNGAN HARIAN
-            ================================*/
+            // Area Chart - Kunjungan Harian
             const areaEl = document.getElementById("visitor_area_chart");
             if (areaEl) {
                 new ApexCharts(areaEl, {
@@ -247,48 +194,35 @@
                     }],
                     chart: {
                         type: 'area',
-                        height: 300,
+                        height: 280,
                         toolbar: { show: false },
-                        fontFamily: 'inherit'
+                        fontFamily: 'inherit',
+                        background: 'transparent'
                     },
-                    stroke: {
-                        curve: 'smooth',
-                        width: 3
-                    },
+                    stroke: { curve: 'smooth', width: 3 },
                     fill: {
                         type: 'gradient',
-                        gradient: {
-                            opacityFrom: 0.45,
-                            opacityTo: 0.1
-                        }
+                        gradient: { opacityFrom: 0.45, opacityTo: 0.1 }
                     },
-                    colors: ['#009EF7'],
+                    colors: ['#38bdf8'],
                     xaxis: {
                         categories: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-                        labels: {
-                            style: { colors: '#A1A5B7', fontSize: '12px' }
-                        }
+                        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
                     },
                     yaxis: {
-                        labels: {
-                            style: { colors: '#A1A5B7', fontSize: '12px' }
-                        }
+                        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
                     },
                     grid: {
-                        borderColor: '#EFF2F5',
+                        borderColor: 'rgba(255,255,255,0.06)',
                         strokeDashArray: 4
                     },
                     tooltip: {
-                        y: {
-                            formatter: val => val + ' pengunjung'
-                        }
+                        y: { formatter: val => val + ' pengunjung' }
                     }
                 }).render();
             }
 
-            /* =====================================
-            BAR CHART - KUNJUNGAN PER HALAMAN
-            ======================================*/
+            // Bar Chart - Kunjungan per Halaman
             const barEl = document.getElementById("visitor_page_chart");
             if (barEl) {
                 new ApexCharts(barEl, {
@@ -298,9 +232,10 @@
                     }],
                     chart: {
                         type: 'bar',
-                        height: 300,
+                        height: 280,
                         toolbar: { show: false },
-                        fontFamily: 'inherit'
+                        fontFamily: 'inherit',
+                        background: 'transparent'
                     },
                     plotOptions: {
                         bar: {
@@ -309,28 +244,17 @@
                             barHeight: '60%'
                         }
                     },
-                    colors: ['#50CD89'],
+                    colors: ['#22c55e'],
                     xaxis: {
-                        categories: [
-                            'Beranda',
-                            'Produk',
-                            'Portfolio',
-                            'Tentang Kami',
-                            'Kontak'
-                        ],
-                        labels: {
-                            style: { colors: '#A1A5B7', fontSize: '12px' }
-                        }
+                        categories: ['Beranda', 'Produk', 'Portfolio', 'Tentang Kami', 'Kontak'],
+                        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
                     },
                     grid: {
-                        borderColor: '#EFF2F5',
+                        borderColor: 'rgba(255,255,255,0.06)',
                         strokeDashArray: 4
                     },
                     tooltip: {
-                        x: { show: true },
-                        y: {
-                            formatter: val => val + ' kunjungan'
-                        }
+                        y: { formatter: val => val + ' kunjungan' }
                     }
                 }).render();
             }
@@ -338,4 +262,3 @@
         });
     </script>
 @endpush
-
