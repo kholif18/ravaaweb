@@ -1,19 +1,12 @@
-<div class="footer py-4 d-flex flex-lg-column" id="kt_footer">
-    <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
-
-        {{-- Copyright --}}
-        <div class="text-dark order-2 order-md-1">
-            <span class="text-muted fw-semibold me-1">
-                © {{ date('Y') }}
-            </span>
-            <a href="https://ravaa.my.id"
-               target="_blank"
-               class="text-gray-800 text-hover-primary fw-semibold">
-                Ravaa Creative
-            </a>
+<footer class="footer footer-transparent d-print-none">
+    <div class="container-xl">
+        <div class="row text-center align-items-center flex-row-reverse">
+            <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                <span class="text-muted">Version 0.0.1</span>
+            </div>
+            <div class="col-12 col-lg-auto">
+                <span class="text-muted">&copy; {{ date('Y') }} Ravaa Creative</span>
+            </div>
         </div>
-
-        {{-- Menu Footer --}}
-        <span class="text-muted fw-semibold me-1 order-1">Version 0.0.1</span>
     </div>
-</div>
+</footer>
