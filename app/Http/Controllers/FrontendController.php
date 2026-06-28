@@ -26,12 +26,22 @@ class FrontendController extends Controller
 
     public function product()
     {
-        return view('frontend.product');
+        // Load categories and products for the catalogue page
+        $categories = \App\Models\Category::active()->orderBy('order')->get();
+        $products = \App\Models\Product::with(['category', 'mainMedia', 'galleryMedia'])
+            ->published()
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+        return view('frontend.product', compact('categories', 'products'));
     }
 
-    public function detailProduct()
+    public function detailProduct($slug)
     {
-        return view('frontend.detail-product');
+        // Load a single product by slug including media and variants
+        $product = \App\Models\Product::with(['category', 'mainMedia', 'galleryMedia', 'variants'])
+            ->where('slug', $slug)
+            ->firstOrFail();
+        return view('frontend.detail-product', compact('product'));
     }
 
     public function portofolio()
