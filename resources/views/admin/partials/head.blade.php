@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="shortcut icon" href="{{ asset('admin/assets/media/logos/favicon.ico') }}" />
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -18,8 +18,6 @@
     @stack('styles')
 
     {{-- Global Styles --}}
-    <link href="{{ asset('admin/assets/css/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin/assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin/assets/css/style.bundle.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin/assets/css/ravaa.css') }}" rel="stylesheet">
+<link href="{{ asset('frontend/css/app.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
