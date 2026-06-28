@@ -1,6 +1,7 @@
 @if($categories->count() > 0)
 <!--begin::Table-->
-<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_categories_table">
+<div class="table-responsive">
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_categories_table" style="min-width: 900px;">
     <thead>
         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
             <th class="w-10px pe-2">
@@ -114,27 +115,8 @@
         @endforeach
     </tbody>
 </table>
-<!--end::Table-->
-
-<!--begin::Pagination and Bulk Actions-->
-<div class="d-flex flex-stack flex-wrap pt-10">
-    <div class="fs-6 fw-semibold text-gray-700">
-        Menampilkan {{ $categories->firstItem() }} - {{ $categories->lastItem() }} dari {{ $categories->total() }} kategori
-    </div>
-    
-    <div class="d-flex align-items-center">
-        <!-- Bulk Actions -->
-        <div class="me-5">
-            <button type="button" class="btn btn-light-danger btn-sm" id="bulk-delete-btn" style="display: none;">
-                <i class="bi bi-trash"></i> Hapus Terpilih
-            </button>
-        </div>
-        
-        <!-- Pagination -->
-        {{ $categories->links('vendor.pagination.custom') }}
-    </div>
 </div>
-<!--end::Pagination and Bulk Actions-->
+<!--end::Table-->
 
 @else
 <!--begin::Empty State-->
@@ -148,3 +130,12 @@
 </div>
 <!--end::Empty State-->
 @endif
+
+<!-- Pagination Footer -->
+<x-pagination :paginator="$categories" :perPage="$filters['per_page'] ?? 10" label="kategori">
+    <div class="me-5">
+        <button type="button" class="btn btn-light-danger btn-sm" id="bulk-delete-btn" style="display: none;">
+            <i class="bi bi-trash"></i> Hapus Terpilih
+        </button>
+    </div>
+</x-pagination>

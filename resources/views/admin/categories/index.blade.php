@@ -496,6 +496,16 @@
 
 @push('scripts')
 <script>
+/**
+ * Show toast notification using Ravaa.toast
+ * @param {string} type - success, error, warning, info
+ * @param {string} message - The message to display
+ * @param {string} title - Ignored (compatibility)
+ */
+function showToast(type, message, title = '') {
+    Ravaa.toast(message, type);
+}
+
 // Show session messages as toast
 @if(session('success'))
     Ravaa.toast('{{ session('success') }}', 'success');
@@ -757,11 +767,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Bulk Actions
-    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
-    
-    // Update bulk delete button visibility
+    // Update bulk delete button visibility (re-queries DOM for AJAX reloads)
     function updateBulkDeleteButton() {
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
         if (!bulkDeleteBtn) return;
         
         const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
@@ -775,37 +783,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Bulk delete
-    if (bulkDeleteBtn) {
-        bulkDeleteBtn.addEventListener('click', function() {
-            const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
-            const selectedIds = Array.from(selectedItems).map(item => item.value);
-            
-            if (selectedIds.length === 0) {
-                showToast('warning', 'Silakan pilih kategori yang akan dihapus', 'Peringatan!');
-                return;
+    // Bulk delete (using event delegation for AJAX reloads)
+    document.addEventListener('click', function(e) {
+        const bulkDeleteBtn = e.target.closest('#bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        
+        if (selectedIds.length === 0) {
+            showToast('warning', 'Silakan pilih kategori yang akan dihapus', 'Peringatan!');
+            return;
+        }
+        
+        Swal.fire({
+            title: 'Hapus Kategori Terpilih?',
+            html: `Anda akan menghapus <strong>${selectedIds.length}</strong> kategori.`,
+            text: "Tindakan ini tidak dapat dibatalkan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                confirmButton: 'btn btn-danger',
+                cancelButton: 'btn btn-light'
             }
-            
-            Swal.fire({
-                title: 'Hapus Kategori Terpilih?',
-                html: `Anda akan menghapus <strong>${selectedIds.length}</strong> kategori.`,
-                text: "Tindakan ini tidak dapat dibatalkan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal',
-                customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-light'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
-                    document.getElementById('bulk-delete-form').submit();
-                }
-            });
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
+                document.getElementById('bulk-delete-form').submit();
+            }
         });
-    }
+    });
     
     // Auto-generate slug from name
     const nameInput = document.getElementById('edit_category_name');
@@ -856,6 +865,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const parentFilter = document.querySelector('select[name="parent"]');
     const resetBtn = document.getElementById('kt_category_reset_filter');
 
+    // Re-query per_page dynamically because the element is inside AJAX-replaced content
+    function getPerPageValue() {
+        const el = document.querySelector('select[name="per_page"]');
+        return el ? el.value : '10';
+    }
+
     async function applyFilters(page = 1) {
         // Show loading state
         tableContainer.style.opacity = '0.5';
@@ -865,6 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const search = searchInput.value;
         const status = statusFilter.value;
         const parent = parentFilter.value;
+        const perPage = getPerPageValue();
 
         if (search) url.searchParams.set('search', search);
         else url.searchParams.delete('search');
@@ -874,6 +890,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (parent) url.searchParams.set('parent', parent);
         else url.searchParams.delete('parent');
+
+        if (perPage) url.searchParams.set('per_page', perPage);
+        else url.searchParams.delete('per_page');
 
         if (page > 1) url.searchParams.set('page', page);
         else url.searchParams.delete('page');
@@ -965,9 +984,19 @@ document.addEventListener('DOMContentLoaded', function() {
             searchInput.value = '';
             $(statusFilter).val('').trigger('change.select2');
             $(parentFilter).val('').trigger('change.select2');
+            // Reset per_page di dalam container yang mungkin sudah di-reload
+            const perPageEl = document.querySelector('select[name="per_page"]');
+            if (perPageEl) {
+                $(perPageEl).val('10').trigger('change');
+            }
             applyFilters();
         });
     }
+
+    // Per-page change with event delegation
+    $(document).on('change', 'select[name="per_page"]', function() {
+        applyFilters();
+    });
 
     // Initial event binding
     initializeTableEvents();

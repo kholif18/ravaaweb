@@ -128,13 +128,12 @@ class CategoryController extends Controller
 
     /**
      * Display the specified resource.
-     * Optional - hanya jika dibutuhkan halaman detail
+     * Redirect to index since detail is shown via modal
      */
     public function show(Category $category)
     {
-        return view('admin.categories.show', [
-            'category' => $category->load(['parent', 'children', 'products']),
-        ]);
+        return redirect()->route('admin.categories.index')
+            ->with('info', 'Gunakan tombol Edit untuk melihat detail kategori.');
     }
 
     /**
@@ -205,7 +204,7 @@ class CategoryController extends Controller
         ]);
 
         // Prevent circular reference (check self and all descendants)
-        if ($validated['parent_id']) {
+        if (!empty($validated['parent_id'])) {
             if ($validated['parent_id'] == $category->id) {
                 $errorMessage = 'Kategori tidak dapat menjadi parent dari dirinya sendiri.';
             } else {
@@ -324,7 +323,7 @@ class CategoryController extends Controller
         $invalidCategories = Category::whereIn('id', $ids)
             ->where(function ($query) {
                 $query->has('products')
-                    ->orHas('children');
+                    ->orWhereHas('children');
             })
             ->get();
 
