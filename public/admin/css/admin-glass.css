@@ -1,18 +1,255 @@
-/* Glassmorphism overrides for admin (Tabler) */
-.glass-sidebar {
-    background: rgba(255,255,255,.25) !important;
-    backdrop-filter: blur(12px);
-    border-right: 1px solid rgba(255,255,255,.2);
+/* Dark Glassmorphism Admin Theme – RavaaWeb */
+:root {
+  --glass-bg: rgba(15, 23, 42, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 16px;
+  --glass-radius: 12px;
+  --sidebar-width: 260px;
+  --header-height: 56px;
+  --text-primary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #7dd3fc;
 }
-.glass-header {
-    background: rgba(255,255,255,.25) !important;
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,.2);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #0f172a;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-right: 1px solid var(--glass-border);
+  z-index: 1040;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.admin-sidebar .sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.admin-sidebar .sidebar-header .brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-sidebar .sidebar-header .brand img {
+  height: 32px;
+  width: auto;
+}
+
+.admin-sidebar .sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 0.75rem;
+}
+
+.admin-sidebar .sidebar-nav .nav-item {
+  list-style: none;
+}
+
+.admin-sidebar .sidebar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.5rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.admin-sidebar .sidebar-nav .nav-link:hover,
+.admin-sidebar .sidebar-nav .nav-link.active {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+}
+
+.admin-sidebar .sidebar-nav .nav-link i {
+  font-size: 1.15rem;
+  width: 1.5rem;
+  text-align: center;
+}
+
+.admin-sidebar .sidebar-nav .nav-section {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1rem 0.875rem 0.25rem;
+  opacity: 0.5;
+}
+
+.admin-sidebar .sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+/* Mobile overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1035;
+}
+
+.sidebar-overlay.active {
+  display: block;
+}
+
+/* ===== MAIN WRAPPER ===== */
+.admin-wrapper {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  height: var(--header-height);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.admin-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-header .header-left .sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.admin-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-header .user-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.admin-header .user-dropdown .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid var(--glass-border);
+}
+
+/* ===== CONTENT ===== */
+.admin-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.admin-content .page-title {
+  margin-bottom: 1.5rem;
+}
+
+.admin-content .page-title h1 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.admin-content .page-title .breadcrumb {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ===== FOOTER ===== */
+.admin-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--glass-border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* ===== CARDS ===== */
 .glass-card {
-    background: rgba(255,255,255,.15) !important;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,.25) !important;
-    border-radius: .75rem;
-    box-shadow: 0 4px 30px rgba(0,0,0,.1);
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  padding: 1.25rem;
+  transition: box-shadow 0.2s;
+}
+
+.glass-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+  }
+  .admin-sidebar.active {
+    transform: translateX(0);
+  }
+  .admin-wrapper {
+    margin-left: 0;
+  }
+  .admin-header .header-left .sidebar-toggle {
+    display: inline-flex;
+  }
+  .admin-header .header-left .brand-text {
+    display: none;
+  }
 }

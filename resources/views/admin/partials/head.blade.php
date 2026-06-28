@@ -18,8 +18,6 @@
     @stack('styles')
 
     {{-- Global Styles --}}
-<link href="{{ asset('admin/css/tabler.min.css') }}" rel="stylesheet">
-<link href="{{ asset('frontend/css/app.css') }}" rel="stylesheet">
 <link href="{{ asset('admin/css/admin-glass.css') }}" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>

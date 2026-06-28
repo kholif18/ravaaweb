@@ -1,31 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 @include('admin.partials.head')
+<body>
 
-<body class="layout-navbars-fixed layout-sidebar-fixed admin-body">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="page">
-    {{-- Vertical sidebar --}}
+<aside class="admin-sidebar" id="adminSidebar">
     @include('admin.partials.aside')
+</aside>
 
-    {{-- Main page wrapper --}}
-    <div class="page-wrapper">
-        {{-- Top header --}}
+<div class="admin-wrapper">
+    <header class="admin-header">
         @include('admin.partials.header')
+    </header>
 
-        {{-- Page content --}}
-        <div class="page-body">
-            <div class="container-xl">
-                @yield('content')
-            </div>
-        </div>
+    <main class="admin-content">
+        @yield('content')
+    </main>
 
-        {{-- Footer --}}
+    <footer class="admin-footer">
         @include('admin.partials.footer')
-    </div>
+    </footer>
 </div>
 
 @include('admin.partials.scripts')
-@stack('scripts')
 </body>
 </html>
