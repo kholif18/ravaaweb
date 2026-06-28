@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "review-code": {
+      "description": "Gunakan untuk melakukan code review: analisis keamanan, performa, best practice, clean code, dan konsistensi di project RavaaWeb. Untuk PHP, Blade, JS, CSS.",
+      "location": ".opencode/skills/review-code.md"
+    },
+    "bugfix": {
+      "description": "Gunakan untuk mendiagnosis dan memperbaiki bug/error/exception di project RavaaWeb. Mencakup alur repro, analisis root cause, implementasi fix, dan validasi.",
+      "location": ".opencode/skills/bugfix.md"
+    },
+    "frontend-design": {
+      "description": "Gunakan untuk mendesain tampilan UI/UX, membuat/mengubah halaman Blade, styling Tailwind CSS v4 / Bootstrap 5, mengatur layout, komponen frontend, dan integrasi Vite di RavaaWeb.",
+      "location": ".opencode/skills/frontend-design.md"
+    },
+    "backend-craft": {
+      "description": "Gunakan untuk membuat fitur backend baru: Controller, Model, Migration, Eloquent, Service class, Form Request, Route, Policy, Queue/Job, Event/Listener, Artisan Command, dan Testing di RavaaWeb.",
+      "location": ".opencode/skills/backend-craft.md"
+    }
+  }
+}

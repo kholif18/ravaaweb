@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\FrontendController;
 
 /*
@@ -24,3 +25,25 @@ Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 Route::get('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.post');
 Route::post('admin/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Protected Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['admin.auth','role:admin,admin'])
+    ->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard.index');
+        })->name('dashboard');
+
+        // Categories
+        Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk.destroy');
+        Route::resource('categories', CategoryController::class);
+        Route::put('categories/{category}/status', [CategoryController::class, 'updateStatus'])->name('categories.status.update');
+
+    });

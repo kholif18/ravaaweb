@@ -1,151 +1,75 @@
 @extends('frontend.layouts.master')
 
-@section('title', 'Produk Kami')
+@section('title', 'Katalog')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="hero-products">
-        <div class="container">
-            <h1>Katalog Produk</h1>
-            <p>Temukan berbagai produk desain, percetakan, dan alat tulis kantor berkualitas tinggi dari Ravaa Creative. Solusi lengkap untuk kebutuhan kreatif dan bisnis Anda.</p>
-        </div>
-    </section>
+<section class="section" style="padding-top:30px;">
+    <div class="container">
+        <form class="catalog-header" method="GET" action="{{ url()->current() }}" id="catalogForm">
+            <input type="hidden" name="category" id="inputCategory" value="{{ request('category') }}">
+            <input type="hidden" name="type" id="inputType" value="{{ request('type', 'all') }}">
 
-    <!-- Product Categories -->
-    <section class="product-categories">
-        <div class="container">
-            <div class="section-title">
-                <h2>Kategori Produk</h2>
+            <div class="catalog-toolbar">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" placeholder="Cari produk..." value="{{ request('search') }}">
+                </div>
+                <div class="type-pills">
+                    <button type="button" class="filter-pill {{ request('type', 'all') == 'all' ? 'active' : '' }}" data-type="all">Semua</button>
+                    <button type="button" class="filter-pill {{ request('type') == 'product' ? 'active' : '' }}" data-type="product">Produk</button>
+                    <button type="button" class="filter-pill {{ request('type') == 'service' ? 'active' : '' }}" data-type="service">Layanan</button>
+                </div>
             </div>
-            <div class="category-grid">
-                <div class="category-card active" data-category="all">
-                    <div class="category-icon"><i class="fas fa-th-large"></i></div>
-                    <h3>Semua Produk</h3>
-                    <div class="category-count">{{ $products->total() }} produk</div>
-                </div>
-                @foreach($categories as $cat)
-                <div class="category-card" data-category="{{ $cat->slug }}">
-                    <div class="category-icon"><i class="{{ $cat->icon ?? 'fas fa-tags' }}"></i></div>
-                    <h3>{{ $cat->name }}</h3>
-                    <div class="category-count">{{ $cat->products()->count() }} produk</div>
-                </div>
+
+            <div class="filter-pills" id="categoryPills">
+                <button type="button" class="filter-pill {{ !request('category') ? 'active' : '' }}" data-category="">Semua</button>
+                @foreach($categories as $category)
+                    <button type="button" class="filter-pill {{ request('category') == $category->slug ? 'active' : '' }}" data-category="{{ $category->slug }}">{{ $category->name }}</button>
                 @endforeach
             </div>
-        </div>
-    </section>
+        </form>
 
-    <!-- Products Grid -->
-    <section class="products-grid-section">
-        <div class="container">
-            <div class="products-header">
-                <div>
-                    <h3>Semua Produk <span class="product-count">({{ $products->total() }} produk)</span></h3>
-                </div>
-                <div class="view-options">
-                    <div class="sort-options">
-                        <span style="margin-right: 10px;">Tampilan:</span>
-                        <button class="view-btn active" data-view="grid"><i class="fas fa-th-large"></i></button>
-                        <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="products-grid" id="productsGrid">
+        @if(count($products) > 0)
+            <div class="product-grid">
                 @foreach($products as $product)
-                <div class="product-card" 
-                     data-category="{{ $product->category->slug ?? 'uncategorized' }}" 
-                     data-price="{{ $product->selling_price }}" 
-                     data-name="{{ $product->name }}" 
-                     data-popular="{{ $product->is_featured ? 'true' : 'false' }}">
-                    <div class="product-image">
-                        @if($product->mainMedia)
-                            <img src="{{ $product->mainMedia->url }}" alt="{{ $product->name }}">
-                        @else
-                            <img src="{{ asset('storage/images/default-product.png') }}" alt="{{ $product->name }}">
-                        @endif
-                        @if($product->is_new_arrival)
-                            <span class="product-badge new">Baru</span>
-                        @endif
-                        @if($product->hasActiveDiscount())
-                            <span class="product-badge discount">Diskon {{ round((($product->price - $product->discount_price)/$product->price)*100) }}%</span>
-                        @endif
-                        @if($product->is_featured)
-                            <span class="product-badge popular">Populer</span>
-                        @endif
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">{{ $product->category->name ?? 'Tidak Ada' }}</div>
-                        <h3 class="product-title">{{ $product->name }}</h3>
-                        <div class="product-price">
-                            @if($product->hasActiveDiscount())
-                                <span class="price">{{ $product->formatted_discount_price }}</span>
-                                <span class="original-price" style="text-decoration: line-through;">{{ $product->formatted_price }}</span>
-                            @else
-                                <span class="price">{{ $product->formatted_price }}</span>
+                    <div class="prod-card">
+                        <div class="prod-card-img" style="position:relative;">
+                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="prod-card-img">
+                            @if(!empty($product->badge))
+                                <div class="prod-card-badge badge-{{ strtolower(explode(' ', $product->badge)[0]) }}">{{ $product->badge }}</div>
                             @endif
                         </div>
-                        <div class="product-actions">
-                            <a href="{{ route('detail-product', $product->slug) }}" class="btn-detail">Detail</a>
+
+                        <div class="prod-card-body">
+                            <div class="prod-card-category">{{ $product->category }}</div>
+                            <h3 class="prod-card-title">{{ $product->name }}</h3>
+                            <div class="prod-card-price">
+                                {{ $product->price }}
+                                @if(!empty($product->original_price))
+                                    <span class="original">{{ $product->original_price }}</span>
+                                @endif
+                            </div>
+                            <p>{{ $product->description }}</p>
+                            <div class="prod-card-actions">
+                                <a href="/product/{{ $product->slug }}" class="btn btn-primary btn-sm">Detail</a>
+                                <a href="https://wa.me/6282233377661?text={{ urlencode('Halo, saya tertarik dengan ' . $product->name) }}" class="btn btn-whatsapp btn-sm" target="_blank">WhatsApp</a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endforeach
             </div>
-
-            <!-- Pagination -->
-            <div class="pagination mt-4">
-                {{ $products->withQueryString()->links() }}
+        @else
+            <div class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                    <path d="M8 11h6"/>
+                </svg>
+                <h3>Produk Tidak Ditemukan</h3>
+                <p>Coba ubah filter atau kata kunci pencarian.</p>
+                <a href="/product" class="btn btn-primary">Reset Filter</a>
             </div>
-        </div>
-    </section>
-
-    <!-- Optional Promo Banner -->
-    <section class="container">
-        <div class="promo-banner">
-            <h2>Gratis Konsultasi Desain!</h2>
-            <p>Dapatkan konsultasi desain gratis untuk 5 project pertama Anda. Hubungi kami sekarang untuk mendiskusikan kebutuhan kreatif bisnis Anda.</p>
-            <a href="{{ route('contact') }}" class="btn" style="background-color: white; color: #7209b7; margin-top: 15px;">Hubungi Sekarang</a>
-        </div>
-    </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const categoryCards = document.querySelectorAll('.category-card');
-            const productCards = document.querySelectorAll('.product-card');
-            const viewButtons = document.querySelectorAll('.view-btn');
-            const productCountEl = document.querySelector('.product-count');
-
-            // Category filter
-            categoryCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    categoryCards.forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                    const selected = card.dataset.category;
-                    let visible = 0;
-                    productCards.forEach(p => {
-                        const cat = p.dataset.category;
-                        if (selected === 'all' || cat === selected) {
-                            p.style.display = 'block';
-                            visible++;
-                        } else {
-                            p.style.display = 'none';
-                        }
-                    });
-                    if (productCountEl) productCountEl.textContent = `(${visible} produk)`;
-                });
-            });
-
-            // View toggle
-            viewButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const view = btn.dataset.view;
-                    viewButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    const grid = document.getElementById('productsGrid');
-                    grid.classList.toggle('list-view', view === 'list');
-                });
-            });
-        });
-    </script>
-
+        @endif
+    </div>
+</section>
 @endsection

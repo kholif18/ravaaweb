@@ -2,188 +2,230 @@
 
 @section('title', $product->name)
 
+@section('meta_desc', $product->description)
+
 @section('content')
-    <!-- Breadcrumb -->
-    <section class="breadcrumb-container">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="{{ route('home') }}">Home</a>
-                <i class="fas fa-chevron-right"></i>
-                <a href="{{ route('product') }}">Produk</a>
-                @if($product->category)
-                    <i class="fas fa-chevron-right"></i>
-                    <a href="{{ route('product') }}?category={{ $product->category->slug }}">{{ $product->category->name }}</a>
-                @endif
-                <i class="fas fa-chevron-right"></i>
-                <span>{{ $product->name }}</span>
-            </div>
-        </div>
-    </section>
 
-    <!-- Product Detail -->
-    <section class="product-detail">
-        <div class="container">
-            <div class="product-detail-container">
-                <!-- Product Gallery -->
-                <div class="product-gallery">
-                    <div class="product-main-image">
-                        @if($product->mainMedia)
-                            <img src="{{ $product->mainMedia->url }}" alt="{{ $product->name }}" id="mainImage">
-                        @else
-                            <img src="{{ asset('storage/images/default-product.png') }}" alt="{{ $product->name }}" id="mainImage">
-                        @endif
-                    </div>
-                    <div class="product-thumbnails">
-                        @foreach($product->galleryMedia as $media)
-                            <div class="thumbnail {{ $loop->first ? 'active' : '' }}" data-image="{{ $media->url }}">
-                                <img src="{{ $media->thumbnail_url ?? $media->url }}" alt="{{ $product->name }} thumbnail {{ $loop->iteration }}">
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                
-                <!-- Product Info -->
-                <div class="detail-product-info">
-                    <span class="product-category">{{ $product->category->name ?? 'Tidak Ada' }}</span>
-                    <h1 class="detail-product-title">{{ $product->name }}</h1>
-                    
-                    <div class="detail-product-price-container">
-                         <div class="detail-current-price">
-                             @if($product->hasActiveDiscount())
-                                 {{ $product->formatted_discount_price }}
-                             @else
-                                 {{ $product->formatted_price }}
-                             @endif
-                         </div>
-                         @if($product->hasActiveDiscount())
-                             <div class="detail-original-price">{{ $product->formatted_price }}</div>
-                             <div class="detail-discount-percentage">Hemat {{ round((($product->price - $product->discount_price)/$product->price)*100) }}%</div>
-                         @endif
-                    </div>
-                    
-                    <div class="product-stock">
-                        <div class="stock-status {{ $product->stock_status }}">
-                            <i class="fas fa-check-circle"></i>
-                            <span>{{ $product->stock_status_text }}</span>
-                        </div>
-                        @if(!empty($product->quick_infos['stock']))
-                            <span class="stock-count">Stok: {{ $product->quick_infos['stock'] }}</span>
-                        @endif
-                    </div>
-                    
-                    <!-- Variants (if any) -->
-                    @if($product->has_variants && $product->variants->count())
-                    <div class="detail-product-variants">
-                        <h3 class="detail-variant-title">Pilih Paket:</h3>
-                        <div class="detail-variant-options">
-                            @foreach($product->variants as $variant)
-                                <div class="detail-variant-option {{ $variant->is_default ? 'selected' : '' }}" data-variant="{{ $variant->id }}">
-                                    {{ $variant->name }}
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-                    
-                    <div class="product-warranty">
-                        <div class="warranty-badge">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Garansi 100% Revisi & Hak Cipta</span>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-product-actions">
-                        <div class="detail-action-buttons">
-                            <a href="https://wa.me/6281234567890?text=Halo%20Ravaa%20Creative,%20saya%20tertarik%20dengan%20{{ urlencode($product->name) }}" class="btn-whatsapp" target="_blank">
-                                <i class="fab fa-whatsapp"></i> Pesan via WhatsApp
-                            </a>
-                            <a href="https://t.me/RavaaCreative" class="btn-telegram" target="_blank">
-                                <i class="fab fa-telegram"></i> Pesan via Telegram
-                            </a>
-                        </div>
-                        
-                        <div class="quick-info">
-                            <div class="info-item"><i class="fas fa-shipping-fast"></i> Gratis Konsultasi</div>
-                            <div class="info-item"><i class="fas fa-clock"></i> Pengerjaan 3-7 hari</div>
-                            <div class="info-item"><i class="fas fa-undo"></i> Revisi tanpa batas</div>
-                            <div class="info-item"><i class="fas fa-file-download"></i> File lengkap semua format</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Product Tabs -->
-            <div class="detail-product-tabs">
-                <div class="detail-tab-headers">
-                    <button class="detail-tab-header active" data-tab="description">Deskripsi Produk</button>
-                    <button class="detail-tab-header" data-tab="specifications">Spesifikasi</button>
-                </div>
-                
-                <div class="detail-tab-content active" id="description">
-                    <div class="detail-product-description">
-                        {!! $product->description !!}
-                    </div>
-                </div>
-                
-                <div class="detail-tab-content" id="specifications">
-                    @if($product->specifications)
-                        {!! $product->specifications !!}
-                    @else
-                        <p>Spesifikasi belum tersedia.</p>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </section>
+@php
+$highlights = [
+    'Baru' => 'Produk Terbaru',
+    'Diskon 15%' => 'Harga Spesial',
+    'Terlaris' => 'Best Seller',
+    'Popular' => 'Paling Diminati',
+];
+$badgeText = $product->badge ?? '';
+$highlightLabel = $highlights[$badgeText] ?? null;
 
-    <!-- Related Products -->
-    <section class="related-products">
-        <div class="container">
-            <div class="section-title"><h2>Produk Terkait</h2></div>
-            <div class="related-grid">
-                @foreach($product->relatedProducts()->take(3)->get() as $rel)
-                <div class="related-card">
-                    <div class="related-image">
-                        @if($rel->mainMedia)
-                            <img src="{{ $rel->mainMedia->url }}" alt="{{ $rel->name }}">
-                        @else
-                            <img src="{{ asset('storage/images/default-product.png') }}" alt="{{ $rel->name }}">
-                        @endif
-                    </div>
-                    <div class="related-info">
-                        <h3 class="related-title">{{ $rel->name }}</h3>
-                        <div class="related-price">{{ $rel->formatted_price }}</div>
-                        <a href="{{ route('detail-product', $rel->slug) }}" class="related-btn">Lihat Detail</a>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
+$features = $product->type === 'service'
+    ? ['Konsultasi Gratis', 'Desain Custom', 'Revisi Unlimited', 'File Siap Pakai', 'Garansi Kepuasan']
+    : ['Kualitas Premium', 'Harga Terjangkau', 'Pengiriman Cepat', 'Garansi 100%'];
 
-    <script>
-        // Gallery switch
-        const mainImage = document.getElementById('mainImage');
-        const thumbnails = document.querySelectorAll('.thumbnail');
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', () => {
-                thumbnails.forEach(t => t.classList.remove('active'));
-                thumbnail.classList.add('active');
-                const newSrc = thumbnail.dataset.image;
-                mainImage.src = newSrc;
-            });
-        });
-        // Tab navigation
-        const tabHeaders = document.querySelectorAll('.detail-tab-header');
-        const tabContents = document.querySelectorAll('.detail-tab-content');
-        tabHeaders.forEach(header => {
-            header.addEventListener('click', () => {
-                const target = header.dataset.tab;
-                tabHeaders.forEach(h => h.classList.remove('active'));
-                header.classList.add('active');
-                tabContents.forEach(c => c.classList.remove('active'));
-                document.getElementById(target).classList.add('active');
-            });
-        });
-    </script>
+$allFeatures = $product->type === 'service'
+    ? [
+        ['label' => 'Konsultasi Awal', 'desc' => 'Diskusi kebutuhan untuk hasil yang tepat sasaran.'],
+        ['label' => 'Desain Custom', 'desc' => 'Desain eksklusif sesuai brand & preferensi Anda.'],
+        ['label' => 'Revisi Unlimited', 'desc' => 'Bebas revisi sampai benar-benar puas.'],
+        ['label' => 'File Siap Pakai', 'desc' => 'Output siap cetak/unggah dalam berbagai format.'],
+        ['label' => 'Garansi Kepuasan', 'desc' => '100% puas atau kami revisi sampai sesuai.'],
+    ]
+    : [
+        ['label' => 'Bahan Premium', 'desc' => 'Menggunakan material berkualitas tinggi dan tahan lama.'],
+        ['label' => 'Cetak Tajam', 'desc' => 'Hasil cetak dengan resolusi tinggi dan warna akurat.'],
+        ['label' => 'Pengiriman Cepat', 'desc' => 'Diproses cepat dan dikirim via ekspedisi terpercaya.'],
+        ['label' => 'Garansi 100%', 'desc' => 'Garansi kualitas atau uang kembali dalam 7 hari.'],
+    ];
+@endphp
+
+<section class="section" style="padding-top:30px;">
+  <div class="container">
+
+    {{-- Breadcrumb --}}
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ url('/') }}">Home</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="{{ url('/product') }}">Katalog</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="{{ url('/product?category=' . urlencode($product->category)) }}">{{ $product->category }}</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">{{ $product->name }}</span>
+    </nav>
+
+    {{-- Product Detail Grid --}}
+    <div class="detail-layout">
+      {{-- Left: Image Gallery --}}
+      <div class="detail-gallery">
+        <div class="detail-main-img" id="detailMainImg">
+          <img src="{{ $product->image }}" alt="{{ $product->name }}">
+          @if(!empty($product->badge))
+            <span class="prod-card-badge badge-{{ strtolower(explode(' ', $product->badge)[0]) }}">{{ $product->badge }}</span>
+          @endif
+        </div>
+        <div class="detail-thumbs" id="galleryThumbs">
+          <div class="detail-thumb active" data-src="{{ $product->image }}">
+            <img src="{{ $product->image }}" alt="{{ $product->name }}">
+          </div>
+          <div class="detail-thumb" data-src="https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&q=80">
+            <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?w=200&q=60" alt="Thumbnail">
+          </div>
+          <div class="detail-thumb" data-src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80">
+            <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=200&q=60" alt="Thumbnail">
+          </div>
+          <div class="detail-thumb" data-src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&q=80">
+            <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=200&q=60" alt="Thumbnail">
+          </div>
+        </div>
+      </div>
+
+      {{-- Right: Product Info --}}
+      <div class="detail-panel">
+        <span class="detail-category">{{ $product->category }}</span>
+        <h1>{{ $product->name }}</h1>
+
+        {{-- Price --}}
+        <div class="detail-price">
+          {{ $product->price }}
+          @if(!empty($product->original_price))
+            <span class="original-price">{{ $product->original_price }}</span>
+            <span class="discount-badge">Hemat sampai 15%</span>
+          @endif
+        </div>
+
+        {{-- Stock --}}
+        <div class="detail-stock">
+          <span class="stock-dot"></span>
+          <span>Stok tersedia</span>
+          <span class="dimm">— Pesan sekarang, siap dalam 2-3 hari</span>
+        </div>
+
+        {{-- Highlights --}}
+        @if($highlightLabel)
+        <div class="detail-highlight">
+          <i class="fas fa-medal"></i>
+          <span>{{ $highlightLabel }}</span>
+        </div>
+        @endif
+
+        {{-- Feature Chips --}}
+        <div class="detail-chips">
+          @foreach($features as $feature)
+            <span class="chip">{{ $feature }}</span>
+          @endforeach
+        </div>
+
+        {{-- Variant: Warna --}}
+        <div class="detail-variants">
+          <div class="variant-group">
+            <span class="variant-label">Warna:</span>
+            <div class="variant-options">
+              <button class="variant-btn active" style="background:#1D1D1F" title="Hitam"></button>
+              <button class="variant-btn" style="background:#FFFFFF;border-color:#D4D4D8;" title="Putih"></button>
+              <button class="variant-btn" style="background:#2563EB" title="Biru"></button>
+              <button class="variant-btn" style="background:#DC2626" title="Merah"></button>
+            </div>
+          </div>
+          <div class="variant-group">
+            <span class="variant-label">Ukuran:</span>
+            <div class="variant-options">
+              <button class="variant-btn variant-text active">S</button>
+              <button class="variant-btn variant-text">M</button>
+              <button class="variant-btn variant-text">L</button>
+              <button class="variant-btn variant-text">XL</button>
+            </div>
+          </div>
+        </div>
+
+        {{-- Info Grid --}}
+        <div class="detail-info-grid">
+          <div class="info-item">
+            <span class="info-label">Tipe</span>
+            <span class="info-value">{{ ucfirst($product->type) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Kategori</span>
+            <span class="info-value">{{ $product->category }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Estimasi</span>
+            <span class="info-value">2-3 Hari</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Min. Pesan</span>
+            <span class="info-value">1 Item</span>
+          </div>
+        </div>
+
+        {{-- CTAs --}}
+        <div class="detail-ctas">
+          <a href="https://wa.me/6282233377661?text=Halo%20Ravaa%20Creative%2C%20saya%20tertarik%20dengan%20produk%20{{ urlencode($product->name) }}%20-%20{{ urlencode($product->description) }}"
+             class="btn btn-whatsapp btn-lg" target="_blank">
+            <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+          </a>
+          <a href="{{ url('/product') }}" class="btn btn-outline btn-lg">
+            <i class="fas fa-arrow-left"></i> Kembali
+          </a>
+        </div>
+
+        {{-- Share --}}
+        <div class="detail-share">
+          <span>Bagikan:</span>
+          <a href="https://wa.me/?text={{ urlencode('Lihat produk ini: ' . $product->name . ' - ' . url()->current()) }}" target="_blank"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" onclick="navigator.clipboard?.writeText(window.location.href);alert('Link disalin!');return false;"><i class="fas fa-link"></i></a>
+        </div>
+      </div>
+    </div>
+
+    {{-- Tab: Deskripsi & Fitur --}}
+    <div class="detail-tabs">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="desc">Deskripsi</button>
+        <button class="tab-btn" data-tab="features">Fitur</button>
+      </div>
+      <div class="tab-panel active" id="tab-desc">
+        <p>{{ $product->description }}</p>
+        <p style="margin-top:16px;">Kami menggunakan bahan-bahan berkualitas tinggi dan teknologi terkini untuk memastikan setiap produk yang kami hasilkan memenuhi standar terbaik. Setiap tahap produksi melalui quality control ketat sehingga Anda mendapatkan hasil yang memuaskan.</p>
+        <p style="margin-top:12px;">Ravaa Creative berkomitmen untuk memberikan solusi kreatif terbaik bagi bisnis dan kebutuhan personal Anda. Dengan pengalaman bertahun-tahun di industri kreatif dan teknologi, kami siap membantu mewujudkan ide Anda menjadi kenyataan.</p>
+      </div>
+      <div class="tab-panel" id="tab-features">
+        <div class="features-grid">
+          @foreach($allFeatures as $f)
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+              <strong>{{ $f['label'] }}</strong>
+              <p>{{ $f['desc'] }}</p>
+            </div>
+          </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+
+    {{-- Related Products --}}
+    @if(count($relatedProducts) > 0)
+    <div style="margin-top:64px;">
+      <div class="detail-section-title" style="margin-bottom:24px;">Produk Terkait</div>
+      <div class="product-grid">
+        @foreach($relatedProducts as $rp)
+        <a href="{{ url('/product/'.$rp->slug) }}" class="prod-card" style="text-decoration:none;color:inherit;">
+          <div style="position:relative;">
+            <img src="{{ $rp->image }}" class="prod-card-img" alt="{{ $rp->name }}">
+            @if(!empty($rp->badge))
+              <span class="prod-card-badge badge-{{ strtolower(explode(' ', $rp->badge)[0]) }}">{{ $rp->badge }}</span>
+            @endif
+          </div>
+          <div class="prod-card-body">
+            <div class="prod-card-category">{{ $rp->category }}</div>
+            <div class="prod-card-title">{{ $rp->name }}</div>
+            <div class="prod-card-price">{{ $rp->price }}</div>
+          </div>
+        </a>
+        @endforeach
+      </div>
+    </div>
+    @endif
+
+  </div>
+</section>
 @endsection
