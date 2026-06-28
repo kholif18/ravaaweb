@@ -26,10 +26,14 @@ use App\Http\Controllers\FrontendController;
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/layanan', [FrontendController::class, 'layanan'])->name('layanan');
 Route::get('/product', [FrontendController::class, 'product'])->name('product');
-Route::get('/detail-product', [FrontendController::class, 'detailProduct'])->name('detail-product');
+Route::get('/product/{slug}', [FrontendController::class, 'detailProduct'])->name('detail-product');
 Route::get('/portofolio', [FrontendController::class, 'portofolio'])->name('portofolio');
 Route::get('/software-house', [FrontendController::class, 'softwareHouse'])->name('software-house');
 Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
+
+Route::get('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('admin.login');
+Route::post('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.post');
+Route::post('admin/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +42,7 @@ Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 */
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware('admin.dummy')
+    ->middleware(['admin.auth','role:admin,admin'])
     ->group(function () {
 
         // 1. Dashboard
@@ -48,20 +52,23 @@ Route::prefix('admin')
 
         // 2. Katalog Produk (Entity-based)
         Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
-        Route::resource('products', ProductController::class);
         Route::delete('products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk.destroy');
+        Route::resource('products', ProductController::class);
         Route::put('products/{product}/status', [ProductController::class, 'updateStatus'])->name('products.status.update');
         
-        Route::resource('categories', CategoryController::class);
         Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk.destroy');
+        Route::resource('categories', CategoryController::class);
         Route::put('categories/{category}/status', [CategoryController::class, 'updateStatus'])->name('categories.status.update');
         
         Route::prefix('media')->name('media.')->group(function () {
             Route::get('/', [MediaController::class, 'index'])->name('index');
             Route::get('/picker', [MediaController::class, 'picker'])->name('picker');
+            Route::post('/store', [MediaController::class, 'store'])->name('store');
             Route::post('/upload', [MediaController::class, 'upload'])->name('upload');
+            Route::get('/{media}/download', [MediaController::class, 'download'])->name('download');
             Route::delete('/{media}', [MediaController::class, 'destroy'])->name('destroy');
             Route::post('/bulk-destroy', [MediaController::class, 'bulkDestroy'])->name('bulk.destroy');
+            Route::post('/bulk-download', [MediaController::class, 'bulkDownload'])->name('bulk.download');
         });
 
         // 3. Layanan & Portfolio
