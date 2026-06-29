@@ -46,9 +46,6 @@
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
-                    <button type="button" class="btn btn-primary btn-sm" id="kt_category_search_btn">
-                        <i class="bi bi-search"></i> Cari
-                    </button>
                     <button type="button" class="btn btn-light btn-sm" id="kt_category_reset_filter">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
@@ -940,13 +937,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(searchTimer);
                 applyFilters();
             }
-        });
-    }
-
-    const searchBtn = document.getElementById('kt_category_search_btn');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', function() {
-            applyFilters();
         });
     }
 

@@ -46,4 +46,8 @@ Route::prefix('admin')
         Route::resource('categories', CategoryController::class);
         Route::put('categories/{category}/status', [CategoryController::class, 'updateStatus'])->name('categories.status.update');
 
+        // Tags
+        Route::delete('tags/bulk-delete', [App\Http\Controllers\Admin\TagController::class, 'bulkDestroy'])->name('tags.bulk.destroy');
+        Route::resource('tags', App\Http\Controllers\Admin\TagController::class);
+
     });

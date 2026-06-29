@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 @include('admin.partials.head')
 <body>
 
@@ -24,5 +24,6 @@
 </div>
 
 @include('admin.partials.scripts')
+
 </body>
 </html>

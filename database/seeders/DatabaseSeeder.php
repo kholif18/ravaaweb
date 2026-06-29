@@ -31,5 +31,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed kategori produk
         $this->call(CategorySeeder::class);
+
+        // Seed tag produk
+        $this->call(TagSeeder::class);
     }
 }

@@ -3,17 +3,14 @@
 @section('page-title', 'Dashboard')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-gray-400">
-        <a href="{{ route('admin.dashboard') }}"
-           class="text-gray-400 text-hover-primary">
-            Home
+    <li>
+        <a href="{{ route('admin.dashboard') }}">
+            <i class="bi bi-house-door"></i> Home
         </a>
     </li>
-    <li class="breadcrumb-item text-gray-400">
-        <span class="bullet bg-gray-300 w-5px h-2px"></span>
-    </li>
-    <li class="breadcrumb-item text-dark">
-        Dashboard
+    <li class="bc-separator"><i class="bi bi-chevron-right"></i></li>
+    <li>
+        <span class="bc-current">Dashboard</span>
     </li>
 @endsection
 
@@ -204,16 +201,16 @@
                         type: 'gradient',
                         gradient: { opacityFrom: 0.45, opacityTo: 0.1 }
                     },
-                    colors: ['#38bdf8'],
+                    colors: ['#4f6ef7'],
                     xaxis: {
                         categories: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-                        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
+                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } }
                     },
                     yaxis: {
-                        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
+                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } }
                     },
                     grid: {
-                        borderColor: 'rgba(255,255,255,0.06)',
+                        borderColor: 'rgba(0,0,0,0.04)',
                         strokeDashArray: 4
                     },
                     tooltip: {
@@ -247,10 +244,10 @@
                     colors: ['#22c55e'],
                     xaxis: {
                         categories: ['Beranda', 'Produk', 'Portfolio', 'Tentang Kami', 'Kontak'],
-                        labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
+                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } }
                     },
                     grid: {
-                        borderColor: 'rgba(255,255,255,0.06)',
+                        borderColor: 'rgba(0,0,0,0.04)',
                         strokeDashArray: 4
                     },
                     tooltip: {
