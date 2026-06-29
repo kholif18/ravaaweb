@@ -22,7 +22,7 @@
 <form id="product-form" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 <div class="row g-4">
-    <!-- ========== MAIN CONTENT (80%) ========== -->
+    <!-- ========== MAIN CONTENT ========== -->
     <div class="col-md-8">
         <!-- Nama & Slug -->
         <div class="glass-card mb-4">
@@ -276,7 +276,7 @@
         </div>
     </div>
 
-    <!-- ========== SIDEBAR (20%) ========== -->
+    <!-- ========== SIDEBAR ========== -->
     <div class="col-md-4">
         <!-- Publish -->
         <div class="glass-card mb-4">
