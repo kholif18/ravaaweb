@@ -693,8 +693,11 @@ textarea.form-control { min-height: 60px; resize: vertical; }
 .input-group > :not(:last-child) {
   border-top-right-radius: 0; border-bottom-right-radius: 0;
 }
-.input-group:hover .input-group-text,
-.input-group:hover .form-control { border-color: rgba(0, 0, 0, 0.2); }
+    .input-group:hover .input-group-text,
+    .input-group:hover .form-control {
+        border-color: rgba(0, 0, 0, 0.2);
+        background: var(--bg-surface-hover);
+    }
 .input-group:focus-within .input-group-text {
   border-color: var(--accent);
 }
@@ -925,44 +928,22 @@ textarea.form-control { min-height: 60px; resize: vertical; }
    DROPDOWN
    ============================================= */
 .dropdown { position: relative; }
-.dropdown-menu, .dropdown-portal {
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    min-width: 155px;
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    padding: 0.25rem 0;
+    list-style: none;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
     z-index: 1040;
-  display: none; position: fixed; z-index: 1060;
-  min-width: 155px; background: var(--bg-surface);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border); border-radius: var(--r-md);
-  padding: 0.25rem 0; list-style: none;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
 }
 .dropdown-menu.show {
   display: block;
-}
-/* Portal — always rendered (display:block), invisible until .show */
-.dropdown-portal {
-  display: block; position: fixed; margin: 0; padding: 0.25rem 0;
-  visibility: hidden; pointer-events: none;
-}
-.dropdown-portal.show {
-  visibility: visible; pointer-events: auto;
-  animation: dropdown-in 0.13s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-@keyframes dropdown-in {
-  from { opacity: 0; transform: translateY(-5px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-/* Action dropdown state (hidden by default, shown when .show) */
-.action-dropdown {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(6px);
-    transition: all .18s ease;
-}
-.action-dropdown.show {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateY(0);
 }
 .dropdown-menu-end { right: 2px !important; left: auto !important; }
 .dropdown-item {
