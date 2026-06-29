@@ -15,11 +15,6 @@
 @endsection
 
 @section('content')
-<!-- Toast Container -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastContainer"></div>
-</div>
-
 <!--begin::Card-->
 <div class="glass-card">
     <!--begin::Card header-->

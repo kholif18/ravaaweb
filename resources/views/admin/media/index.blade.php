@@ -15,11 +15,6 @@
 @endsection
 
 @section('content')
-<!-- Toast Container -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastContainer"></div>
-</div>
-
 <!--begin::Card-->
 <div class="glass-card">
     <!--begin::Card header-->
@@ -451,10 +446,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.reload();
             } else {
                 const data = await response.json();
-                alert(data.message || 'Upload gagal');
+                Ravaa.toast(data.message || 'Upload gagal', 'error');
             }
         } catch (err) {
-            alert('Upload gagal: ' + err.message);
+            Ravaa.toast('Upload gagal: ' + err.message, 'error');
         }
     }
 
@@ -480,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (actionType === 'copy-url') {
             navigator.clipboard.writeText(action.dataset.url);
-            showToast('URL berhasil disalin!', 'success');
+            Ravaa.toast('URL berhasil disalin!', 'success');
         }
 
         if (actionType === 'view') {
@@ -533,10 +528,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (response.ok) {
                 document.querySelector('.media-item[data-id="' + id + '"]').remove();
-                showToast('File berhasil dihapus!', 'success');
+                Ravaa.toast('File berhasil dihapus!', 'success');
             }
         } catch (err) {
-            alert('Gagal menghapus: ' + err.message);
+            Ravaa.toast('Gagal menghapus: ' + err.message, 'error');
         }
     }
 
@@ -558,21 +553,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 selectedIds.clear();
                 updateBulkUI();
-                showToast(ids.length + ' file berhasil dihapus!', 'success');
+                Ravaa.toast(ids.length + ' file berhasil dihapus!', 'success');
             }
         } catch (err) {
-            alert('Gagal menghapus: ' + err.message);
+            Ravaa.toast('Gagal menghapus: ' + err.message, 'error');
         }
     }
 
-    function showToast(message, type) {
-        const toastContainer = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = 'alert alert-' + type + ' alert-dismissible fade show';
-        toast.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-        toastContainer.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
 });
 </script>
 @endpush
