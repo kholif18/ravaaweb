@@ -90,6 +90,10 @@ class Media extends Model
 
     public function deleteFile(): void
     {
+        if (empty($this->path)) {
+            return;
+        }
+
         if ($this->disk === 's3') {
             Storage::disk('s3')->delete($this->path);
         } else {
