@@ -142,17 +142,19 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
             const name = this.dataset.name;
-            if (confirm('Yakin ingin menghapus "' + name + '"?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/admin/products/' + id;
-                form.innerHTML = `
-                    @csrf
-                    @method('DELETE')
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
+            Ravaa.confirm('Hapus Produk?', `Produk "${name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`, 'error').then(function(result) {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/admin/products/' + id;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         });
     });
 });

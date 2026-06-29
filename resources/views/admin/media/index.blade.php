@@ -612,18 +612,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (actionType === 'delete') {
-            if (confirm('Yakin ingin menghapus "' + action.dataset.name + '"?')) {
-                deleteMedia(action.dataset.id);
-            }
+            Ravaa.confirm('Hapus Media?', `File "${action.dataset.name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`, 'error').then(function(result) {
+                if (result.isConfirmed) {
+                    deleteMedia(action.dataset.id);
+                }
+            });
         }
     });
 
     // Bulk delete
     bulkDeleteBtn.addEventListener('click', function() {
         if (selectedIds.size === 0) return;
-        if (confirm('Yakin ingin menghapus ' + selectedIds.size + ' file?')) {
-            bulkDeleteMedia([...selectedIds]);
-        }
+        Ravaa.confirm('Hapus Media Terpilih?', `Anda akan menghapus <strong>${selectedIds.size}</strong> file. Tindakan ini tidak dapat dibatalkan!`, 'error').then(function(result) {
+            if (result.isConfirmed) {
+                bulkDeleteMedia([...selectedIds]);
+            }
+        });
     });
 
     deselectAllBtn.addEventListener('click', function() {

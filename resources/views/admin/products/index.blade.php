@@ -201,10 +201,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bulkDeleteBtn.addEventListener('click', function() {
         if (selectedIds.size === 0) return;
-        if (confirm('Yakin ingin menghapus ' + selectedIds.size + ' produk?')) {
-            document.getElementById('product-bulk-delete-ids').value = JSON.stringify([...selectedIds]);
-            document.getElementById('product-bulk-delete-form').submit();
-        }
+        Ravaa.confirm('Hapus Produk Terpilih?', `Anda akan menghapus <strong>${selectedIds.size}</strong> produk. Tindakan ini tidak dapat dibatalkan!`, 'error').then(function(result) {
+            if (result.isConfirmed) {
+                document.getElementById('product-bulk-delete-ids').value = JSON.stringify([...selectedIds]);
+                document.getElementById('product-bulk-delete-form').submit();
+            }
+        });
     });
 
     deselectAllBtn.addEventListener('click', function() {
