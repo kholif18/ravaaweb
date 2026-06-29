@@ -50,4 +50,15 @@ Route::prefix('admin')
         Route::delete('tags/bulk-delete', [App\Http\Controllers\Admin\TagController::class, 'bulkDestroy'])->name('tags.bulk.destroy');
         Route::resource('tags', App\Http\Controllers\Admin\TagController::class);
 
+        // Media Library
+        Route::delete('media/bulk-delete', [App\Http\Controllers\Admin\MediaController::class, 'destroyMultiple'])->name('media.bulk.destroy');
+        Route::post('media/upload-multiple', [App\Http\Controllers\Admin\MediaController::class, 'storeMultiple'])->name('media.store.multiple');
+        Route::get('media/picker', [App\Http\Controllers\Admin\MediaController::class, 'picker'])->name('media.picker');
+        Route::resource('media', App\Http\Controllers\Admin\MediaController::class)->except(['show', 'edit', 'update']);
+
+        // Products
+        Route::delete('products/bulk-delete', [App\Http\Controllers\Admin\ProductController::class, 'destroyMultiple'])->name('products.bulk.destroy');
+        Route::put('products/{product}/media-order', [App\Http\Controllers\Admin\ProductController::class, 'updateMediaOrder'])->name('products.media.order');
+        Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+
     });
