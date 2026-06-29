@@ -18,48 +18,46 @@ Gunakan skill ini ketika pengguna meminta **review kode**, **analisis kode**, **
 ## 📋 Aturan Review Kode
 
 ### 1. Keamanan (Security)
-- SQL Injection? → Pastikan pakai Eloquent / Query Builder binding, bukan raw `DB::statement()` dengan concatenation.
-- XSS? → Blade sudah auto-escape (`{{ }}`), tapi pastikan tidak ada `{!! !!}` tanpa sanitasi.
+- SQL Injection? → Pastikan pakai Eloquent / Query Builder binding.
+- XSS? → Blade auto-escape (`{{ }}`), pastikan tidak ada `{!! !!}` tanpa sanitasi.
 - CSRF? → Setiap form POST harus `@csrf`.
 - Mass Assignment? → Cek `$fillable` / `$guarded` di Model.
-- Authorization? → Pastikan resource `Policy` atau `Gate` digunakan, jangan hanya `if(Auth::id() == ...)`.
+- Authorization? → Pastikan resource `Policy` atau `Gate` digunakan.
 - File Upload? → Validasi ekstensi, ukuran, path traversal.
 
 ### 2. Kinerja (Performance)
 - N+1 Query? → Pastikan `->with()` untuk eager loading.
-- Query besar tanpa pagination? → Gunakan `->paginate()` / `->cursor()`.
-- Loop DB query? → Jangan query di dalam Blade atau loop; push ke controller / service.
-- Cache? → Data statis (kategori, produk) sebaiknya di-cache.
+- Query besar tanpa pagination? → Gunakan `->paginate()`.
+- Loop DB query? → Jangan query di dalam Blade atau loop.
+- Cache? → Data statis sebaiknya di-cache.
 
 ### 3. Best Practice Laravel
 - Controller tebal? → Pindahkan logic ke **Service** / **Action** class.
 - Route menggunakan Closure? → Pindahkan ke Controller.
 - Blade panjang >200 baris? → Pecah menjadi component (`<x-...>`).
-- JavaScript inline di Blade? → Pindahkan ke `resources/js/` module.
-- Model tanpa scope / accessor? → Gunakan `scopePublished()`, `getFormattedPriceAttribute()`.
+- Model tanpa scope / accessor? → Gunakan scope & accessor.
 
-### 4. Clean Code & SOLID
+### 4. Clean Code
 - Fungsi/method terlalu panjang (>30 baris)? → Refactor.
 - Naming buruk? → Gunakan nama yang deskriptif.
 - Duplikasi kode? → Ekstrak ke method/trait/component.
-- Dead code / komentar tidak berguna? → Hapus.
-
-### 5. Konsistensi
-- Ikuti **PSR-12** (PHP), **ESLint** (JS), **Tailwind** / **Bootstrap** (CSS).
-- Kolom tabel migration harus sesuai standar (singular table, timestamps, softDeletes).
-- Route resource → ikuti `{resource}` singular naming.
 
 ---
 
 ## 🛠️ Project Context
 
-- **Laravel version**: 13.x
-- **Container**: `docker exec RavaaWeb <command>`
-- **Admin middleware**: `admin.auth` + `role:admin,admin`
-- **Guard admin**: guard `admin`
-- **Cache/Redis**: sudah dinonaktifkan (`file` / `sync`)
-- **Database**: MariaDB via `mariadb-db-1`
-- **Login admin**: `/admin/login` — view `admin.auth.login-standalone`
+| Item | Value |
+|------|-------|
+| **Laravel version** | 13.x |
+| **PHP version** | 8.3 |
+| **Docker container** | `RavaaWeb` |
+| **Database** | MariaDB (`mariadb-db-1`) |
+| **Admin guard** | `admin` |
+| **Admin middleware** | `admin.auth` + `role:admin,admin` |
+| **CSS system** | Custom CSS Glassmorphism (NO Bootstrap/Tailwind) |
+| **Admin CSS** | `public/admin/css/admin-glass.css` |
+| **Frontend CSS** | `public/frontend/css/app.css` |
+| **JS functions** | `Ravaa.toast()`, `Ravaa.confirm()`, `Ravaa.alert()` |
 
 ---
 
@@ -72,17 +70,15 @@ Gunakan skill ini ketika pengguna meminta **review kode**, **analisis kode**, **
 | `app/Models/` | Eloquent models |
 | `resources/views/frontend/` | Halaman publik |
 | `resources/views/admin/` | Halaman admin |
-| `app/Http/Middleware/` | Custom middleware |
-| `config/auth.php` | Guard & provider auth |
-| `bootstrap/app.php` | Middleware alias & config |
+| `resources/views/components/` | Blade components (pagination, media-picker) |
+| `public/admin/css/admin-glass.css` | Admin design system |
+| `public/admin/js/app.js` | Admin JS (Ravaa.toast, Ravaa.confirm) |
 | `database/migrations/` | Semua migration |
 | `database/seeders/` | Seeder data |
 
 ---
 
 ## 📝 Format Output Review
-
-Gunakan format berikut untuk respons ke pengguna:
 
 ```
 ## 🔍 Code Review: `path/file`

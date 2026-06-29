@@ -34,25 +34,55 @@ resources/views/
 │   ├── portofolio.blade.php    # Portofolio
 │   ├── software-house.blade.php# Software house page (dark glass)
 │   └── contact.blade.php       # Halaman kontak
-├── admin/                      # Panel admin (Metronic compact)
+├── admin/                      # Panel admin (macOS Glassmorphism)
 │   ├── layouts/
+│   │   └── app.blade.php       # Layout utama admin
 │   ├── partials/
+│   │   ├── aside.blade.php     # Sidebar navigation
+│   │   ├── header.blade.php    # Top header
+│   │   ├── footer.blade.php    # Footer
+│   │   ├── head.blade.php      # Meta, CSS includes
+│   │   └── scripts.blade.php   # JS includes
 │   ├── auth/
+│   │   └── login-standalone.blade.php
 │   ├── dashboard/
-│   └── categories/
+│   │   └── index.blade.php
+│   ├── categories/
+│   │   ├── index.blade.php     # Category list + modals
+│   │   └── _table.blade.php    # Table partial
+│   ├── tags/
+│   │   ├── index.blade.php
+│   │   ├── create.blade.php
+│   │   ├── edit.blade.php
+│   │   └── _table.blade.php
+│   ├── media/
+│   │   └── index.blade.php     # Media library (grid + list)
+│   └── products/
+│       ├── index.blade.php     # Product list
+│       ├── _table.blade.php    # Compact table
+│       ├── create.blade.php    # Create form + media picker
+│       └── edit.blade.php      # Edit form + media picker
 ├── components/                 # Blade components reusable
-│   └── pagination.blade.php
+│   ├── pagination.blade.php    # Pagination with per-page selector
+│   └── media-picker.blade.php  # WordPress-style media picker modal
 └── vendor/
 ```
 
 ### 📁 Asset CSS/JS
 
 ```
-public/frontend/
-├── css/
-│   └── app.css                 # Design system (macOS Glassmorphism, ~1350 baris)
-└── js/
-    └── app.js                  # JS utama (mobile menu, gallery, tabs, filter pills)
+public/
+├── frontend/
+│   ├── css/
+│   │   └── app.css             # Design system frontend (macOS Glassmorphism)
+│   └── js/
+│       └── app.js              # JS frontend (mobile menu, gallery, tabs)
+├── admin/
+│   ├── css/
+│   │   └── admin-glass.css     # Design system admin (macOS Glassmorphism)
+│   └── js/
+│       └── app.js              # JS admin (dropdowns, Ravaa.toast, Ravaa.confirm)
+└── storage/                    # Uploaded files (symlinked)
 ```
 
 ### 🛠️ Tech Stack Frontend
@@ -60,10 +90,14 @@ public/frontend/
 | Teknologi | Kegunaan |
 |-----------|----------|
 | **Blade** | Templating engine (Laravel) |
-| **Custom CSS** | macOS Glassmorphism design system (`public/frontend/css/app.css`) |
-| **Font Awesome 6** | Ikon via CDN |
+| **Custom CSS** | macOS Glassmorphism (frontend: `app.css`, admin: `admin-glass.css`) |
+| **Bootstrap Icons** | Ikon via CDN (`bootstrap-icons@1.11.3`) |
+| **Font Awesome 6** | Ikon legacy via CDN |
 | **Google Fonts (Inter)** | Tipografi via CDN |
-| **No framework CSS** | Murni custom CSS, tanpa Bootstrap/Tailwind |
+| **No CSS framework** | Murni custom CSS, tanpa Bootstrap/Tailwind |
+| **jQuery 3.7.1** | Legacy JS (admin) |
+| **Bootstrap 5.3.3 JS** | Modal, dropdown (admin only) |
+| **ApexCharts** | Dashboard charts (admin) |
 
 ---
 
@@ -78,39 +112,19 @@ public/frontend/
 - Include partials: `@include('frontend.partials.navbar')` dan `footer`.
 - **Responsive**: breakpoint 900px, 768px, 640px, 480px via CSS media queries.
 
-**Layout:**
-```blade
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') — Ravaa Creative</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('frontend/css/app.css') }}">
-    @stack('styles')
-</head>
-<body>
-    @include('frontend.partials.navbar')
-    <main>@yield('content')</main>
-    @include('frontend.partials.footer')
-    <script src="{{ asset('frontend/js/app.js') }}"></script>
-    @stack('scripts')
-</body>
-</html>
-```
-
 ### 2. Halaman Admin
 
 **Layout utama:** `resources/views/admin/layouts/app.blade.php`
-- Gunakan **Metronic compact** (custom).
-- Login: `login-standalone.blade.php`.
-- Data via dummy di controller atau model.
+- Custom CSS dari `public/admin/css/admin-glass.css`.
+- Include partials: `head`, `aside`, `header`, `footer`, `scripts`.
+- **Sidebar**: `admin/partials/aside.blade.php` — navigation menu.
+- **Toast**: gunakan `Ravaa.toast(message, type)` — jangan buat custom toast.
+- **Confirm**: gunakan `Ravaa.confirm(title, text, icon)` — jangan pakai `confirm()` native.
+- **Dropdown**: gunakan Bootstrap 5 Dropdown API (`bootstrap.Dropdown.getInstance().hide()`).
 
 ### 3. Design System (macOS Glassmorphism)
 
-Semua styling via `public/frontend/css/app.css`. Variable di root:
+#### Frontend (`public/frontend/css/app.css`)
 
 ```css
 :root {
@@ -125,7 +139,7 @@ Semua styling via `public/frontend/css/app.css`. Variable di root:
 }
 ```
 
-**Key classes:**
+**Key classes frontend:**
 - `.glass-card` — frosted glass container
 - `.glass-card-dark` — dark mode glass (Software House)
 - `.btn`, `.btn-primary`, `.btn-whatsapp`, `.btn-outline` — premium pill buttons
@@ -135,19 +149,57 @@ Semua styling via `public/frontend/css/app.css`. Variable di root:
 - `.svc-card` — service cards
 - `.filter-pill` — category/type filter pills
 - `.badge-baru`, `.badge-diskon`, `.badge-terlaris`, `.badge-popular` — color badges
-- `.detail-gallery`, `.detail-panel`, `.detail-tabs` — detail page components
+
+#### Admin (`public/admin/css/admin-glass.css`)
+
+```css
+:root {
+  --accent: #4f6ef7;
+  --accent-light: rgba(79, 110, 247, 0.12);
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f8f9fc;
+  --bg-surface-hover: rgba(79, 110, 247, 0.04);
+  --text-primary: #1a1d2b;
+  --text-muted: #7e8299;
+  --border-color: rgba(0, 0, 0, 0.06);
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --radius: 12px;
+  --font: 'Inter', -apple-system, system-ui, sans-serif;
+}
+```
+
+**Key classes admin:**
+- `.glass-card` — card container dengan glass effect
+- `.card-header` / `.card-body` — card sections
+- `.admin-sidebar` — sidebar navigation
+- `.admin-header` — top header bar
+- `.btn-primary`, `.btn-light`, `.btn-icon` — button styles
+- `.form-control`, `.form-select` — input styles
+- `.table` — table styles
+- `.badge` — status badges
+- `.ravaa-dialog` — confirm/alert dialog (macOS style)
+- `.toast` — notification toast
 
 ### 4. JavaScript
 
-Semua JS di `public/frontend/js/app.js`:
+#### Frontend (`public/frontend/js/app.js`)
 - Mobile menu (toggle drawer)
 - IntersectionObserver fade-up animations
 - Hero parallax
 - Navbar blur on scroll
-- Gallery thumb switcher (click → ganti src)
+- Gallery thumb switcher
 - Tab switching (Deskripsi / Fitur)
 - Variant selector (warna/ukuran)
-- Catalog filter pills (click → submit form)
+- Catalog filter pills
+
+#### Admin (`public/admin/js/app.js`)
+- `closeAllDropdowns()` — close all Bootstrap dropdowns
+- `Ravaa.toast(message, type)` — macOS-style toast notification
+- `Ravaa.confirm(title, text, icon)` — macOS-style confirm dialog (returns Promise)
+- `Ravaa.alert(title, text, icon)` — macOS-style alert dialog
+- Bootstrap 5 Dropdown API integration
 
 ### 5. Responsive Breakpoints
 
@@ -157,12 +209,6 @@ Semua JS di `public/frontend/js/app.js`:
 | 768px | Tablet portrait |
 | 640px | Mobile |
 | 480px | Small mobile |
-
-**Aturan:**
-- Product grid: `repeat(auto-fill, minmax(270px, 1fr))` — di <640px jadi `repeat(2, 1fr)`
-- Detail layout: 2 kolom di desktop → 1 kolom di <900px
-- Navbar links: sembunyi di <900px, hamburger muncul
-- Hero: grid `1fr 1fr` → `1fr` di mobile, image di atas
 
 ---
 
@@ -188,39 +234,33 @@ Semua JS di `public/frontend/js/app.js`:
 - Tabs: Deskripsi & Fitur
 - Related products
 
-### Software House (`software-house.blade.php`)
-- Dark glass gradient (`sh-section` / `sh-card`)
-- Service cards with premium icons
-- 4-step process
-- Filtered portfolio
+### Admin Media Library (`admin/media/index.blade.php`)
+- Grid view: thumbnail cards dengan actions
+- List view: compact rows (thumbnail, name, size, actions)
+- View toggle button (grid/list) dengan localStorage persistence
+- Drag-drop upload zone
+- Fullscreen gallery overlay (prev/next, keyboard navigation)
+- `<x-media-picker>` component untuk form produk
 
----
-
-## 🚀 Commands
-
-```bash
-# Run inside Docker container
-docker exec f3dd6e5d80bd php artisan view:clear
-
-# Check route list
-docker exec f3dd6e5d80bd php artisan route:list
-
-# Run migrations
-docker exec f3dd6e5d80bd php artisan migrate
-
-# Seed database
-docker exec f3dd6e5d80bd php artisan db:seed
-```
+### Admin Products (`admin/products/`)
+- Compact table: 32x32 thumbnails, small text, tight padding
+- Inline badge colors (matching categories style)
+- Media picker integration (WordPress-style)
+- Variant management (dynamic add/remove)
+- Tag selection (checkboxes)
 
 ---
 
 ## ⚠️ Aturan Penting untuk AI
 
 1. **Halaman publik** → gunakan custom CSS glassmorphism (`public/frontend/css/app.css`).
-2. **Halaman admin** → Metronic compact.
+2. **Halaman admin** → gunakan custom CSS glassmorphism (`public/admin/css/admin-glass.css`).
 3. **Semua variabel design** di CSS root variable — jangan hardcode.
-4. **Tidak ada Bootstrap/Tailwind** di frontend — murni custom CSS.
-5. **WhatsApp CTA** — semua tombol WA pakai `https://wa.me/6282233377661?text=...`.
-6. **Gallery JS** — pakai `data-src` di thumb, update `src` main image via JS.
-7. **Responsive** — gunakan media queries di CSS, bukan framework.
-8. **Animasi** — `fade-up` via IntersectionObserver, parallax via scroll event.
+4. **Tidak ada Bootstrap/Tailwind CSS** — murni custom CSS.
+5. **Bootstrap JS** hanya untuk modal/dropdown di admin.
+6. **Toast** → gunakan `Ravaa.toast()` — jangan buat custom.
+7. **Confirm** → gunakan `Ravaa.confirm()` — jangan pakai `confirm()` native.
+8. **WhatsApp CTA** — `https://wa.me/6282233377661?text=...`.
+9. **Responsive** — gunakan media queries di CSS.
+10. **Docker command** → `docker exec RavaaWeb <command>`.
+11. **View cache** → `docker exec RavaaWeb php artisan view:clear`.

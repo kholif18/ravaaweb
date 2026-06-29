@@ -12,10 +12,7 @@ Gunakan skill ini ketika pengguna meminta **membuat fitur backend baru**, **cont
 - Mengembangkan fitur backend **Laravel** dengan mengikuti best practice.
 - Membuat **CRUD lengkap** (Controller + Model + Migration + Request + Route).
 - Merancang **database schema** dan **Eloquent relationships** yang efisien.
-- Membangun **service layer** untuk memisahkan business logic dari Controller.
 - Menambahkan **validasi**, **authorization** (Policy/Gate), dan **event-driven logic**.
-- Membuat **Artisan command** untuk task rutin.
-- Mengatur **queue & job** untuk proses background.
 
 ---
 
@@ -31,33 +28,40 @@ app/
 │   │   ├── FrontendController.php      # Controller halaman publik
 │   │   └── Admin/                      # Controller untuk panel admin
 │   │       ├── AuthController.php
-│   │       ├── ProductController.php
 │   │       ├── CategoryController.php
+│   │       ├── TagController.php
 │   │       ├── MediaController.php
-│   │       └── ...
+│   │       └── ProductController.php
 │   ├── Requests/                       # Form request validation
-│   │   ├── StoreProductRequest.php
-│   │   └── UpdateProductRequest.php
 │   └── Middleware/
-│       ├── AdminAuthenticate.php       # Auth guard admin
-│       └── AdminDummyAuth.php
 ├── Models/
 │   ├── User.php
-│   ├── Product.php
 │   ├── Category.php
+│   ├── Tag.php
 │   ├── Media.php
-│   └── ... (model lainnya)
-├── Services/                           # Business logic layer
-│   ├── ProductService.php
-│   ├── MediaService.php
-│   └── ...
+│   ├── Product.php
+│   └── ProductVariant.php
+├── Services/                           # Business logic layer (opsional)
 ├── Policies/                           # Authorization
-├── Events/                             # Event classes
-├── Listeners/                          # Listener classes
-├── Jobs/                               # Queue jobs
-├── Console/
-│   └── Commands/                       # Artisan commands
-└── Providers/                          # Service providers
+└── Providers/
+```
+
+### 📁 Database Tables
+
+```
+├── categories          # name, slug, icon, color, order, status, parent_id, SEO
+├── tags                # name, slug, color
+├── media               # name, file_name, mime_type, size, path, disk, uploaded_by
+├── products            # name, slug, description, price, price_discount, stock,
+│                       # category_id, status, is_featured, sku, weight, SEO, thumbnail_id
+├── product_variants    # product_id, color, size, sku, stock, price_addition, status
+├── product_media       # product_id, media_id, sort_order, is_primary (pivot)
+├── product_tag         # product_id, tag_id (pivot)
+├── roles               # Spatie Permission
+├── permissions         # Spatie Permission
+├── model_has_roles     # Spatie Permission
+├── model_has_permissions # Spatie Permission
+└── role_has_permissions  # Spatie Permission
 ```
 
 ---
@@ -74,29 +78,13 @@ docker exec RavaaWeb php artisan make:migration create_xxxxx_table
 **Aturan:**
 - Nama tabel: **plural** (`products`, `categories`, `media`)
 - Kolom `id` otomatis (bigIncrements)
-- Selalu tambah `timestamps()` (created_at, updated_at)
+- Selalu tambah `timestamps()`
 - Jika perlu soft delete: `softDeletes()`
-- Jika perlu user stamp: `foreignId('created_by')->nullable()->constrained('users')`
 - Gunakan `foreignId()->constrained()` untuk foreign key
-
-```php
-Schema::create('products', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->string('slug')->unique();
-    $table->text('description')->nullable();
-    $table->decimal('price', 12, 2)->default(0);
-    $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-    $table->boolean('is_active')->default(true);
-    $table->timestamps();
-    $table->softDeletes();
-});
-```
 
 #### b. Model
 ```bash
 docker exec RavaaWeb php artisan make:model Models/NamaModel -m
-# Flag: -m = migration, -c = controller, -r = resource, -s = seeder, -f = factory
 ```
 
 **Aturan Model:**
@@ -107,15 +95,22 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'price',
-        'category_id', 'is_active', 'sort_order',
+        'category_id', 'status', 'is_featured',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'price' => 'decimal:2',
+        'is_featured' => 'boolean',
+    ];
+
+    // Auto-generate slug
+    protected static function booted(): void
     {
-        return [
-            'price' => 'decimal:2',
-            'is_active' => 'boolean',
-        ];
+        static::creating(function (Product $product) {
+            if (empty($product->slug)) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
     }
 
     // Relationships
@@ -124,374 +119,132 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function media(): MorphMany
+    public function tags(): BelongsToMany
     {
-        return $this->morphMany(Media::class, 'mediable');
+        return $this->belongsToMany(Tag::class, 'product_tag')->withTimestamps();
     }
 
-    // Scopes
-    public function scopeActive(Builder $query): void
+    public function media(): BelongsToMany
     {
-        $query->where('is_active', true);
+        return $this->belongsToMany(Media::class, 'product_media')
+            ->withPivot('sort_order', 'is_primary')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 
-    // Accessors
-    public function getFormattedPriceAttribute(): string
+    public function variants(): HasMany
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
-    }
-}
-```
-
-#### c. Form Request (Validation)
-```bash
-docker exec RavaaWeb php artisan make:request StoreNamaRequest
-```
-
-```php
-class StoreProductRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true; // atau return Gate::allows('create', Product::class);
-    }
-
-    public function rules(): array
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:products,slug',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'is_active' => 'boolean',
-            'media_ids' => 'nullable|array',
-            'media_ids.*' => 'exists:media,id',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'name.required' => 'Nama produk wajib diisi.',
-            'slug.unique' => 'Slug sudah digunakan.',
-        ];
+        return $this->hasMany(ProductVariant::class);
     }
 }
 ```
 
-#### d. Controller
+#### c. Controller
 ```bash
-docker exec RavaaWeb php artisan make:controller Admin/NamaController --resource --model=NamaModel
+docker exec RavaaWeb php artisan make:controller Admin/NamaController --resource
 ```
 
 **Aturan Controller:**
-- Letakkan di `App\Http\Controllers\Admin\` untuk admin, atau root untuk public.
-- Method resource: `index()`, `create()`, `store(Request)`, `show($id)`, `edit($id)`, `update(Request, $id)`, `destroy($id)`.
-- Jaga controller tetap **tipis** — pindahkan logika ke Service class jika > 30 baris.
+- Letakkan di `App\Http\Controllers\Admin\` untuk admin.
+- Method resource: `index()`, `create()`, `store()`, `edit()`, `update()`, `destroy()`.
+- Gunakan `DB::transaction()` untuk operasi kompleks (create + attach media + variants).
 
 ```php
 class ProductController extends Controller
 {
-    public function __construct(
-        protected ProductService $productService
-    ) {}
-
-    public function index(): View
+    public function index(Request $request)
     {
-        $products = $this->productService->getPaginated();
+        $query = Product::with(['category', 'thumbnail', 'media'])->withCount('variants');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->latest()->paginate($request->input('per_page', 15));
+        $products->withQueryString();
+
         return view('admin.products.index', compact('products'));
     }
 
-    public function store(StoreProductRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        $this->productService->create($request->validated());
+        $validated = $request->validate([...]);
+
+        $product = DB::transaction(function () use ($validated, $request) {
+            $product = Product::create($validated);
+
+            // Attach tags
+            if ($request->filled('tag_ids')) {
+                $product->tags()->sync($request->input('tag_ids'));
+            }
+
+            // Attach media from library
+            if ($request->filled('media_ids')) {
+                foreach ($request->input('media_ids') as $index => $mediaId) {
+                    $product->media()->attach($mediaId, [
+                        'sort_order' => $index,
+                        'is_primary' => $mediaId == $request->input('primary_media_id'),
+                    ]);
+                }
+            }
+
+            // Create variants
+            if ($request->filled('variants')) {
+                foreach ($request->input('variants') as $variantData) {
+                    $product->variants()->create($variantData);
+                }
+            }
+
+            return $product;
+        });
+
         return redirect()->route('admin.products.index')
-            ->with('success', 'Produk berhasil ditambahkan.');
+            ->with('success', "Produk \"{$product->name}\" berhasil dibuat.");
     }
 }
 ```
 
-#### e. Route
+#### d. Route
 ```php
-// Route resource penuh (index, create, store, show, edit, update, destroy)
-Route::resource('products', ProductController::class);
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['admin.auth', 'role:admin,admin'])
+    ->group(function () {
+        // Resource routes
+        Route::resource('categories', CategoryController::class);
+        Route::resource('tags', TagController::class);
+        Route::resource('products', ProductController::class);
 
-// Route khusus
-Route::put('products/{product}/status', [ProductController::class, 'updateStatus'])->name('products.status.update');
-Route::delete('products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk.destroy');
-
-// Route untuk admin (dalam grup middleware admin)
-Route::prefix('admin')->name('admin.')->middleware(['admin.auth', 'role:admin,admin'])->group(function () {
-    Route::resource('products', ProductController::class);
-});
+        // Custom routes
+        Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk.destroy');
+        Route::put('categories/{category}/status', [CategoryController::class, 'updateStatus'])->name('categories.status.update');
+        Route::delete('tags/bulk-delete', [TagController::class, 'bulkDestroy'])->name('tags.bulk.destroy');
+        Route::delete('media/bulk-delete', [MediaController::class, 'destroyMultiple'])->name('media.bulk.destroy');
+        Route::post('media/upload-multiple', [MediaController::class, 'storeMultiple'])->name('media.store.multiple');
+        Route::get('media/picker', [MediaController::class, 'picker'])->name('media.picker');
+        Route::resource('media', MediaController::class)->except(['show', 'edit', 'update']);
+        Route::delete('products/bulk-delete', [ProductController::class, 'destroyMultiple'])->name('products.bulk.destroy');
+        Route::put('products/{product}/media-order', [ProductController::class, 'updateMediaOrder'])->name('products.media.order');
+    });
 ```
 
 ---
 
-### 2. Service Layer
+## 🔑 Project Context
 
-Gunakan **Service class** untuk logic bisnis yang kompleks:
-
-```bash
-docker exec RavaaWeb php artisan make:class Services/NamaService
-```
-
-```php
-class ProductService
-{
-    public function __construct(
-        protected MediaService $mediaService
-    ) {}
-
-    public function getPaginated(int $perPage = 15): LengthAwarePaginator
-    {
-        return Product::with(['category', 'media'])
-            ->active()
-            ->orderBy('sort_order')
-            ->paginate($perPage);
-    }
-
-    public function create(array $data): Product
-    {
-        $product = Product::create($data);
-
-        if (!empty($data['media_ids'])) {
-            $this->mediaService->attachToProduct($product, $data['media_ids']);
-        }
-
-        return $product;
-    }
-
-    public function update(Product $product, array $data): Product
-    {
-        $product->update($data);
-        return $product->fresh();
-    }
-
-    public function delete(Product $product): void
-    {
-        $product->delete();
-    }
-}
-```
-
----
-
-### 3. Hubungkan ke Frontend (View)
-
-Controller → Pass data ke view:
-
-```php
-public function index(): View
-{
-    $products = Product::with('category')
-        ->active()
-        ->paginate(12);
-
-    $categories = Category::active()->get();
-
-    return view('frontend.product', compact('products', 'categories'));
-}
-```
-
----
-
-### 4. Authorization (Policies)
-
-```bash
-docker exec RavaaWeb php artisan make:policy ProductPolicy --model=Product
-```
-
-```php
-class ProductPolicy
-{
-    public function viewAny(User $user): bool { return true; }
-    public function view(User $user, Product $product): bool { return true; }
-    public function create(User $user): bool { return $user->hasRole('admin'); }
-    public function update(User $user, Product $product): bool { return $user->hasRole('admin'); }
-    public function delete(User $user, Product $product): bool { return $user->hasRole('admin'); }
-}
-```
-
-Daftarkan di `App\Providers\AuthServiceProvider`:
-```php
-protected $policies = [
-    Product::class => ProductPolicy::class,
-];
-```
-
----
-
-### 5. Queue & Job
-
-```bash
-docker exec RavaaWeb php artisan make:job ProsesGambar
-```
-
-```php
-class ProsesGambar implements ShouldQueue
-{
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public function __construct(
-        public Product $product
-    ) {}
-
-    public function handle(ImageService $imageService): void
-    {
-        $imageService->optimize($this->product->gambar);
-    }
-}
-```
-
-Dispatch:
-```php
-ProsesGambar::dispatch($product)
-    ->delay(now()->addSeconds(5));
-```
-
----
-
-### 6. Artisan Command
-
-```bash
-docker exec RavaaWeb php artisan make:command BersihkanData --command=app:bersihkan-data
-```
-
-```php
-class BersihkanData extends Command
-{
-    protected $signature = 'app:bersihkan-data
-                          {--days=30 : Hapus data lebih dari N hari}
-                          {--force : Jalankan tanpa konfirmasi}';
-
-    protected $description = 'Bersihkan data lama dari database';
-
-    public function handle(): int
-    {
-        $days = (int) $this->option('days');
-        $force = $this->option('force');
-
-        if (!$force && !$this->confirm("Hapus data lebih dari {$days} hari?")) {
-            return self::FAILURE;
-        }
-
-        $deleted = Product::where('created_at', '<', now()->subDays($days))->delete();
-        $this->info("Berhasil menghapus {$deleted} produk lama.");
-
-        return self::SUCCESS;
-    }
-}
-```
-
----
-
-### 7. Event & Listener
-
-```bash
-docker exec RavaaWeb php artisan make:event ProductCreated
-docker exec RavaaWeb php artisan make:listener SendProductNotification --event=ProductCreated
-```
-
-```php
-class ProductCreated
-{
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public function __construct(public Product $product) {}
-}
-
-class SendProductNotification implements ShouldQueue
-{
-    public function handle(ProductCreated $event): void
-    {
-        // Kirim notifikasi...
-        Log::info('Produk baru: ' . $event->product->name);
-    }
-}
-```
-
-Daftarkan di `EventServiceProvider` atau via `AppServiceProvider`:
-```php
-Event::listen(ProductCreated::class, SendProductNotification::class);
-```
-
----
-
-## 🗄️ Eloquent Relationship Patterns
-
-| Relasi | Method | Contoh |
-|--------|--------|--------|
-| 1:1 | `hasOne()` / `belongsTo()` | User → Profile |
-| 1:M | `hasMany()` / `belongsTo()` | Category → Products |
-| M:M | `belongsToMany()` | Product → Tags |
-| Morph | `morphMany()` / `morphedByMany()` | Media → (Products, Categories) |
-| Has-Many-Through | `hasManyThrough()` | Country → Posts via Users |
-
-**Eager loading** untuk hindari N+1:
-```php
-// ❌ Buruk (N+1)
-$products = Product::all();
-foreach ($products as $p) { echo $p->category->name; }
-
-// ✅ Baik
-$products = Product::with('category', 'media')->get();
-```
-
----
-
-## 🧪 Testing (Backend)
-
-```bash
-docker exec RavaaWeb php artisan make:test ProductTest
-# atau untuk feature test:
-docker exec RavaaWeb php artisan make:test ProductTest --unit
-```
-
-```php
-class ProductTest extends TestCase
-{
-    public function test_product_can_be_created(): void
-    {
-        $category = Category::factory()->create();
-        $product = Product::factory()->create([
-            'category_id' => $category->id,
-        ]);
-
-        $this->assertDatabaseHas('products', [
-            'id' => $product->id,
-            'name' => $product->name,
-        ]);
-    }
-
-    public function test_product_list_page_returns_ok(): void
-    {
-        $response = $this->get(route('product'));
-        $response->assertStatus(200);
-    }
-}
-```
-
-```bash
-# Run test spesifik
-docker exec RavaaWeb php artisan test --filter=ProductTest
-```
-
----
-
-## 📋 Checklist Pembuatan Fitur Baru
-
-1. **Migration** — buat tabel dengan kolom tepat + foreign key + index
-2. **Model** — fillable, casts, relationships, scopes, accessors
-3. **Form Request** — validasi + authorize
-4. **Service** — business logic (opsional jika sederhana)
-5. **Controller** — method resource + dependency injection
-6. **Route** — daftarkan di web.php
-7. **View** — buat Blade template (via frontend-design skill)
-8. **Policy** — authorization (jika perlu)
-9. **Test** — unit/feature test
-10. **Seeder** — data dummy (jika perlu)
+| Item | Value |
+|------|-------|
+| **Laravel version** | 13.x |
+| **PHP version** | 8.3 |
+| **Docker container** | `RavaaWeb` |
+| **Database** | MariaDB (`mariadb-db-1`) |
+| **Admin guard** | `admin` |
+| **Admin middleware** | `admin.auth` + `role:admin,admin` |
+| **Login URL** | `/admin/login` |
+| **Auth scaffolding** | Spatie Laravel-Permission |
 
 ---
 
@@ -502,14 +255,6 @@ docker exec RavaaWeb php artisan test --filter=ProductTest
 docker exec RavaaWeb php artisan make:model Models/Nama -m
 docker exec RavaaWeb php artisan make:controller Admin/NamaController --resource
 docker exec RavaaWeb php artisan make:request StoreNamaRequest
-docker exec RavaaWeb php artisan make:policy NamaPolicy --model=Nama
-docker exec RavaaWeb php artisan make:service Services/NamaService
-docker exec RavaaWeb php artisan make:command NamaCommand
-docker exec RavaaWeb php artisan make:event NamaEvent
-docker exec RavaaWeb php artisan make:listener NamaListener --event=NamaEvent
-docker exec RavaaWeb php artisan make:job NamaJob
-docker exec RavaaWeb php artisan make:test NamaTest
-docker exec RavaaWeb php artisan make:factory NamaFactory --model=Nama
 docker exec RavaaWeb php artisan make:seeder NamaSeeder
 
 # Migrasi
@@ -519,12 +264,27 @@ docker exec RavaaWeb php artisan migrate:fresh --seed
 # Route
 docker exec RavaaWeb php artisan route:list
 
-# Test
-docker exec RavaaWeb php artisan test --filter=NamaTest
+# View cache
+docker exec RavaaWeb php artisan view:clear
+
+# Config cache
+docker exec RavaaWeb php artisan config:clear
 
 # Tinker (debug)
 docker exec RavaaWeb php artisan tinker
 ```
+
+---
+
+## 📋 Checklist Pembuatan Fitur Baru
+
+1. **Migration** — buat tabel dengan kolom tepat + foreign key + index
+2. **Model** — fillable, casts, relationships, booted (auto-slug)
+3. **Controller** — method resource + DB::transaction untuk operasi kompleks
+4. **Route** — daftarkan di `routes/web.php`
+5. **View** — buat Blade template (index, create, edit, _table)
+6. **Seeder** — data dummy (jika perlu)
+7. **Clear cache** — `docker exec RavaaWeb php artisan view:clear`
 
 ---
 

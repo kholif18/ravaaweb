@@ -1,120 +1,115 @@
 # Roadmap Penyelesaian Web Katalog – RavaaWeb
 
-## Fase 1 : Penyusunan Basis Data & Model
+## Fase 1: Penyusunan Basis Data & Model ✅ SELESAI
 
-1. **Migrasi & Tabel**
-   - Buat tabel `categories`, `products`, `product_images`, `product_variants`, `tags` serta tabel pivot `product_tag`.
-2. **Model Eloquent**
-   - `Product belongsTo Category`
-   - `Product hasMany ProductImage`
-   - `Product hasMany ProductVariant`
-   - `Product belongsToMany Tag`
-3. **Factory & Seeder**
-   - Factory untuk masing‑masing tabel.
-   - Seeder menghasilkan minimal 30 produk, 5 kategori, 3 varian per produk.
-4. **Verifikasi**
-   - Jalankan `php artisan migrate:fresh --seed` dan pastikan data ter‑seed dengan benar.
+1. **Migrasi & Tabel** ✅
+   - `categories` (name, slug, icon, color, order, status, SEO fields)
+   - `tags` (name, slug, color)
+   - `media` (name, file_name, mime_type, size, path, disk, uploaded_by)
+   - `products` (name, slug, description, price, price_discount, stock, category_id, status, is_featured, sku, weight, SEO fields, thumbnail_id)
+   - `product_variants` (product_id, color, size, sku, stock, price_addition, status)
+   - Pivot: `product_media` (product_id, media_id, sort_order, is_primary)
+   - Pivot: `product_tag` (product_id, tag_id)
+2. **Model Eloquent** ✅
+   - `Category` — has children, products
+   - `Tag` — belongsToMany products
+   - `Media` — belongsToMany products, uploader
+   - `Product` — belongsTo category, belongsToMany tags, belongsToMany media, hasMany variants
+   - `ProductVariant` — belongsTo product
+3. **Factory & Seeder** ✅
+   - `CategorySeeder` — 20 kategori (5 utama + 15 tambahan)
+   - `TagSeeder` — 6 tag
+   - `ProductSeeder` — 5 produk sample
+4. **Verifikasi** ✅
+   - `php artisan migrate:fresh --seed` berhasil
 
-## Fase 2 : Integrasi Backend ke Frontend
+## Fase 2: Admin CRUD & Otorisasi ✅ SELESAI
+
+1. **Auth & Middleware** ✅
+   - `Admin/AuthController` — login/logout
+   - Middleware: `admin.auth` + `role:admin,admin`
+   - Guard: `admin` (Spatie Laravel-Permission)
+2. **Dashboard** ✅
+   - `admin/dashboard/index.blade.php` — placeholder
+
+## Fase 3: Manajemen Katalog ✅ SELESAI
+
+1. **Kategori** ✅
+   - `CategoryController` — full CRUD + bulk delete + status toggle
+   - Views: `admin/categories/` — index, create modal, edit modal, _table
+2. **Tag** ✅
+   - `TagController` — full CRUD + bulk delete
+   - Views: `admin/tags/` — index, create, edit, _table
+
+## Fase 4: Media Library ✅ SELESAI
+
+1. **Media Library** ✅
+   - `MediaController` — CRUD, bulk delete, bulk upload, picker API
+   - Views: `admin/media/index.blade.php` — grid + list view toggle
+   - Features: drag-drop upload, search, type filter, fullscreen gallery, copy URL
+   - `<x-media-picker>` — reusable Blade component (modal-based, WordPress-style)
+
+## Fase 5: Produk (Dalam Proses) 🔄 IN PROGRESS
+
+1. **Backend** ✅
+   - `ProductController` — full CRUD + bulk delete + media order
+   - Routes: resource + bulk-delete + media-order
+2. **Views** 🔄
+   - `admin/products/index.blade.php` — compact table ✅
+   - `admin/products/_table.blade.php` — compact layout ✅
+   - `admin/products/create.blade.php` — form with media picker ✅
+   - `admin/products/edit.blade.php` — form with media picker ✅
+   - **Belum**: variant management dynamic, product gallery reorder
+
+## Fase 6: Integrasi Backend ke Frontend ⏳ BELUM
 
 1. **Query Dinamis**
-   - Ganti data statis di `FrontendController` dengan:
-     ```php
-     Product::with(['category','images','variants','tags'])
-            ->when(request('category'), fn($q,$c)=>$q->whereHas('category',fn($q2)=>$q2->where('slug',$c)))
-            ->paginate(12);
-     ```
+   - Ganti data statis di `FrontendController` dengan query Eloquent
+   - Filter by category, search, paginate
 2. **Routing**
-   - Tambahkan route RESTful untuk katalog (`/catalog`) dan detail produk (`/product/{slug}`).
-   - Opsional: endpoint API JSON untuk penggunaan di SPA.
+   - `/catalog` — daftar produk dengan filter
+   - `/product/{slug}` — detail produk
 3. **Blade Update**
-   - Loop produk, tampilkan gambar utama, varian warna/ukuran, badge warna.
-   - Fallback gambar & varian dengan placeholder bila tidak ada.
+   - Loop produk, tampilkan gambar utama, varian, badge
+   - Fallback gambar placeholder
 
-## Fase 3 : Admin CRUD & Otorisasi
+## Fase 7: Penyempurnaan UI/UX & Responsif ⏳ BELUM
 
-1. **Resource Controller** `Admin\ProductController` (index, create, store, edit, update, destroy).
-2. **Middleware & Policy**
-   - `auth` + `admin` guard.
-   - `ProductPolicy` untuk otorisasi.
-3. **Form & Komponen Blade**
-   - Input teks, select kategori, upload multiple gambar, tabel varian (warna, ukuran, stok, harga tambahan).
-4. **Validasi & Penyimpanan**
-   - Request `StoreProductRequest`/`UpdateProductRequest` dengan aturan validasi lengkap.
-   - Simpan file ke `storage/app/public/products` dan link via `php artisan storage:link`.
-5. **Routing Admin**
-   - Prefix `/admin/products` dengan grup middleware `admin`.
-
-## Fase 4 : Penyempurnaan UI/UX & Responsif
-
-1. **CSS (`public/frontend/css/app.css`)**
-   - Media query pada breakpoint 900 px, 768 px, 640 px, 480 px untuk grid kartu (2 kolom → 1 kolom).
-   - Efek glass‑morphism pada modal gambar dan tab deskripsi.
-2. **Lazy‑load & `srcset`**
-   - Tambahkan `loading="lazy"` dan `srcset` pada gambar produk.
-3. **Pagination UI**
-   - Tombol prev/next & nomor halaman dengan styling glass.
-4. **Filter Pill**
-   - Highlight pilihan aktif, tombol reset filter.
+1. **CSS Responsive**
+   - Media query breakpoints: 900px, 768px, 640px, 480px
+   - Grid kartu: 4 kolom → 2 → 1
+2. **Lazy-load & srcset**
+3. **Pagination UI** — glass style
+4. **Filter Pill** — highlight aktif
 5. **CTA WhatsApp**
-   - Tautan `https://wa.me/<nomor>?text=Halo%2C%20saya%20tertarik%20pada%20{product_name}`.
-6. **Uji Responsif**
-   - Desktop Chrome, Safari iOS, Chrome Android. Periksa overflow, kontras, dan ukuran font.
+6. **Uji Responsif** — Chrome, Safari iOS, Chrome Android
 
-## Fase 5 : Pengujian Otomatis & CI
+## Fase 8: Halaman Admin Lainnya ⏳ BELUM
 
-1. **Test Unit**
-   - Pastikan relasi model (`Product->category`, `Product->variants`, `Product->tags`).
-2. **Test Feature**
-   - Route katalog & detail mengembalikan 200, pagination berfungsi, filter mengubah query.
-3. **Test Browser** (Laravel Dusk / Cypress)
-   - Klik thumbnail galeri → gambar utama berubah.
-   - Pilih varian → harga & stok terupdate.
-   - Klik tombol WhatsApp → URL dengan teks benar.
-4. **CI Pipeline** (GitHub Actions)
-   - `phpstan` lint, `phpunit` run, lint CSS/JS.
-   - Pastikan pipeline gagal bila coverage < 80 % atau ada lint error.
+1. **Banner / Hero** — CRUD carousel
+2. **Home Builder** — CMS section builder
+3. **Settings** — Umum, Kontak, Sosial, SEO, Integrasi
+4. **Users** — CRUD admin users
+5. **Role & Permission** — UI management
+6. **Reports & Analytics**
+7. **System Logs**
 
-## Fase 6 : Optimasi Performa & Keamanan
+## Fase 9: Pengujian & CI ⏳ BELUM
 
-1. **Asset Build**
-   - Laravel Mix/Vite: minify, versioning, extract CSS kritikal.
-2. **Cache Header** pada static assets via Nginx.
-3. **Query Caching** pada katalog (`Cache::remember('catalog_page_'.$page, 300, ...)`).
-4. **Audit Keamanan**
-   - Sanitasi input pencarian.
-   - CSRF protection pada semua form admin.
-   - Validasi file upload (mime, max 2 MB).
+1. **Test Unit** — relasi model
+2. **Test Feature** — route, pagination, filter
+3. **Test Browser** — Laravel Dusk / Cypress
+4. **CI Pipeline** — GitHub Actions
 
-## Fase 7 : SEO, Analitik & Dokumentasi
+## Fase 10: Optimasi & Deployment ⏳ BELUM
 
-1. **Meta Tag Dinamis** (`title`, `description`, `og:*`) pada halaman produk.
-2. **Sitemap XML** otomatis (`spatie/laravel-sitemap`).
-3. **Integrasi Analitik** (Google Analytics / Plausible) di layout utama.
-4. **Update Dokumentasi `.opencode`**
-   - Ringkasan arsitektur data, instruksi setup lokal (seed, storage link), catatan deployment Docker.
-
-## Fase 8 : Deployment & Monitoring
-
-1. **Docker Image Produksi**
-   - `php artisan config:cache`, `php artisan route:cache`.
-2. **Staging Deploy**
-   - Smoke test semua route, admin login, CRUD.
-3. **Supervisor/PM2** untuk queue worker bila dibutuhkan.
-4. **Monitoring**
-   - Log (`Logflare`/`Sentry`), alert error rate.
-5. **Production Release**
-   - Backup DB, tag image, rollback plan siap.
-
-## Fase 9 : Pasca‑Launch & Iterasi
-
-1. **Feedback Pengguna**
-   - Form feedback, heatmap analytics.
-2. **Bugfix Minor & Feature Tambahan**
-   - Wishlist, rating, review.
-3. **Sprint Berikutnya**
-   - Berdasarkan backlog yang terbentuk.
+1. **Asset Build** — minify, versioning
+2. **Cache Header** — static assets
+3. **Query Caching**
+4. **SEO** — meta tags, sitemap, analytics
+5. **Docker Production** — config cache, route cache
+6. **Monitoring** — logs, alerts
 
 ---
 
-*Setiap fase di‑commit terpisah (mis. `feat: migrate & seed`, `feat: admin CRUD`, `chore: UI polishing`). Pull‑request harus melewati review code, CI, dan testing sebelum digabung ke `main`.*
+*Terakhir diperbarui: 29 Juni 2026*
