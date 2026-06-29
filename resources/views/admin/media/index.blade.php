@@ -135,7 +135,7 @@
 
         <!-- Pagination -->
         <div class="pagination-toolbar">
-            {{ $media->links('admin.partials.pagination') }}
+            <x-pagination :paginator="$media" label="media" :perPage="$media->perPage()" />
         </div>
     </div>
 </div>

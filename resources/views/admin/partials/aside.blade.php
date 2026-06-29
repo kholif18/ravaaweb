@@ -37,7 +37,7 @@
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->is('admin/products*') ? 'active' : '' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">
                 <i class="bi bi-box"></i>
                 <span>Produk</span>
             </a>
@@ -91,15 +91,15 @@
 
     <ul class="nav-item">
         <li>
-            <a class="nav-link {{ request()->is('admin/reports*') ? 'active' : '' }}" href="#">
-                <i class="bi bi-bar-chart"></i>
-                <span>Laporan</span>
+            <a class="nav-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}" href="{{ route('admin.media.index') }}">
+                <i class="bi bi-folder"></i>
+                <span>Media Library</span>
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->is('admin/media*') ? 'active' : '' }}" href="#">
-                <i class="bi bi-folder"></i>
-                <span>Media Library</span>
+            <a class="nav-link {{ request()->is('admin/reports*') ? 'active' : '' }}" href="#">
+                <i class="bi bi-bar-chart"></i>
+                <span>Laporan</span>
             </a>
         </li>
         <li>
