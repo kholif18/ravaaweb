@@ -18,15 +18,25 @@ class Product extends Model
     protected $fillable = [
         'name',
         'slug',
+        'short_description',
         'description',
+        'features',
         'price',
         'price_discount',
+        'discount_percent',
+        'discount_start',
+        'discount_end',
         'stock',
+        'is_service',
+        'variant_types',
         'category_id',
         'status',
         'is_featured',
         'sku',
         'weight',
+        'length',
+        'width',
+        'height',
         'meta_title',
         'meta_description',
         'meta_keywords',
@@ -36,7 +46,13 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'price_discount' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
+        'discount_start' => 'datetime',
+        'discount_end' => 'datetime',
         'is_featured' => 'boolean',
+        'is_service' => 'boolean',
+        'features' => 'array',
+        'variant_types' => 'array',
     ];
 
     protected static function booted(): void
@@ -86,5 +102,28 @@ class Product extends Model
     {
         $primary = $this->media()->wherePivot('is_primary', true)->first();
         return $primary ?? $this->media()->first();
+    }
+
+    public function getEffectivePriceAttribute(): float
+    {
+        if ($this->price_discount && $this->price_discount > 0) {
+            return (float) $this->price_discount;
+        }
+        return (float) $this->price;
+    }
+
+    public function getDiscountActiveAttribute(): bool
+    {
+        if (!$this->discount_percent || $this->discount_percent <= 0) {
+            return false;
+        }
+        $now = now();
+        if ($this->discount_start && $now->lt($this->discount_start)) {
+            return false;
+        }
+        if ($this->discount_end && $now->gt($this->discount_end)) {
+            return false;
+        }
+        return true;
     }
 }

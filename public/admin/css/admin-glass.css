@@ -339,28 +339,54 @@ body {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .admin-sidebar { transform: translateX(-100%); }
-  .admin-sidebar.active { transform: translateX(0); }
-  .admin-wrapper { margin-left: 0; }
-  .admin-content { padding: 0.75rem; }
-  .admin-header { padding: 0 0.75rem; }
-  .header-breadcrumb { font-size: 0.72rem; }
-  .admin-header .header-left .brand-text { display: none; }
-  .header-search-input.open { width: 130px; }
-  .glass-card .card-header { flex-direction: column; align-items: stretch; }
-  .admin-header .header-right .header-btn { width: 28px; height: 28px; font-size: 0.9rem; }
-  .admin-footer { padding: 0.5rem 0.75rem; font-size: 0.7rem; }
-  .table-toolbar { flex-direction: column; align-items: stretch; }
-  .table-toolbar .toolbar-group { flex-wrap: wrap; gap: 0.35rem; }
-  .table-toolbar .toolbar-group .form-control,
-  .table-toolbar .toolbar-group .form-select { min-width: 100%; }
-  .modal-dialog { margin: 0.5rem; }
-  .card-header-btns .btn { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
-  .filter-bar { flex-direction: column; align-items: stretch; }
-  .filter-bar .filter-group { flex-wrap: wrap; }
-  .filter-bar .filter-group .form-select,
-  .filter-bar .filter-group .form-control { min-width: 100%; }
+    .admin-sidebar { transform: translateX(-100%); }
+    .admin-sidebar.active { transform: translateX(0); }
+    .admin-wrapper { margin-left: 0; }
+    .admin-content { padding: 0.75rem; }
+    .admin-header { padding: 0 0.75rem; }
+    .header-breadcrumb { font-size: 0.72rem; }
+    .admin-header .header-left .brand-text { display: none; }
+    .header-search-input.open { width: 130px; }
+    .glass-card .card-header { flex-direction: column; align-items: stretch; }
+    .admin-header .header-right .header-btn { width: 28px; height: 28px; font-size: 0.9rem; }
+    .admin-footer { padding: 0.5rem 0.75rem; font-size: 0.7rem; }
+    .table-toolbar { flex-direction: column; align-items: stretch; }
+    .table-toolbar .toolbar-group { flex-wrap: wrap; gap: 0.35rem; }
+    .table-toolbar .toolbar-group .form-control,
+    .table-toolbar .toolbar-group .form-select { min-width: 100%; }
+    .modal-dialog { margin: 0.5rem; }
+    .card-header-btns .btn { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-bar .filter-group { flex-wrap: wrap; }
+    .filter-bar .filter-group .form-select,
+    .filter-bar .filter-group .form-control { min-width: 100%; }
 }
+
+/* Custom 80/20 layout helpers for admin dashboard (optional utilities) */
+@media (min-width: 768px) {
+    .col-md-80 {
+        flex: 0 0 80% !important;
+        max-width: 80% !important;
+        width: 80% !important;
+    }
+    .col-md-20 {
+        flex: 0 0 20% !important;
+        max-width: 20% !important;
+        width: 20% !important;
+    }
+    .col-lg-80 {
+        flex: 0 0 80% !important;
+        max-width: 80% !important;
+        width: 80% !important;
+    }
+    .col-lg-20 {
+        flex: 0 0 20% !important;
+        max-width: 20% !important;
+        width: 20% !important;
+    }
+}
+
+/* Removed accidental min-width 769px block that hid the sidebar */
 @media (max-width: 576px) {
   .admin-content { padding: 0.5rem; }
   .glass-card { padding: 0.75rem; border-radius: var(--r-lg); }
@@ -851,13 +877,15 @@ textarea.form-control { min-height: 60px; resize: vertical; }
   padding: 0.6rem 1rem; border-top: 1px solid var(--glass-border); flex-shrink: 0;
 }
 .modal-footer .btn { font-size: 0.78rem; padding: 0.35rem 0.7rem; }
-.btn-close {
-  background: none; border: none; color: var(--text-muted);
-  font-size: 1.1rem; cursor: pointer; padding: 0; line-height: 1;
-  width: 28px; height: 28px; display: inline-flex; align-items: center;
-  justify-content: center; border-radius: var(--r-sm);
-  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
-}
+  .btn-close {
+    background: var(--bs-btn-close-bg) no-repeat center;
+    background-size: 1em;
+    border: none; color: var(--text-primary);
+    font-size: 1.1rem; cursor: pointer; padding: 0; line-height: 1;
+    width: 28px; height: 28px; display: inline-flex; align-items: center;
+    justify-content: center; border-radius: var(--r-sm);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
 .btn-close:hover {
   background: rgba(0, 0, 0, 0.06);
   color: var(--text-primary);
@@ -1042,13 +1070,73 @@ textarea.form-control { min-height: 60px; resize: vertical; }
 /* =============================================
    GRID SYSTEM
    ============================================= */
+.container,
+.container-fluid {
+  width: 100%;
+  padding-right: var(--gutter-x, 0.75rem);
+  padding-left: var(--gutter-x, 0.75rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container { max-width: 540px; }
+}
+@media (min-width: 768px) {
+  .container { max-width: 720px; }
+}
+@media (min-width: 992px) {
+  .container { max-width: 960px; }
+}
+@media (min-width: 1200px) {
+  .container { max-width: 1140px; }
+}
+@media (min-width: 1400px) {
+  .container { max-width: 1320px; }
+}
+
 .row {
-  display: flex; flex-wrap: wrap;
-  margin-left: -0.75rem; margin-right: -0.75rem;
+  --gutter-x: 1.5rem;
+  --gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: calc(-0.5 * var(--gutter-x));
+  margin-right: calc(-0.5 * var(--gutter-x));
+  margin-top: calc(-1 * var(--gutter-y));
 }
 .row > * {
-  padding-left: 0.75rem; padding-right: 0.75rem;
-  box-sizing: border-box; flex-shrink: 0; width: 100%; max-width: 100%;
+    padding-left: calc(var(--gutter-x) * 0.5);
+    padding-right: calc(var(--gutter-x) * 0.5);
+    margin-top: var(--gutter-y);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    /* width and max-width removed to allow column sizing */
+    width: auto;
+    max-width: none;
+}
+
+/* Row-specific gutter classes override using CSS variables instead of flexbox gap */
+.row.g-0, .row.gx-0 { --gutter-x: 0px !important; }
+.row.g-0, .row.gy-0 { --gutter-y: 0px !important; }
+.row.g-1, .row.gx-1 { --gutter-x: 0.25rem !important; }
+.row.g-1, .row.gy-1 { --gutter-y: 0.25rem !important; }
+.row.g-2, .row.gx-2 { --gutter-x: 0.5rem !important; }
+.row.g-2, .row.gy-2 { --gutter-y: 0.5rem !important; }
+.row.g-3, .row.gx-3 { --gutter-x: 1rem !important; }
+.row.g-3, .row.gy-3 { --gutter-y: 1rem !important; }
+.row.g-4, .row.gx-4 { --gutter-x: 1.5rem !important; }
+.row.g-4, .row.gy-4 { --gutter-y: 1.5rem !important; }
+.row.g-5, .row.gx-5 { --gutter-x: 2rem !important; }
+.row.g-5, .row.gy-5 { --gutter-y: 2rem !important; }
+.row.g-6, .row.gx-6 { --gutter-x: 2.5rem !important; }
+.row.g-6, .row.gy-6 { --gutter-y: 2.5rem !important; }
+.row.gy-5 { --gutter-y: 2rem !important; }
+
+/* Disable flexbox gap on row when gutter classes are present to prevent wrapping bugs */
+.row.g-0, .row.g-1, .row.g-2, .row.g-3, .row.g-4, .row.g-5, .row.g-6, .row.gy-5,
+.row.gx-0, .row.gx-1, .row.gx-2, .row.gx-3, .row.gx-4, .row.gx-5, .row.gx-6 {
+  gap: 0 !important;
+  row-gap: 0 !important;
 }
 .col-12 { flex: 0 0 auto; width: 100%; }
 .col-11 { flex: 0 0 auto; width: 91.66666667%; }
@@ -1071,6 +1159,9 @@ textarea.form-control { min-height: 60px; resize: vertical; }
 }
 @media (min-width: 768px) {
   .col-md-12 { flex: 0 0 auto; width: 100%; }
+  .col-md-11 { flex: 0 0 auto; width: 91.66666667%; }
+  .col-md-10 { flex: 0 0 auto; width: 83.33333333%; }
+  .col-md-9  { flex: 0 0 auto; width: 75%; }
   .col-md-8  { flex: 0 0 auto; width: 66.66666667%; }
   .col-md-7  { flex: 0 0 auto; width: 58.33333333%; }
   .col-md-6  { flex: 0 0 auto; width: 50%; }
@@ -1078,16 +1169,35 @@ textarea.form-control { min-height: 60px; resize: vertical; }
   .col-md-4  { flex: 0 0 auto; width: 33.33333333%; }
   .col-md-3  { flex: 0 0 auto; width: 25%; }
   .col-md-2  { flex: 0 0 auto; width: 16.66666667%; }
+  .col-md-1  { flex: 0 0 auto; width: 8.33333333%; }
 }
 @media (min-width: 992px) {
-  .col-lg-6 { flex: 0 0 auto; width: 50%; }
-  .col-lg-4 { flex: 0 0 auto; width: 33.33333333%; }
-  .col-lg-3 { flex: 0 0 auto; width: 25%; }
+  .col-lg-12 { flex: 0 0 auto; width: 100%; }
+  .col-lg-11 { flex: 0 0 auto; width: 91.66666667%; }
+  .col-lg-10 { flex: 0 0 auto; width: 83.33333333%; }
+  .col-lg-9  { flex: 0 0 auto; width: 75%; }
+  .col-lg-8  { flex: 0 0 auto; width: 66.66666667%; }
+  .col-lg-7  { flex: 0 0 auto; width: 58.33333333%; }
+  .col-lg-6  { flex: 0 0 auto; width: 50%; }
+  .col-lg-5  { flex: 0 0 auto; width: 41.66666667%; }
+  .col-lg-4  { flex: 0 0 auto; width: 33.33333333%; }
+  .col-lg-3  { flex: 0 0 auto; width: 25%; }
+  .col-lg-2  { flex: 0 0 auto; width: 16.66666667%; }
+  .col-lg-1  { flex: 0 0 auto; width: 8.33333333%; }
 }
 @media (min-width: 1200px) {
-  .col-xl-6 { flex: 0 0 auto; width: 50%; }
-  .col-xl-4 { flex: 0 0 auto; width: 33.33333333%; }
-  .col-xl-3 { flex: 0 0 auto; width: 25%; }
+  .col-xl-12 { flex: 0 0 auto; width: 100%; }
+  .col-xl-11 { flex: 0 0 auto; width: 91.66666667%; }
+  .col-xl-10 { flex: 0 0 auto; width: 83.33333333%; }
+  .col-xl-9  { flex: 0 0 auto; width: 75%; }
+  .col-xl-8  { flex: 0 0 auto; width: 66.66666667%; }
+  .col-xl-7  { flex: 0 0 auto; width: 58.33333333%; }
+  .col-xl-6  { flex: 0 0 auto; width: 50%; }
+  .col-xl-5  { flex: 0 0 auto; width: 41.66666667%; }
+  .col-xl-4  { flex: 0 0 auto; width: 33.33333333%; }
+  .col-xl-3  { flex: 0 0 auto; width: 25%; }
+  .col-xl-2  { flex: 0 0 auto; width: 16.66666667%; }
+  .col-xl-1  { flex: 0 0 auto; width: 8.33333333%; }
 }
 
 /* =============================================
@@ -1676,7 +1786,7 @@ label.required::after, .fv-row label.required::after {
   .d-md-flex { display: flex !important; }
   .d-md-inline-flex { display: inline-flex !important; }
 }
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   .d-lg-none { display: none !important; }
   .d-lg-block { display: block !important; }
   .d-lg-flex { display: flex !important; }

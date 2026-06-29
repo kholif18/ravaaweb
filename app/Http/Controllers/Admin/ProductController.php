@@ -10,6 +10,7 @@ use App\Models\ProductVariant;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -57,15 +58,30 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'short_description' => 'nullable|string',
             'description' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*.title' => 'required_with:features|string|max:255',
+            'features.*.value' => 'required_with:features|string|max:255',
             'price' => 'required|numeric|min:0',
-            'price_discount' => 'nullable|numeric|min:0|lt:price',
+            'price_discount' => 'nullable|numeric|min:0',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'discount_start' => 'nullable|date',
+            'discount_end' => 'nullable|date|after_or_equal:discount_start',
             'stock' => 'required|integer|min:0',
+            'is_service' => 'boolean',
+            'variant_types' => 'nullable|array',
+            'variant_types.*.name' => 'required_with:variant_types|string|max:100',
+            'variant_types.*.values' => 'required_with:variant_types|array',
+            'variant_types.*.values.*' => 'required_with:variant_types|string|max:100',
             'category_id' => 'required|exists:categories,id',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:active,inactive,archived',
             'is_featured' => 'boolean',
             'sku' => 'nullable|string|max:50|unique:products,sku',
             'weight' => 'nullable|string|max:50',
+            'length' => 'nullable|string|max:50',
+            'width' => 'nullable|string|max:50',
+            'height' => 'nullable|string|max:50',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:255',
@@ -75,21 +91,32 @@ class ProductController extends Controller
             'media_ids.*' => 'exists:media,id',
             'primary_media_id' => 'nullable|exists:media,id',
             'variants' => 'nullable|array',
-            'variants.*.color' => 'nullable|string|max:50',
-            'variants.*.size' => 'nullable|string|max:50',
+            'variants.*.attributes' => 'nullable|array',
             'variants.*.sku' => 'nullable|string|max:50',
-            'variants.*.stock' => 'required_with:variants.*|integer|min:0',
-            'variants.*.price_addition' => 'nullable|numeric|min:0',
-            'variants.*.status' => 'required_with:variants.*|in:active,inactive',
+            'variants.*.price' => 'required_with:variants|numeric|min:0',
+            'variants.*.price_discount' => 'nullable|numeric|min:0',
+            'variants.*.discount_percent' => 'nullable|numeric|min:0|max:100',
+            'variants.*.discount_start' => 'nullable|date',
+            'variants.*.discount_end' => 'nullable|date',
+            'variants.*.is_active' => 'boolean',
+            'variants.*.is_service' => 'boolean',
+            'variants.*.weight' => 'nullable|string|max:50',
+            'variants.*.length' => 'nullable|string|max:50',
+            'variants.*.width' => 'nullable|string|max:50',
+            'variants.*.height' => 'nullable|string|max:50',
+            'variants.*.image' => 'nullable|image|max:2048',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
 
         $product = DB::transaction(function () use ($validated, $request) {
             $product = Product::create(collect($validated)->only([
-                'name', 'slug', 'description', 'price', 'price_discount',
-                'stock', 'category_id', 'status', 'is_featured', 'sku',
-                'weight', 'meta_title', 'meta_description', 'meta_keywords',
+                'name', 'slug', 'short_description', 'description', 'features',
+                'price', 'price_discount', 'discount_percent', 'discount_start', 'discount_end',
+                'stock', 'is_service', 'variant_types',
+                'category_id', 'status', 'is_featured', 'sku',
+                'weight', 'length', 'width', 'height',
+                'meta_title', 'meta_description', 'meta_keywords',
             ])->toArray());
 
             // Attach tags
@@ -106,7 +133,6 @@ class ProductController extends Controller
                     ]);
                 }
 
-                // Set thumbnail to primary media
                 if ($request->filled('primary_media_id')) {
                     $product->update(['thumbnail_id' => $request->input('primary_media_id')]);
                 } else {
@@ -118,9 +144,34 @@ class ProductController extends Controller
 
             // Create variants
             if ($request->filled('variants')) {
-                foreach ($request->input('variants') as $variantData) {
-                    if (!empty($variantData['color']) || !empty($variantData['size'])) {
-                        $product->variants()->create($variantData);
+                foreach ($request->input('variants') as $index => $variantData) {
+                    $variantData['product_id'] = $product->id;
+
+                    // Handle image upload
+                    if ($request->hasFile("variants.{$index}.image")) {
+                        $file = $request->file("variants.{$index}.image");
+                        $path = $file->store('products/variants', 'public');
+                        $variantData['image'] = $path;
+                    }
+                    unset($variantData['image']); // image handled separately via file upload
+
+                    $product->variants()->create(collect($variantData)->only([
+                        'attributes', 'sku', 'price', 'price_discount',
+                        'discount_percent', 'discount_start', 'discount_end',
+                        'is_active', 'is_service', 'weight', 'length', 'width', 'height',
+                    ])->toArray());
+                }
+
+                // Handle variant images separately (file uploads)
+                if ($request->hasFiles('variant_images')) {
+                    $variantImages = $request->file('variant_images');
+                    $variants = $product->variants->toArray();
+                    foreach ($variantImages as $index => $file) {
+                        if (isset($variants[$index])) {
+                            $path = $file->store('products/variants', 'public');
+                            ProductVariant::where('id', $variants[$index]['id'])
+                                ->update(['image' => $path]);
+                        }
                     }
                 }
             }
@@ -145,15 +196,30 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'short_description' => 'nullable|string',
             'description' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*.title' => 'required_with:features|string|max:255',
+            'features.*.value' => 'required_with:features|string|max:255',
             'price' => 'required|numeric|min:0',
-            'price_discount' => 'nullable|numeric|min:0|lt:price',
+            'price_discount' => 'nullable|numeric|min:0',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'discount_start' => 'nullable|date',
+            'discount_end' => 'nullable|date|after_or_equal:discount_start',
             'stock' => 'required|integer|min:0',
+            'is_service' => 'boolean',
+            'variant_types' => 'nullable|array',
+            'variant_types.*.name' => 'required_with:variant_types|string|max:100',
+            'variant_types.*.values' => 'required_with:variant_types|array',
+            'variant_types.*.values.*' => 'required_with:variant_types|string|max:100',
             'category_id' => 'required|exists:categories,id',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:active,inactive,archived',
             'is_featured' => 'boolean',
             'sku' => 'nullable|string|max:50|unique:products,sku,' . $product->id,
             'weight' => 'nullable|string|max:50',
+            'length' => 'nullable|string|max:50',
+            'width' => 'nullable|string|max:50',
+            'height' => 'nullable|string|max:50',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:255',
@@ -164,21 +230,31 @@ class ProductController extends Controller
             'primary_media_id' => 'nullable|exists:media,id',
             'variants' => 'nullable|array',
             'variants.*.id' => 'nullable|integer',
-            'variants.*.color' => 'nullable|string|max:50',
-            'variants.*.size' => 'nullable|string|max:50',
+            'variants.*.attributes' => 'nullable|array',
             'variants.*.sku' => 'nullable|string|max:50',
-            'variants.*.stock' => 'required_with:variants.*|integer|min:0',
-            'variants.*.price_addition' => 'nullable|numeric|min:0',
-            'variants.*.status' => 'required_with:variants.*|in:active,inactive',
+            'variants.*.price' => 'required_with:variants|numeric|min:0',
+            'variants.*.price_discount' => 'nullable|numeric|min:0',
+            'variants.*.discount_percent' => 'nullable|numeric|min:0|max:100',
+            'variants.*.discount_start' => 'nullable|date',
+            'variants.*.discount_end' => 'nullable|date',
+            'variants.*.is_active' => 'boolean',
+            'variants.*.is_service' => 'boolean',
+            'variants.*.weight' => 'nullable|string|max:50',
+            'variants.*.length' => 'nullable|string|max:50',
+            'variants.*.width' => 'nullable|string|max:50',
+            'variants.*.height' => 'nullable|string|max:50',
             'delete_variant_ids' => 'nullable|array',
             'delete_variant_ids.*' => 'integer',
         ]);
 
         DB::transaction(function () use ($validated, $request, $product) {
             $product->update(collect($validated)->only([
-                'name', 'description', 'price', 'price_discount',
-                'stock', 'category_id', 'status', 'is_featured', 'sku',
-                'weight', 'meta_title', 'meta_description', 'meta_keywords',
+                'name', 'short_description', 'description', 'features',
+                'price', 'price_discount', 'discount_percent', 'discount_start', 'discount_end',
+                'stock', 'is_service', 'variant_types',
+                'category_id', 'status', 'is_featured', 'sku',
+                'weight', 'length', 'width', 'height',
+                'meta_title', 'meta_description', 'meta_keywords',
             ])->toArray());
 
             // Sync tags
@@ -188,7 +264,6 @@ class ProductController extends Controller
             $mediaIds = $request->input('media_ids', []);
             $primaryId = $request->input('primary_media_id');
 
-            // Detach all current media, then reattach in order
             $product->media()->detach();
             foreach ($mediaIds as $index => $mediaId) {
                 $product->media()->attach($mediaId, [
@@ -197,7 +272,6 @@ class ProductController extends Controller
                 ]);
             }
 
-            // Update thumbnail
             if (!empty($mediaIds)) {
                 $thumbId = $primaryId ?? $mediaIds[0];
                 $product->update(['thumbnail_id' => $thumbId]);
@@ -205,21 +279,44 @@ class ProductController extends Controller
                 $product->update(['thumbnail_id' => null]);
             }
 
-            // Handle variants
+            // Handle variant deletion
             if ($request->filled('delete_variant_ids')) {
-                ProductVariant::whereIn('id', $request->input('delete_variant_ids'))
+                $deleteIds = $request->input('delete_variant_ids');
+                // Delete variant images from storage
+                $variantsToDelete = ProductVariant::whereIn('id', $deleteIds)
+                    ->where('product_id', $product->id)
+                    ->get();
+                foreach ($variantsToDelete as $v) {
+                    if ($v->image) {
+                        Storage::disk('public')->delete($v->image);
+                    }
+                }
+                ProductVariant::whereIn('id', $deleteIds)
                     ->where('product_id', $product->id)
                     ->delete();
             }
 
+            // Handle variants
             if ($request->filled('variants')) {
-                foreach ($request->input('variants') as $variantData) {
-                    if (!empty($variantData['color']) || !empty($variantData['size'])) {
-                        if (!empty($variantData['id'])) {
-                            $product->variants()->where('id', $variantData['id'])->update($variantData);
-                        } else {
-                            $product->variants()->create($variantData);
-                        }
+                foreach ($request->input('variants') as $index => $variantData) {
+                    $variantAttributes = collect($variantData)->only([
+                        'attributes', 'sku', 'price', 'price_discount',
+                        'discount_percent', 'discount_start', 'discount_end',
+                        'is_active', 'is_service', 'weight', 'length', 'width', 'height',
+                    ])->toArray();
+
+                    // Handle variant image upload
+                    if ($request->hasFile("variants.{$index}.image")) {
+                        $file = $request->file("variants.{$index}.image");
+                        $path = $file->store('products/variants', 'public');
+                        $variantAttributes['image'] = $path;
+                    }
+
+                    if (!empty($variantData['id'])) {
+                        $product->variants()->where('id', $variantData['id'])->update($variantAttributes);
+                    } else {
+                        $variantAttributes['product_id'] = $product->id;
+                        $product->variants()->create($variantAttributes);
                     }
                 }
             }
@@ -236,6 +333,13 @@ class ProductController extends Controller
         // Delete associated media files from disk
         foreach ($product->media as $media) {
             $media->deleteFile();
+        }
+
+        // Delete variant images
+        foreach ($product->variants as $variant) {
+            if ($variant->image) {
+                Storage::disk('public')->delete($variant->image);
+            }
         }
 
         $product->delete();
@@ -257,6 +361,11 @@ class ProductController extends Controller
             foreach ($product->media as $media) {
                 $media->deleteFile();
             }
+            foreach ($product->variants as $variant) {
+                if ($variant->image) {
+                    Storage::disk('public')->delete($variant->image);
+                }
+            }
             $product->delete();
             $count++;
         }
@@ -265,9 +374,6 @@ class ProductController extends Controller
             ->with('success', "{$count} products deleted.");
     }
 
-    /**
-     * Update product media ordering.
-     */
     public function updateMediaOrder(Request $request, Product $product)
     {
         $request->validate([

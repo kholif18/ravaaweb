@@ -11,16 +11,23 @@ return new class extends Migration
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('color')->nullable();
-            $table->string('size')->nullable();
+            $table->text('attributes')->nullable(); // JSON: {"Ukuran":"S","Warna":"Hijau"}
             $table->string('sku')->nullable();
-            $table->unsignedInteger('stock')->default(0);
-            $table->decimal('price_addition', 12, 2)->default(0);
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->decimal('price', 12, 2)->default(0);
+            $table->decimal('price_discount', 12, 2)->nullable();
+            $table->decimal('discount_percent', 5, 2)->nullable();
+            $table->datetime('discount_start')->nullable();
+            $table->datetime('discount_end')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_service')->default(false);
+            $table->string('weight')->nullable();
+            $table->string('length')->nullable();
+            $table->string('width')->nullable();
+            $table->string('height')->nullable();
+            $table->string('image')->nullable(); // path to variant image
             $table->timestamps();
 
             $table->index('product_id');
-            $table->index(['color', 'size']);
         });
     }
 

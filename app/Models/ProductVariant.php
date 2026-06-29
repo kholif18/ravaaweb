@@ -12,16 +12,31 @@ class ProductVariant extends Model
 
     protected $fillable = [
         'product_id',
-        'color',
-        'size',
+        'attributes',
         'sku',
-        'stock',
-        'price_addition',
-        'status',
+        'price',
+        'price_discount',
+        'discount_percent',
+        'discount_start',
+        'discount_end',
+        'is_active',
+        'is_service',
+        'weight',
+        'length',
+        'width',
+        'height',
+        'image',
     ];
 
     protected $casts = [
-        'price_addition' => 'decimal:2',
+        'price' => 'decimal:2',
+        'price_discount' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
+        'discount_start' => 'datetime',
+        'discount_end' => 'datetime',
+        'is_active' => 'boolean',
+        'is_service' => 'boolean',
+        'attributes' => 'array',
     ];
 
     public function product(): BelongsTo
@@ -31,6 +46,24 @@ class ProductVariant extends Model
 
     public function getEffectivePriceAttribute(): float
     {
-        return $this->product->price + $this->price_addition;
+        if ($this->price_discount && $this->price_discount > 0) {
+            return (float) $this->price_discount;
+        }
+        return (float) $this->price;
+    }
+
+    public function getDiscountActiveAttribute(): bool
+    {
+        if (!$this->discount_percent || $this->discount_percent <= 0) {
+            return false;
+        }
+        $now = now();
+        if ($this->discount_start && $now->lt($this->discount_start)) {
+            return false;
+        }
+        if ($this->discount_end && $now->gt($this->discount_end)) {
+            return false;
+        }
+        return true;
     }
 }

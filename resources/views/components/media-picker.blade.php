@@ -65,6 +65,7 @@
         overflow: hidden;
         border: 2px solid var(--border-color);
         flex-shrink: 0;
+        margin: 4px; /* fallback spacing when flex gap is not applied */
     }
 
     .media-picker-thumb img {
@@ -214,7 +215,26 @@
 @push('scripts')
 <script>
 // Media picker state
-const mediaPickerState = {};
+window.mediaPickerState = window.mediaPickerState || {};
+
+/**
+ * Register a new target for the media‑picker.
+ *
+ * When variant cards are generated dynamically we need to make sure the
+ * preview container (`${fieldName}-selected`) exists before the picker
+ * tries to write the preview. The component normally renders the preview
+ * container statically; for dynamic cards we create a dummy element if it
+ * is missing.
+ */
+window.registerMediaPickerTarget = function (fieldName) {
+    const preview = document.getElementById(fieldName + '-selected');
+    if (!preview) {
+        const wrapper = document.createElement('div');
+        wrapper.id = fieldName + '-selected';
+        wrapper.className = 'media-picker-selected';
+        document.body.appendChild(wrapper);
+    }
+};
 
 function openMediaPicker(fieldName, multiple, type) {
     mediaPickerState[fieldName] = {

@@ -132,15 +132,23 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Bootstrap.Modal compat
-    if (!window.bootstrap) window.bootstrap = {};
-    window.bootstrap.Modal = {
-        getInstance: function (el) {
-            return {
-                hide: function () { hideModal(el); },
-                show: function () { showModal(el); }
-            };
-        }
+if (!window.bootstrap) window.bootstrap = {};
+// Provide a fallback only if the native Bootstrap Modal class is not available
+if (typeof window.bootstrap.Modal !== 'function') {
+    // Simple wrapper that mimics the Bootstrap Modal constructor API
+    window.bootstrap.Modal = function (el) {
+        this._el = el;
     };
+    window.bootstrap.Modal.prototype.show = function () { showModal(this._el); };
+    window.bootstrap.Modal.prototype.hide = function () { hideModal(this._el); };
+    // Also keep the getInstance helper used elsewhere in the code
+    window.bootstrap.Modal.getInstance = function (el) {
+        return {
+            hide: function () { hideModal(el); },
+            show: function () { showModal(el); }
+        };
+    };
+}
 
     // ===== DROPDOWNS – PORTAL APPROACH (escape table overflow) =====
     function closeAllDropdowns() {
