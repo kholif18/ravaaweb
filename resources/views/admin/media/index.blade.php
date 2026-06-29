@@ -132,22 +132,17 @@
         <div class="pagination-toolbar">
             <x-pagination :paginator="$media" label="media" :perPage="$media->perPage()" />
         </div>
-    </div>
 </div>
 
-<!-- View Media Modal -->
-<div class="modal fade" id="modal-view-media" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content glass-card">
-            <div class="card-header">
-                <div class="card-title" id="modal-view-media-title">Preview</div>
-                <div class="card-header-btns">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-            </div>
-            <div class="card-body text-center" id="modal-view-media-body">
-            </div>
-        </div>
+<!-- Fullscreen Gallery Overlay -->
+<div class="gallery-overlay" id="galleryOverlay">
+    <button type="button" class="gallery-close" id="galleryClose"><i class="bi bi-x-lg"></i></button>
+    <button type="button" class="gallery-nav gallery-prev" id="galleryPrev"><i class="bi bi-chevron-left"></i></button>
+    <button type="button" class="gallery-nav gallery-next" id="galleryNext"><i class="bi bi-chevron-right"></i></button>
+    <div class="gallery-content" id="galleryContent"></div>
+    <div class="gallery-footer">
+        <span class="gallery-filename" id="galleryFilename"></span>
+        <span class="gallery-counter" id="galleryCounter"></span>
     </div>
 </div>
 
@@ -346,6 +341,140 @@
         border: 1px solid var(--accent);
     }
 
+    /* ==============================
+       FULLSCREEN GALLERY
+    ============================== */
+    .gallery-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .gallery-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .gallery-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        z-index: 10;
+    }
+
+    .gallery-close:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .gallery-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        z-index: 10;
+    }
+
+    .gallery-nav:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .gallery-prev { left: 16px; }
+    .gallery-next { right: 16px; }
+
+    .gallery-content {
+        max-width: 90vw;
+        max-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gallery-content img {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 8px;
+        object-fit: contain;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .gallery-file-info {
+        text-align: center;
+        color: #fff;
+    }
+
+    .gallery-file-info i {
+        font-size: 80px;
+        opacity: 0.4;
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .gallery-file-info p {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .gallery-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        color: #fff;
+    }
+
+    .gallery-filename {
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 70%;
+    }
+
+    .gallery-counter {
+        font-size: 13px;
+        opacity: 0.7;
+        flex-shrink: 0;
+    }
+
     .bulk-info {
         font-size: 14px;
         font-weight: 500;
@@ -479,16 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (actionType === 'view') {
-            const modal = new bootstrap.Modal(document.getElementById('modal-view-media'));
-            const title = document.getElementById('modal-view-media-title');
-            const body = document.getElementById('modal-view-media-body');
-            title.textContent = action.dataset.name;
-            if (action.dataset.url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
-                body.innerHTML = '<img src="' + action.dataset.url + '" style="max-width:100%;border-radius:8px;">';
-            } else {
-                body.innerHTML = '<a href="' + action.dataset.url + '" target="_blank" class="btn btn-primary">Buka File</a>';
-            }
-            modal.show();
+            openGallery(action.dataset.id);
         }
 
         if (actionType === 'delete') {
@@ -560,7 +680,83 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-});
+    // ==================== Fullscreen Gallery ====================
+    let galleryItems = [];
+    let galleryIndex = 0;
+
+    function getGalleryItems() {
+        const items = [];
+        document.querySelectorAll('.media-item').forEach(el => {
+            const btn = el.querySelector('[data-action="view"]');
+            if (btn) {
+                items.push({
+                    id: el.dataset.id,
+                    url: btn.dataset.url,
+                    name: btn.dataset.name,
+                });
+            }
+        });
+        return items;
+    }
+
+    function openGallery(id) {
+        galleryItems = getGalleryItems();
+        galleryIndex = galleryItems.findIndex(item => item.id === id);
+        if (galleryIndex === -1) galleryIndex = 0;
+        renderGallery();
+        document.getElementById('galleryOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeGallery() {
+        document.getElementById('galleryOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function navigateGallery(dir) {
+        galleryIndex += dir;
+        if (galleryIndex < 0) galleryIndex = galleryItems.length - 1;
+        if (galleryIndex >= galleryItems.length) galleryIndex = 0;
+        renderGallery();
+    }
+
+    function renderGallery() {
+        const item = galleryItems[galleryIndex];
+        if (!item) return;
+        const content = document.getElementById('galleryContent');
+        const filename = document.getElementById('galleryFilename');
+        const counter = document.getElementById('galleryCounter');
+
+        const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(item.url);
+        if (isImage) {
+            content.innerHTML = '<img src="' + item.url + '" alt="' + item.name + '">';
+        } else {
+            content.innerHTML = '<div class="gallery-file-info"><i class="bi bi-file-earmark"></i><p>' + item.name + '</p><a href="' + item.url + '" target="_blank" class="btn btn-primary btn-sm mt-2"><i class="bi bi-box-arrow-up-right"></i> Buka File</a></div>';
+        }
+        filename.textContent = item.name;
+        counter.textContent = (galleryIndex + 1) + ' / ' + galleryItems.length;
+    }
+
+    // Gallery controls
+    document.getElementById('galleryClose').addEventListener('click', closeGallery);
+    document.getElementById('galleryPrev').addEventListener('click', function() { navigateGallery(-1); });
+    document.getElementById('galleryNext').addEventListener('click', function() { navigateGallery(1); });
+
+    // Click outside image to close
+    document.getElementById('galleryOverlay').addEventListener('click', function(e) {
+        if (e.target === this || e.target.classList.contains('gallery-content')) {
+            closeGallery();
+        }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        const overlay = document.getElementById('galleryOverlay');
+        if (!overlay.classList.contains('active')) return;
+        if (e.key === 'Escape') closeGallery();
+        if (e.key === 'ArrowLeft') navigateGallery(-1);
+        if (e.key === 'ArrowRight') navigateGallery(1);
+    });
 </script>
 @endpush
 @endsection
