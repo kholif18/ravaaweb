@@ -3,19 +3,14 @@
 @section('page-title', 'Kategori Produk')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-muted">
-        <a href="{{ route('admin.dashboard') }}"
-           class="text-muted text-hover-primary">
-            Dashboard
+    <li>
+        <a href="{{ route('admin.dashboard') }}">
+            <i class="bi bi-house-door"></i> Home
         </a>
     </li>
-
-    <li class="breadcrumb-item">
-        <span class="bullet bg-gray-300 w-5px h-2px"></span>
-    </li>
-
-    <li class="breadcrumb-item text-dark">
-        Kategori Produk
+    <li class="bc-separator"><i class="bi bi-chevron-right"></i></li>
+    <li>
+        <a href="{{ route('admin.categories.index') }}">Kategori Produk</a>
     </li>
 @endsection
 
@@ -26,70 +21,58 @@
 </div>
 
 <!--begin::Card-->
-<div class="card">
+<div class="glass-card">
     <!--begin::Card header-->
-    <div class="card-header border-0 pt-6">
-        <!--begin::Card title-->
-        <div class="card-title">
-            <!--begin::Search-->
-            <div class="d-flex align-items-center position-relative my-1 me-5">
-                <i class="bi bi-search fs-3 position-absolute ms-6"></i>
-                <input type="text" 
-                       data-kt-category-table-filter="search" 
-                       class="form-control form-control-solid w-250px ps-15" 
-                       placeholder="Cari Kategori..." 
-                       name="search"
-                       value="{{ $filters['search'] ?? '' }}" />
-            </div>
-            <!--end::Search-->
+    <div class="card-header">
+        <div class="card-title">Daftar Kategori Produk</div>
+        <div class="card-header-btns">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
+                <i class="bi bi-plus-circle"></i> Tambah
+            </button>
         </div>
-        <!--end::Card title-->
-        
-        <!--begin::Card toolbar-->
-        <div class="card-toolbar">
-            <!--begin::Toolbar-->
-            <div class="d-flex justify-content-end align-items-center" data-kt-category-table-toolbar="base">
-                <!--begin::Filter-->
-                <div class="me-3">
-                    <select name="status" data-control="select2" data-hide-search="true" class="form-select form-select-solid w-125px" data-placeholder="Status">
-                        <option value="">Semua Status</option>
-                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
-                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                </div>
-                
-                <div class="me-3">
-                    <select name="parent" data-control="select2" class="form-select form-select-solid w-200px" data-placeholder="Parent">
-                        <option value="">Semua Parent</option>
-                        <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Tanpa Parent (Root)</option>
-                        @foreach($parentCategories as $parent)
-                            <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
-                                {{ $parent->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <button type="button" class="btn btn-light-primary me-3" id="kt_category_reset_filter">
-                    <i class="bi bi-arrow-clockwise"></i> Reset
-                </button>
-                <!--end::Filter-->
-
-                <!--begin::Add category-->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
-                    <i class="bi bi-plus-circle"></i>
-                    Tambah Kategori
-                </button>
-                <!--end::Add category-->
-            </div>
-            <!--end::Toolbar-->
-        </div>
-        <!--end::Card toolbar-->
     </div>
     <!--end::Card header-->
-    
-    <!--begin::Card body-->
-    <div class="card-body pt-0">
+
+    <div class="card-body">
+        <!-- Table toolbar with search + filter row -->
+        <div class="table-toolbar">
+            <div class="toolbar-group">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="input-group input-group-sm" style="max-width: 280px;">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" 
+                               data-kt-category-table-filter="search" 
+                               placeholder="Cari Kategori..." 
+                               name="search"
+                               value="{{ $filters['search'] ?? '' }}">
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" id="kt_category_search_btn">
+                        <i class="bi bi-search"></i> Cari
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm" id="kt_category_reset_filter">
+                        <i class="bi bi-arrow-clockwise"></i> Reset
+                    </button>
+                </div>
+            </div>
+            <div class="toolbar-group">
+                <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
+                    <option value="">Semua Status</option>
+                    <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                    <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                </select>
+                <select name="parent" class="form-select form-select-sm" style="min-width: 150px;">
+                    <option value="">Semua Parent</option>
+                    <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Root</option>
+                    @foreach($parentCategories as $parent)
+                        <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
+                            {{ $parent->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <!--end::Toolbar-->
+
         <!--begin::Category Table Container-->
         <div id="kt_category_table_container">
             @include('admin.categories._table')
@@ -102,46 +85,44 @@
 
 <!--begin::Modal - Add Category-->
 <div class="modal fade" id="kt_modal_add_category" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog-centered mw-500px">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="fw-bold">Tambah Kategori Baru</h2>
+            <div class="modal-header py-3">
+                <h3 class="fw-bold">Tambah Kategori</h3>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                     <i class="bi bi-x-lg"></i>
                 </div>
             </div>
             
-            <div class="modal-body py-10 px-lg-17">
-                <form id="kt_modal_add_category_form" class="form" action="{{ route('admin.categories.store') }}" method="POST">
-                    @csrf
-                    <div class="fv-row mb-7">
-                        <label class="required fs-6 fw-semibold mb-2">Nama Kategori</label>
-                        <input type="text" class="form-control form-control-solid" 
+            <form id="kt_modal_add_category_form" class="form" action="{{ route('admin.categories.store') }}" method="POST">
+                @csrf
+                <div class="modal-body py-4 px-4">
+                    <div class="fv-row mb-3">
+                        <label class="required fs-7 fw-semibold mb-1">Nama Kategori</label>
+                        <input type="text" class="form-control form-control-sm" 
                                placeholder="Masukkan nama kategori" 
                                name="name" 
+                               id="add_category_name"
                                required />
-                        <div class="text-danger fs-7 mt-1" id="name-error"></div>
+                        <div class="text-danger fs-8 mt-1" id="name-error"></div>
                     </div>
                     
-                    <div class="fv-row mb-7">
-                        <label class="fs-6 fw-semibold mb-2">Deskripsi</label>
-                        <textarea class="form-control form-control-solid" 
-                                  rows="3" 
+                    <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-1">Deskripsi</label>
+                        <textarea class="form-control form-control-sm" 
+                                  rows="2" 
                                   placeholder="Masukkan deskripsi kategori" 
                                   name="description"></textarea>
                     </div>
                     
-                    <div class="row mb-7">
+                    <div class="row mb-3">
                         <div class="col-md-4 fv-row">
-                            <label class="required fs-6 fw-semibold mb-2">Icon</label>
-                            <div class="input-group">
+                            <label class="required fs-7 fw-semibold mb-1">Icon</label>
+                            <div class="input-group input-group-sm">
                                 <span class="input-group-text">
                                     <i id="add_icon_preview" class="fas fa-icons"></i>
                                 </span>
-                                <select
-                                    class="form-select form-select-solid"
-                                    id="add_category_icon"
-                                    name="icon">
+                                <select class="form-select form-select-sm" id="add_category_icon" name="icon">
                                     <option value="fas fa-tags">Tags</option>
                                     <option value="fas fa-print">Print</option>
                                     <option value="fas fa-paint-brush">Paint Brush</option>
@@ -171,39 +152,36 @@
                         </div>
                         
                         <div class="col-md-4 fv-row">
-                            <label class="required fs-6 fw-semibold mb-2">Urutan</label>
-                            <input type="number" class="form-control form-control-solid" 
-                                   min="1" max="100" 
-                                   value="1" 
-                                   name="order" 
-                                   required />
+                            <label class="required fs-7 fw-semibold mb-1">Urutan</label>
+                            <input type="number" class="form-control form-control-sm" 
+                                   min="1" max="100" value="1" name="order" required />
                         </div>
 
                         <div class="col-md-4 fv-row">
-                            <label class="fs-6 fw-semibold mb-2">Warna</label>
-                            <select class="form-select form-select-solid" name="color">
-                                <option value="primary" selected>Primary (Blue)</option>
-                                <option value="success">Success (Green)</option>
-                                <option value="info">Info (Cyan)</option>
-                                <option value="warning">Warning (Yellow)</option>
-                                <option value="danger">Danger (Red)</option>
-                                <option value="dark">Dark (Black)</option>
+                            <label class="fs-7 fw-semibold mb-1">Warna</label>
+                            <select class="form-select form-select-sm" name="color" id="add_category_color">
+                                <option value="primary" selected>Blue</option>
+                                <option value="success">Green</option>
+                                <option value="info">Cyan</option>
+                                <option value="warning">Yellow</option>
+                                <option value="danger">Red</option>
+                                <option value="dark">Dark</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div class="row mb-7">
+                    <div class="row mb-3">
                         <div class="col-md-6 fv-row">
-                            <label class="required fs-6 fw-semibold mb-2">Status</label>
-                            <select class="form-select form-select-solid" name="status" required>
+                            <label class="required fs-7 fw-semibold mb-1">Status</label>
+                            <select class="form-select form-select-sm" name="status" required>
                                 <option value="active" selected>Aktif</option>
                                 <option value="inactive">Tidak Aktif</option>
                             </select>
                         </div>
                         
                         <div class="col-md-6 fv-row">
-                            <label class="fs-6 fw-semibold mb-2">Parent Kategori</label>
-                            <select class="form-select form-select-solid" name="parent_id">
+                            <label class="fs-7 fw-semibold mb-1">Parent Kategori</label>
+                            <select class="form-select form-select-sm" name="parent_id">
                                 <option value="">-- Tanpa Parent --</option>
                                 @foreach($parentCategories as $parent)
                                     <option value="{{ $parent->id }}">{{ $parent->name }}</option>
@@ -212,55 +190,49 @@
                         </div>
                     </div>
                     
-                    <div class="fv-row mb-7">
-                        <label class="fs-6 fw-semibold mb-2">Slug (URL)</label>
-                        <input type="text" class="form-control form-control-solid" 
+                    <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-1">Slug (URL)</label>
+                        <input type="text" class="form-control form-control-sm" 
                                placeholder="slug-otomatis-jika-kosong" 
                                name="slug" />
-                        <div class="text-muted fs-7 mt-1">
-                            URL friendly version. Kosongkan untuk generate otomatis dari nama.
-                        </div>
                     </div>
                     
-                    <div class="card card-bordered mb-7">
-                        <div class="card-header">
-                            <h4 class="card-title">SEO Settings</h4>
+                    <div class="border rounded p-3 mb-0" style="background: rgba(0,0,0,0.01);">
+                        <div class="fw-semibold fs-7 mb-2" style="color: var(--text-secondary);">
+                            <i class="bi bi-search me-1"></i> SEO Settings
                         </div>
-                        <div class="card-body">
-                            <div class="fv-row mb-5">
-                                <label class="fs-6 fw-semibold mb-2">Meta Title</label>
-                                <input type="text" class="form-control form-control-solid" 
+                        <div class="row g-3">
+                            <div class="col-12 fv-row">
+                                <label class="fs-7 fw-semibold mb-1">Meta Title</label>
+                                <input type="text" class="form-control form-control-sm" 
                                        placeholder="Meta title untuk SEO" 
                                        name="meta_title" />
                             </div>
-                            
-                            <div class="fv-row mb-5">
-                                <label class="fs-6 fw-semibold mb-2">Meta Description</label>
-                                <textarea class="form-control form-control-solid" 
+                            <div class="col-12 fv-row">
+                                <label class="fs-7 fw-semibold mb-1">Meta Description</label>
+                                <textarea class="form-control form-control-sm" 
                                           rows="2"
                                           placeholder="Meta description untuk SEO" 
                                           name="meta_description"></textarea>
                             </div>
-                            
-                            <div class="fv-row">
-                                <label class="fs-6 fw-semibold mb-2">Meta Keywords</label>
-                                <input type="text" class="form-control form-control-solid" 
+                            <div class="col-12 fv-row mb-0">
+                                <label class="fs-7 fw-semibold mb-1">Meta Keywords</label>
+                                <input type="text" class="form-control form-control-sm" 
                                        placeholder="Keyword1, Keyword2, Keyword3" 
                                        name="meta_keywords" />
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="text-center pt-10">
-                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary" id="kt_modal_add_category_submit">
-                            <span class="indicator-label">Simpan</span>
-                            <span class="indicator-progress">Mohon tunggu...
-                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="kt_modal_add_category_submit">
+                        <span class="indicator-label">Simpan</span>
+                        <span class="indicator-progress">Mohon tunggu...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -268,51 +240,50 @@
 
 <!--begin::Modal - Edit Category-->
 <div class="modal fade" id="kt_modal_edit_category" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog-centered mw-500px">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="fw-bold">Edit Kategori</h2>
+            <div class="modal-header py-3">
+                <h3 class="fw-bold">Edit Kategori</h3>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                     <i class="bi bi-x-lg"></i>
                 </div>
             </div>
             
-            <div class="modal-body py-10 px-lg-17">
-                <form id="kt_modal_edit_category_form" class="form" method="POST" data-update-url="{{ route('admin.categories.update', ':id') }}">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="id" id="edit_category_id" />
+            <form id="kt_modal_edit_category_form" class="form" method="POST" data-update-url="{{ route('admin.categories.update', ':id') }}">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" id="edit_category_id" />
+                <div class="modal-body py-4 px-4">
                     
-                    <div class="fv-row mb-7">
-                        <label class="required fs-6 fw-semibold mb-2">Nama Kategori</label>
-                        <input type="text" class="form-control form-control-solid" 
+                    <div class="fv-row mb-3">
+                        <label class="required fs-7 fw-semibold mb-1">Nama Kategori</label>
+                        <input type="text" class="form-control form-control-sm" 
                                placeholder="Masukkan nama kategori" 
                                name="name" 
                                id="edit_category_name"
                                required />
-                        <div class="text-danger fs-7 mt-1" id="edit_name-error"></div>
+                        <div class="text-danger fs-8 mt-1" id="edit_name-error"></div>
                     </div>
                     
-                    <div class="fv-row mb-7">
-                        <label class="fs-6 fw-semibold mb-2">Deskripsi</label>
-                        <textarea class="form-control form-control-solid" 
-                                  rows="3" 
+                    <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-1">Deskripsi</label>
+                        <textarea class="form-control form-control-sm" 
+                                  rows="2" 
                                   placeholder="Masukkan deskripsi kategori" 
                                   name="description" 
                                   id="edit_category_description"></textarea>
                     </div>
                     
-                    <div class="row mb-7">
+                    <div class="row mb-3">
                         <div class="col-md-4 fv-row">
-                            <label class="required fs-6 fw-semibold mb-2">Icon</label>
-                            <div class="input-group">
+                            <label class="required fs-7 fw-semibold mb-1">Icon</label>
+                            <div class="input-group input-group-sm">
                                 <span class="input-group-text">
                                     <i id="icon_preview" class="fas fa-icons"></i>
                                 </span>
-                                <select class="form-select form-select-solid" 
+                                <select class="form-select form-select-sm" 
                                         name="icon" 
                                         id="edit_category_icon" 
-                                        data-placeholder="Pilih icon"
                                         required>
                                     <option value="fas fa-tags">Tags</option>
                                     <option value="fas fa-print">Print</option>
@@ -343,8 +314,8 @@
                         </div>
                         
                         <div class="col-md-4 fv-row">
-                            <label class="required fs-6 fw-semibold mb-2">Urutan</label>
-                            <input type="number" class="form-control form-control-solid" 
+                            <label class="required fs-7 fw-semibold mb-1">Urutan</label>
+                            <input type="number" class="form-control form-control-sm" 
                                    min="1" max="100" 
                                    name="order" 
                                    id="edit_category_order"
@@ -352,30 +323,30 @@
                         </div>
 
                         <div class="col-md-4 fv-row">
-                            <label class="fs-6 fw-semibold mb-2">Warna</label>
-                            <select class="form-select form-select-solid" name="color" id="edit_category_color">
-                                <option value="primary">Primary (Blue)</option>
-                                <option value="success">Success (Green)</option>
-                                <option value="info">Info (Cyan)</option>
-                                <option value="warning">Warning (Yellow)</option>
-                                <option value="danger">Danger (Red)</option>
-                                <option value="dark">Dark (Black)</option>
+                            <label class="fs-7 fw-semibold mb-1">Warna</label>
+                            <select class="form-select form-select-sm" name="color" id="edit_category_color">
+                                <option value="primary">Blue</option>
+                                <option value="success">Green</option>
+                                <option value="info">Cyan</option>
+                                <option value="warning">Yellow</option>
+                                <option value="danger">Red</option>
+                                <option value="dark">Dark</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div class="row mb-7">
+                    <div class="row mb-3">
                         <div class="col-md-6 fv-row">
-                            <label class="required fs-6 fw-semibold mb-2">Status</label>
-                            <select class="form-select form-select-solid" name="status" id="edit_category_status" required>
+                            <label class="required fs-7 fw-semibold mb-1">Status</label>
+                            <select class="form-select form-select-sm" name="status" id="edit_category_status" required>
                                 <option value="active">Aktif</option>
                                 <option value="inactive">Tidak Aktif</option>
                             </select>
                         </div>
                         
                         <div class="col-md-6 fv-row">
-                            <label class="fs-6 fw-semibold mb-2">Parent Kategori</label>
-                            <select class="form-select form-select-solid" name="parent_id" id="edit_category_parent">
+                            <label class="fs-7 fw-semibold mb-1">Parent Kategori</label>
+                            <select class="form-select form-select-sm" name="parent_id" id="edit_category_parent">
                                 <option value="">-- Tanpa Parent --</option>
                                 @foreach($parentCategories as $parent)
                                     <option value="{{ $parent->id }}">{{ $parent->name }}</option>
@@ -384,56 +355,53 @@
                         </div>
                     </div>
                     
-                    <div class="fv-row mb-7">
-                        <label class="fs-6 fw-semibold mb-2">Slug (URL)</label>
-                        <input type="text" class="form-control form-control-solid" 
+                    <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-1">Slug (URL)</label>
+                        <input type="text" class="form-control form-control-sm" 
                                placeholder="slug-kategori" 
                                name="slug" 
                                id="edit_category_slug" />
                     </div>
                     
-                    <div class="card card-bordered mb-7">
-                        <div class="card-header">
-                            <h4 class="card-title">SEO Settings</h4>
+                    <div class="border rounded p-3 mb-0" style="background: rgba(0,0,0,0.01);">
+                        <div class="fw-semibold fs-7 mb-2" style="color: var(--text-secondary);">
+                            <i class="bi bi-search me-1"></i> SEO Settings
                         </div>
-                        <div class="card-body">
-                            <div class="fv-row mb-5">
-                                <label class="fs-6 fw-semibold mb-2">Meta Title</label>
-                                <input type="text" class="form-control form-control-solid" 
+                        <div class="row g-3">
+                            <div class="col-12 fv-row">
+                                <label class="fs-7 fw-semibold mb-1">Meta Title</label>
+                                <input type="text" class="form-control form-control-sm" 
                                        placeholder="Meta title untuk SEO" 
                                        name="meta_title" 
                                        id="edit_category_meta_title" />
                             </div>
-                            
-                            <div class="fv-row mb-5">
-                                <label class="fs-6 fw-semibold mb-2">Meta Description</label>
-                                <textarea class="form-control form-control-solid" 
+                            <div class="col-12 fv-row">
+                                <label class="fs-7 fw-semibold mb-1">Meta Description</label>
+                                <textarea class="form-control form-control-sm" 
                                           rows="2"
                                           placeholder="Meta description untuk SEO" 
                                           name="meta_description" 
                                           id="edit_category_meta_description"></textarea>
                             </div>
-                            
-                            <div class="fv-row">
-                                <label class="fs-6 fw-semibold mb-2">Meta Keywords</label>
-                                <input type="text" class="form-control form-control-solid" 
+                            <div class="col-12 fv-row mb-0">
+                                <label class="fs-7 fw-semibold mb-1">Meta Keywords</label>
+                                <input type="text" class="form-control form-control-sm" 
                                        placeholder="Keyword1, Keyword2, Keyword3" 
                                        name="meta_keywords" 
                                        id="edit_category_meta_keywords" />
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="text-center pt-10">
-                        <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary" id="kt_modal_edit_category_submit">
-                            <span class="indicator-label">Update</span>
-                            <span class="indicator-progress">Mohon tunggu...
-                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="kt_modal_edit_category_submit">
+                        <span class="indicator-label">Update</span>
+                        <span class="indicator-progress">Mohon tunggu...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -460,66 +428,48 @@
 
 @push('styles')
 <style>
-    .dropdown-menu {
-        min-width: 120px;
+    /* Search + action input group compact */
+    .input-group.input-group-sm .input-group-text {
+        background: transparent;
+        border-color: rgba(0, 0, 0, 0.1);
+        color: var(--text-muted);
+        padding: 0.2rem 0.5rem;
     }
-    .symbol-label {
-        background-color: #f8f9fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .input-group.input-group-sm .form-control {
+        border-left: 0;
     }
-    
-    /* Toast Styles */
-    .toast {
-        border: 0;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    .input-group.input-group-sm:focus-within .input-group-text,
+    .input-group.input-group-sm:focus-within .form-control {
+        border-color: var(--accent);
     }
-    .toast-success {
-        background-color: #d1fae5;
-        border-left: 4px solid #10b981;
+    .input-group.input-group-sm:focus-within .form-control {
+        box-shadow: 0 0 0 2px var(--accent-light);
     }
-    .toast-error {
-        background-color: #fee2e2;
-        border-left: 4px solid #ef4444;
+    /* Card header buttons compact */
+    .card-header-btns {
+        display: flex; align-items: center; gap: 0.35rem;
     }
-    .toast-warning {
-        background-color: #fef3c7;
-        border-left: 4px solid #f59e0b;
-    }
-    .toast-info {
-        background-color: #e0f2fe;
-        border-left: 4px solid #0ea5e9;
-    }
+    /* Paginator compact */
+    .pagination { margin: 0 !important; }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-/**
- * Show toast notification using Ravaa.toast
- * @param {string} type - success, error, warning, info
- * @param {string} message - The message to display
- * @param {string} title - Ignored (compatibility)
- */
-function showToast(type, message, title = '') {
-    Ravaa.toast(message, type);
-}
-
-// Show session messages as toast
-@if(session('success'))
-    Ravaa.toast('{{ session('success') }}', 'success');
-@endif
-
-@if(session('error'))
-    Ravaa.toast('{{ session('error') }}', 'error');
-@endif
-
-@if($errors->any())
-    @foreach($errors->all() as $error)
-        Ravaa.toast('{{ $error }}', 'error');
-    @endforeach
-@endif
+document.addEventListener('DOMContentLoaded', function () {
+    // Show session messages as toast
+    @if(session('success'))
+        Ravaa.toast('{{ session('success') }}', 'success');
+    @endif
+    @if(session('error'))
+        Ravaa.toast('{{ session('error') }}', 'error');
+    @endif
+    @if($errors->any())
+        @foreach($errors->all() as $error)
+            Ravaa.toast('{{ $error }}', 'error');
+        @endforeach
+    @endif
+});
 
 // Add Modal
 const addIconSelect = document.getElementById('add_category_icon');
@@ -529,22 +479,40 @@ const addIconPreview = document.getElementById('add_icon_preview');
 const editIconSelect = document.getElementById('edit_category_icon');
 const editIconPreview = document.getElementById('icon_preview');
 
-function updateIconPreview(selectId, previewId) {
+const COLOR_MAP = {
+    'primary': '#0071e3',
+    'success': '#15803d',
+    'info':    '#0891b2',
+    'warning': '#b45309',
+    'danger':  '#b91c1c',
+    'dark':    '#1e293b',
+};
+
+function updateIconPreview(selectId, previewId, colorSelectId) {
     const select = document.getElementById(selectId);
     const preview = document.getElementById(previewId);
+    const colorSelect = colorSelectId ? document.getElementById(colorSelectId) : null;
 
     if (!select || !preview) return;
 
-    preview.className = select.value;
-
-    select.addEventListener('change', () => {
+    function refresh() {
         preview.className = select.value;
-    });
+        if (colorSelect) {
+            preview.style.color = COLOR_MAP[colorSelect.value] || '#0071e3';
+        }
+    }
+
+    refresh();
+
+    select.addEventListener('change', refresh);
+    if (colorSelect) {
+        colorSelect.addEventListener('change', refresh);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateIconPreview('add_category_icon', 'add_icon_preview');
-    updateIconPreview('edit_category_icon', 'icon_preview');
+    updateIconPreview('add_category_icon', 'add_icon_preview', 'add_category_color');
+    updateIconPreview('edit_category_icon', 'icon_preview', 'edit_category_color');
 });
 
 // Edit Category Function
@@ -674,14 +642,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         errorElement.textContent = data.errors[key][0];
                     }
                 });
-                showToast('error', 'Terdapat kesalahan validasi', 'Validasi Error!');
+                Ravaa.toast('Terdapat kesalahan validasi', 'error');
             } else if (data.success) {
                 // Close modal and refresh page
                 bootstrap.Modal.getInstance(
                     document.getElementById('kt_modal_add_category')
                 ).hide();
                 addForm.reset();
-                showToast('success', data.message, 'Sukses!');
+                Ravaa.toast(data.message, 'success');
                 setTimeout(() => location.reload(), 1500);
             }
         })
@@ -689,8 +657,13 @@ document.addEventListener('DOMContentLoaded', function() {
             addSubmitButton.removeAttribute('data-kt-indicator');
             addSubmitButton.disabled = false;
             console.error('Error:', error);
-            showToast('error', 'Terjadi kesalahan saat menyimpan data', 'Error!');
+            Ravaa.toast('Terjadi kesalahan saat menyimpan data', 'error');
         });
+    });
+
+    document.getElementById('kt_modal_add_category')
+    .addEventListener('shown.bs.modal', () => {
+        document.getElementById('add_category_name').focus();
     });
 
     document.getElementById('kt_modal_add_category')
@@ -705,6 +678,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
     
+    document.getElementById('kt_modal_edit_category')
+    .addEventListener('shown.bs.modal', () => {
+        document.getElementById('edit_category_name').focus();
+    });
+
     document.getElementById('kt_modal_edit_category')
     .addEventListener('hidden.bs.modal', () => {
 
@@ -749,13 +727,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         errorElement.textContent = data.errors[key][0];
                     }
                 });
-                showToast('error', 'Terdapat kesalahan validasi', 'Validasi Error!');
+                Ravaa.toast('Terdapat kesalahan validasi', 'error');
             } else if (data.success) {
                 // Close modal and refresh page
                 bootstrap.Modal.getInstance(
                     document.getElementById('kt_modal_edit_category')
                 ).hide();
-                showToast('success', data.message, 'Sukses!');
+                Ravaa.toast(data.message, 'success');
                 setTimeout(() => location.reload(), 1500);
             }
         })
@@ -763,7 +741,7 @@ document.addEventListener('DOMContentLoaded', function() {
             editSubmitButton.removeAttribute('data-kt-indicator');
             editSubmitButton.disabled = false;
             console.error('Error:', error);
-            showToast('error', 'Terjadi kesalahan saat menyimpan data', 'Error!');
+            Ravaa.toast('Terjadi kesalahan saat menyimpan data', 'error');
         });
     });
     
@@ -792,23 +770,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedIds = Array.from(selectedItems).map(item => item.value);
         
         if (selectedIds.length === 0) {
-            showToast('warning', 'Silakan pilih kategori yang akan dihapus', 'Peringatan!');
+            Ravaa.toast('Silakan pilih kategori yang akan dihapus', 'warning');
             return;
         }
         
-        Swal.fire({
-            title: 'Hapus Kategori Terpilih?',
-            html: `Anda akan menghapus <strong>${selectedIds.length}</strong> kategori.`,
-            text: "Tindakan ini tidak dapat dibatalkan!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal',
-            customClass: {
-                confirmButton: 'btn btn-danger',
-                cancelButton: 'btn btn-light'
-            }
-        }).then((result) => {
+        Ravaa.confirm('Hapus Kategori Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> kategori. Tindakan ini tidak dapat dibatalkan!`, 'warning')
+        .then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
                 document.getElementById('bulk-delete-form').submit();
@@ -917,7 +884,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Error filtering:', error);
-            showToast('error', 'Gagal memfilter data', 'Error!');
+            Ravaa.toast('Gagal memfilter data', 'error');
         } finally {
             tableContainer.style.opacity = '1';
             tableContainer.style.pointerEvents = 'auto';
@@ -956,7 +923,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateBulkDeleteButton();
     }
 
-    // Debounce search
+    // Debounce search on input
     let searchTimer;
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -965,16 +932,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 applyFilters();
             }, 500);
         });
+
+        // Enter triggers search immediately
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(searchTimer);
+                applyFilters();
+            }
+        });
+    }
+
+    const searchBtn = document.getElementById('kt_category_search_btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function() {
+            applyFilters();
+        });
     }
 
     if (statusFilter) {
-        $(statusFilter).on('change', function() {
+        statusFilter.addEventListener('change', function() {
             applyFilters();
         });
     }
 
     if (parentFilter) {
-        $(parentFilter).on('change', function() {
+        parentFilter.addEventListener('change', function() {
             applyFilters();
         });
     }
@@ -982,20 +965,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (resetBtn) {
         resetBtn.addEventListener('click', function() {
             searchInput.value = '';
-            $(statusFilter).val('').trigger('change.select2');
-            $(parentFilter).val('').trigger('change.select2');
-            // Reset per_page di dalam container yang mungkin sudah di-reload
+            statusFilter.value = '';
+            parentFilter.value = '';
             const perPageEl = document.querySelector('select[name="per_page"]');
             if (perPageEl) {
-                $(perPageEl).val('10').trigger('change');
+                perPageEl.value = '10';
             }
             applyFilters();
         });
     }
 
     // Per-page change with event delegation
-    $(document).on('change', 'select[name="per_page"]', function() {
-        applyFilters();
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('select[name="per_page"]')) {
+            applyFilters();
+        }
     });
 
     // Initial event binding

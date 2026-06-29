@@ -247,7 +247,18 @@ body {
 .header-search-input.open {
   width: 170px; opacity: 1; visibility: visible; padding: 0 0.6rem 0 1.75rem;
 }
-.header-search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+    .header-search-input:focus { 
+        border-color: var(--accent); 
+        box-shadow: 0 0 0 2px var(--accent-light); 
+    }
+
+    /* Override .input-group:focus-within specificity for header search input */
+    .admin-header .header-search-input:focus {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 2px var(--accent-light) !important;
+        outline: none !important;
+    }
+
 .header-search-input-icon {
   position: absolute; right: 0.35rem; top: 50%; transform: translateY(-50%);
   color: var(--text-muted); font-size: 0.75rem; pointer-events: none;
