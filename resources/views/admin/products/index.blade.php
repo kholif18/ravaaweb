@@ -115,23 +115,37 @@
     .bulk-info { font-size: 14px; font-weight: 500; color: var(--accent); }
     .bulk-btns { display: flex; gap: 8px; }
     .product-thumb {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
         object-fit: cover;
         border: 1px solid var(--border-color);
+        flex-shrink: 0;
     }
     .product-thumb-placeholder {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
         background: var(--bg-surface-alt);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text-muted);
-        font-size: 16px;
+        font-size: 13px;
         border: 1px solid var(--border-color);
+        flex-shrink: 0;
+    }
+    #kt_products_table tbody td {
+        padding: 8px 10px;
+    }
+    #kt_products_table thead th {
+        padding: 8px 10px;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+    #kt_products_table tbody tr:hover {
+        background: var(--bg-surface-hover);
     }
 </style>
 @endpush

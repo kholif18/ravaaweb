@@ -3,93 +3,95 @@
 @endphp
 
 <div class="table-responsive">
-    <table class="table align-middle table-row-dashed fs-6" id="kt_products_table">
+    <table class="table align-middle mb-0" id="kt_products_table">
         <thead>
-            <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase">
-                <th class="w-25px pe-2">
-                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+            <tr>
+                <th style="width: 32px;">
+                    <div class="form-check" style="margin: 0;">
                         <input class="form-check-input" type="checkbox" id="select-all-products">
                     </div>
                 </th>
-                <th class="min-w-150px">Produk</th>
-                <th class="min-w-120px">Kategori</th>
-                <th class="min-w-80px">Harga</th>
-                <th class="min-w-80px">Stok</th>
-                <th class="min-w-80px">Status</th>
-                <th class="min-w-80px text-center">Aksi</th>
+                <th style="min-width: 200px;">Produk</th>
+                <th style="min-width: 100px;">Kategori</th>
+                <th style="min-width: 100px;">Harga</th>
+                <th style="width: 60px;">Stok</th>
+                <th style="width: 70px;">Status</th>
+                <th style="width: 70px;" class="text-center">Aksi</th>
             </tr>
         </thead>
-        <tbody class="text-gray-600 fw-semibold">
+        <tbody>
             @forelse($products as $product)
                 <tr>
                     <td>
-                        <div class="form-check form-check-sm form-check-custom form-check-solid">
+                        <div class="form-check" style="margin: 0;">
                             <input class="form-check-input" type="checkbox" value="{{ $product->id }}">
                         </div>
                     </td>
                     <td>
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-2">
                             @if($product->thumbnail)
                                 <img src="{{ $product->thumbnail->url }}" alt="{{ $product->name }}" class="product-thumb">
                             @else
                                 <div class="product-thumb-placeholder"><i class="bi bi-image"></i></div>
                             @endif
                             <div>
-                                <a href="{{ route('admin.products.edit', $product) }}" class="text-gray-800 text-hover-primary fw-bold">
-                                    {{ $product->name }}
+                                <a href="{{ route('admin.products.edit', $product) }}" class="text-hover-primary fw-semibold" style="color: var(--text-primary); text-decoration: none; font-size: 0.82rem;">
+                                    {{ Str::limit($product->name, 40) }}
                                 </a>
                                 @if($product->sku)
-                                    <div class="text-muted fs-8">SKU: {{ $product->sku }}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted);">SKU: {{ $product->sku }}</div>
                                 @endif
                             </div>
                         </div>
                     </td>
                     <td>
-                        <span class="badge badge-light-primary">{{ $product->category->name ?? '-' }}</span>
+                        <span class="badge" style="background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent); font-size: 0.7rem; font-weight: 500;">
+                            {{ $product->category->name ?? '-' }}
+                        </span>
                     </td>
                     <td>
                         @if($product->price_discount)
-                            <span class="text-muted text-decoration-line-through fs-8">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                            <br>
-                            <span class="text-danger fw-bold">Rp {{ number_format($product->price_discount, 0, ',', '.') }}</span>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); text-decoration: line-through;">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--danger, #ef4444);">Rp {{ number_format($product->price_discount, 0, ',', '.') }}</div>
                         @else
-                            <span class="fw-bold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                         @endif
                     </td>
                     <td>
                         @if($product->stock > 0)
-                            <span class="badge badge-light-success">{{ $product->stock }}</span>
+                            <span class="badge" style="background: rgba(34,197,94,0.1); color: #15803d; font-size: 0.7rem;">{{ $product->stock }}</span>
                         @else
-                            <span class="badge badge-light-danger">Habis</span>
+                            <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Habis</span>
                         @endif
                     </td>
                     <td>
                         @if($product->status === 'active')
-                            <span class="badge badge-light-success">Aktif</span>
+                            <span class="badge" style="background: rgba(34,197,94,0.1); color: #15803d; font-size: 0.7rem;">Aktif</span>
                         @else
-                            <span class="badge badge-light-danger">Nonaktif</span>
+                            <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Nonaktif</span>
                         @endif
                     </td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
-                                <i class="bi bi-pencil-square"></i>
+                            <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-icon btn-sm" style="width: 28px; height: 28px; border-radius: 6px; background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent);" title="Edit">
+                                <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
                             </a>
-                            <button type="button" class="btn btn-icon btn-light-danger btn-sm btn-delete-product"
+                            <button type="button" class="btn btn-icon btn-sm btn-delete-product"
                                     data-id="{{ $product->id }}"
                                     data-name="{{ $product->name }}"
-                                    title="Hapus">
-                                <i class="bi bi-trash"></i>
+                                    title="Hapus"
+                                    style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
+                                <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="text-center py-10">
-                        <div class="text-gray-500">
-                            <i class="bi bi-inbox fs-2x mb-3 d-block"></i>
-                            Tidak ada produk ditemukan
+                    <td colspan="7" class="text-center" style="padding: 40px 0;">
+                        <div style="color: var(--text-muted);">
+                            <i class="bi bi-inbox" style="font-size: 1.5rem; display: block; margin-bottom: 8px;"></i>
+                            <span style="font-size: 0.82rem;">Tidak ada produk ditemukan</span>
                         </div>
                     </td>
                 </tr>
@@ -120,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.classList.remove('selected');
                 }
             });
-            // Trigger bulk UI update via custom event
             document.dispatchEvent(new CustomEvent('productSelectionChanged'));
         });
     }
