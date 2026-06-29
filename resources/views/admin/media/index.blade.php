@@ -882,8 +882,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             });
             if (response.ok) {
-                document.querySelector('.media-item[data-id="' + id + '"]').remove();
+                // Remove from both grid and list views
+                const gridItem = document.querySelector('.media-item[data-id="' + id + '"]');
+                if (gridItem) gridItem.remove();
+                const listItem = document.querySelector('.media-list-item[data-id="' + id + '"]');
+                if (listItem) listItem.remove();
+                selectedIds.delete(id);
+                updateBulkUI();
                 Ravaa.toast('File berhasil dihapus!', 'success');
+            } else {
+                const data = await response.json().catch(() => ({}));
+                Ravaa.toast(data.message || 'Gagal menghapus file', 'error');
             }
         } catch (err) {
             Ravaa.toast('Gagal menghapus: ' + err.message, 'error');
@@ -903,12 +912,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (response.ok) {
                 ids.forEach(id => {
-                    const el = document.querySelector('.media-item[data-id="' + id + '"]');
-                    if (el) el.remove();
+                    const gridItem = document.querySelector('.media-item[data-id="' + id + '"]');
+                    if (gridItem) gridItem.remove();
+                    const listItem = document.querySelector('.media-list-item[data-id="' + id + '"]');
+                    if (listItem) listItem.remove();
                 });
                 selectedIds.clear();
                 updateBulkUI();
                 Ravaa.toast(ids.length + ' file berhasil dihapus!', 'success');
+            } else {
+                const data = await response.json().catch(() => ({}));
+                Ravaa.toast(data.message || 'Gagal menghapus file', 'error');
             }
         } catch (err) {
             Ravaa.toast('Gagal menghapus: ' + err.message, 'error');
