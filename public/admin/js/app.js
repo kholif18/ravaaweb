@@ -1,20 +1,38 @@
 /**
  * Admin JS – RavaaWeb
- * Sidebar toggle, modals, dropdowns, tooltips (Bootstrap-compatible)
+ * Light Glassmorphism Theme
+ * Handles: Sidebar, Modals, Dropdowns (portal-based), Tooltips, Toasts, Header scroll, Search slide
  */
 document.addEventListener('DOMContentLoaded', function () {
     'use strict';
+
+    // ===== HEADER SCROLL EFFECT =====
+    var header = document.querySelector('.admin-header');
+    if (header) {
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    }
 
     // ===== SIDEBAR =====
     var sidebarToggle = document.getElementById('sidebarToggle');
     var sidebar = document.getElementById('adminSidebar');
     var overlay = document.getElementById('sidebarOverlay');
+    var isMobile = function () { return window.innerWidth <= 768; };
 
     if (sidebarToggle && sidebar) {
         sidebarToggle.addEventListener('click', function (e) {
             e.preventDefault();
-            sidebar.classList.toggle('active');
-            if (overlay) overlay.classList.toggle('active');
+            if (isMobile()) {
+                sidebar.classList.toggle('active');
+                if (overlay) overlay.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
+            }
         });
     }
 
@@ -24,6 +42,15 @@ document.addEventListener('DOMContentLoaded', function () {
             overlay.classList.remove('active');
         });
     }
+
+    window.addEventListener('resize', function () {
+        if (!isMobile() && sidebar) {
+            sidebar.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+        }
+        // Close any open dropdowns on window resize to avoid dangling portals
+        closeAllDropdowns();
+    });
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && sidebar && sidebar.classList.contains('active')) {
@@ -50,6 +77,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var modal = document.querySelector(targetId);
         if (!modal) return;
 
+        // Ensure any open dropdowns are closed before showing the modal
+        closeAllDropdowns();
         showModal(modal);
     });
 
@@ -83,10 +112,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.showModal = function (modal) {
         if (!modal || modal.classList.contains('show')) return;
+        modal.classList.add('fade');
+        modal.offsetHeight;
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
-
-        // Dispatch event for Bootstrap compatibility
         var event = new CustomEvent('shown.bs.modal', { bubbles: true });
         modal.dispatchEvent(event);
     };
@@ -94,14 +123,15 @@ document.addEventListener('DOMContentLoaded', function () {
     window.hideModal = function (modal) {
         if (!modal || !modal.classList.contains('show')) return;
         modal.classList.remove('show');
+        setTimeout(function() {
+            modal.classList.remove('fade');
+        }, 200);
         document.body.style.overflow = '';
-
-        // Dispatch event
         var event = new CustomEvent('hidden.bs.modal', { bubbles: true });
         modal.dispatchEvent(event);
     };
 
-    // Bootstrap.Modal compat (for code like bootstrap.Modal.getInstance)
+    // Bootstrap.Modal compat
     if (!window.bootstrap) window.bootstrap = {};
     window.bootstrap.Modal = {
         getInstance: function (el) {
@@ -112,37 +142,164 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // ===== DROPDOWNS (data-bs-toggle="dropdown") =====
+    // ===== DROPDOWNS – PORTAL APPROACH (escape table overflow) =====
+    function closeAllDropdowns() {
+        document.querySelectorAll('.dropdown-portal.show').forEach(function (m) {
+            m.classList.remove('show');
+            // Remove after transition
+            setTimeout(function() { if (m.parentNode) m.remove(); }, 150);
+        });
+        var backdrop = document.querySelector('.dropdown-backdrop');
+        if (backdrop) backdrop.remove();
+    }
+
+    // Open a dropdown portal for a given toggle button
+    function openDropdown(toggle) {
+        // Find the original dropdown-menu sibling
+        var dropdown = toggle.nextElementSibling;
+        while (dropdown && !dropdown.classList.contains('dropdown-menu')) {
+            dropdown = dropdown.nextElementSibling;
+        }
+        if (!dropdown) return;
+
+        // Clone the menu content into a portal element (start hidden, no 'show')
+        var portal = document.createElement('div');
+        portal.className = 'dropdown-portal action-dropdown';
+        portal.innerHTML = dropdown.innerHTML;
+
+        // Make portal items interactive (close dropdown and handle modal clicks)
+        portal.addEventListener('click', function (ev) {
+            ev.stopPropagation();
+            closeAllDropdowns();
+
+            var item = ev.target.closest('.dropdown-item');
+            if (item) {
+                var modalTarget = item.getAttribute('data-bs-target');
+                if (modalTarget) {
+                    var modal = document.querySelector(modalTarget);
+                    if (modal) showModal(modal);
+                }
+            }
+        });
+
+        document.body.appendChild(portal);
+
+        // Transparent backdrop for click-outside detection
+        var backdrop = document.createElement('div');
+        backdrop.className = 'dropdown-backdrop';
+        document.body.appendChild(backdrop);
+
+        // Position the portal relative to the toggle button
+        var rect = toggle.getBoundingClientRect();
+        var menuWidth = portal.offsetWidth || 155;
+        var menuHeight = portal.offsetHeight || 160;
+        var winW = window.innerWidth;
+        var winH = window.innerHeight;
+
+        var top = rect.bottom + 4;
+        var left = rect.left;
+
+        // Prevent right overflow
+        if (left + menuWidth > winW - 8) {
+            left = Math.max(8, rect.right - menuWidth);
+        }
+        // Prevent bottom overflow → show above
+        if (top + menuHeight > winH - 8) {
+            top = Math.max(8, rect.top - menuHeight - 4);
+        }
+        // Safety clamp
+        if (left < 8) left = 8;
+        if (top < 8) top = 8;
+
+        portal.style.top = top + 'px';
+        portal.style.left = left + 'px';
+        portal.style.right = 'auto';
+
+        // Force reflow then animate in
+        portal.offsetHeight;
+        portal.classList.add('show');
+    }
+
+    // Toggle dropdown: close any open ones then open the requested dropdown
+    function toggleDropdown(toggle) {
+        closeAllDropdowns();
+        openDropdown(toggle);
+    }
+
     document.addEventListener('click', function (e) {
         var t = _target(e.target);
         if (!t) return;
-        var toggle = t.closest('[data-bs-toggle="dropdown"]');
-        if (toggle) {
-            e.preventDefault();
-            var dropdown = toggle.nextElementSibling;
-            while (dropdown && !dropdown.classList.contains('dropdown-menu')) {
-                dropdown = dropdown.nextElementSibling;
+
+            // Dropdown toggle click
+            var toggle = t.closest('[data-bs-toggle="dropdown"]');
+            if (toggle) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                toggleDropdown(toggle);
+                return;
             }
-            if (dropdown) {
-                var isOpen = dropdown.classList.contains('show');
-                // Close all other dropdowns
-                document.querySelectorAll('.dropdown-menu.show').forEach(function (m) {
-                    if (m !== dropdown) m.classList.remove('show');
-                });
-                if (!isOpen) {
-                    dropdown.classList.add('show');
-                    // Position
-                    var rect = toggle.getBoundingClientRect();
-                    dropdown.style.top = rect.bottom + 'px';
-                }
-            }
-        } else {
-            // Close dropdowns when clicking outside
-            document.querySelectorAll('.dropdown-menu.show').forEach(function (m) {
-                m.classList.remove('show');
+
+        // Backdrop click → close
+        if (t.classList.contains('dropdown-backdrop')) {
+            closeAllDropdowns();
+            return;
+        }
+
+        // Any other click → close dropdowns
+        closeAllDropdowns();
+    });
+
+    // Close dropdowns on scroll
+    window.addEventListener('scroll', function () {
+        closeAllDropdowns();
+    }, { passive: true });
+
+    // Close dropdowns on Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeAllDropdowns();
+            // Also close modals
+            document.querySelectorAll('.modal.show').forEach(function (m) {
+                hideModal(m);
             });
         }
     });
+
+    // ===== HEADER SEARCH SLIDE =====
+    var searchBtn = document.getElementById('headerSearchBtn');
+    var searchInput = document.getElementById('headerSearchInput');
+
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var isOpen = searchInput.classList.contains('open');
+            if (isOpen) {
+                searchInput.classList.remove('open');
+                searchInput.blur();
+            } else {
+                searchInput.classList.add('open');
+                setTimeout(function () { searchInput.focus(); }, 400);
+            }
+        });
+
+        // Close on Escape
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                searchInput.classList.remove('open');
+                searchInput.blur();
+            }
+        });
+
+        // Close when clicking outside the wrapper
+        document.addEventListener('click', function (e) {
+            var wrapper = document.querySelector('.header-search-wrapper');
+            if (wrapper && !wrapper.contains(e.target) && searchInput && searchInput.classList.contains('open')) {
+                searchInput.classList.remove('open');
+            }
+        });
+    }
 
     // ===== TOOLTIPS (data-bs-toggle="tooltip") =====
     document.addEventListener('mouseenter', function (e) {
@@ -154,23 +311,35 @@ document.addEventListener('DOMContentLoaded', function () {
         var title = el.getAttribute('title') || el.getAttribute('data-bs-original-title') || '';
         if (!title) return;
 
-        // Preserve original title
         if (!el.hasAttribute('data-bs-original-title')) {
             el.setAttribute('data-bs-original-title', title);
             el.removeAttribute('title');
         }
 
-        // Remove existing tooltip if any
         if (el._tooltipEl) el._tooltipEl.remove();
 
         var tooltip = document.createElement('div');
         tooltip.className = 'ravaa-tooltip';
         tooltip.textContent = title;
+        Object.assign(tooltip.style, {
+            position: 'fixed',
+            background: '#1a1d21',
+            color: '#ffffff',
+            padding: '0.3rem 0.55rem',
+            borderRadius: '6px',
+            fontSize: '0.72rem',
+            fontWeight: '500',
+            zIndex: '9999',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+            animation: 'tooltip-in 0.15s ease'
+        });
         document.body.appendChild(tooltip);
 
         var rect = el.getBoundingClientRect();
         tooltip.style.left = Math.max(4, Math.min(rect.left + rect.width / 2 - tooltip.offsetWidth / 2, window.innerWidth - tooltip.offsetWidth - 4)) + 'px';
-        tooltip.style.top = Math.max(4, rect.top - tooltip.offsetHeight - 6) + 'px';
+        tooltip.style.top = Math.max(4, rect.top - tooltip.offsetHeight - 5) + 'px';
 
         el._tooltipEl = tooltip;
 
@@ -195,8 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     };
 
-    // ===== TOAST NOTIFICATIONS =====
-    // Ravaa.toast – global helper
+    // ===== TOAST NOTIFICATIONS (modern borderless) =====
     window.Ravaa = window.Ravaa || {};
     window.Ravaa.toast = function (message, type) {
         type = type || 'success';
@@ -208,58 +376,202 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.appendChild(container);
         }
 
+        var icons = {
+            success: '<i class="bi bi-check-circle-fill"></i>',
+            error:   '<i class="bi bi-x-circle-fill"></i>',
+            warning: '<i class="bi bi-exclamation-triangle-fill"></i>',
+            info:    '<i class="bi bi-info-circle-fill"></i>'
+        };
+
         var toast = document.createElement('div');
         toast.className = 'toast toast-' + type;
-        toast.textContent = message;
-        toast.style.cssText = 'padding:0.75rem 1rem;border-radius:0.5rem;border-left:4px solid;font-size:0.85rem;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:toast-in 0.3s ease;min-width:280px;max-width:420px;';
-        if (type === 'success') { toast.style.background = 'rgba(34,197,94,0.15)'; toast.style.borderColor = '#22c55e'; toast.style.color = '#86efac'; }
-        else if (type === 'error') { toast.style.background = 'rgba(239,68,68,0.15)'; toast.style.borderColor = '#ef4444'; toast.style.color = '#fca5a5'; }
-        else if (type === 'warning') { toast.style.background = 'rgba(245,158,11,0.15)'; toast.style.borderColor = '#f59e0b'; toast.style.color = '#fcd34d'; }
-        else if (type === 'info') { toast.style.background = 'rgba(6,182,212,0.15)'; toast.style.borderColor = '#06b6d4'; toast.style.color = '#67e8f9'; }
+        toast.innerHTML = (icons[type] || icons.info) + '<span>' + message + '</span>';
 
         container.appendChild(toast);
 
         setTimeout(function () {
             toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s';
+            toast.style.transform = 'translateX(100%)';
+            toast.style.transition = 'opacity 0.3s, transform 0.3s';
             setTimeout(function () { toast.remove(); }, 300);
-        }, 3000);
+        }, 3500);
     };
 
-    // ===== SWEETALERT2-LITE CONFIRM =====
+    // ===== CONFIRM DIALOG (macOS style) =====
     window.Ravaa.confirm = function (title, text, icon) {
         return new Promise(function (resolve) {
-            // Build a simple inline confirm dialog
+            icon = icon || 'warning';
+            // Ensure any open dropdowns are closed before showing confirm dialog
+            closeAllDropdowns();
             var overlay2 = document.createElement('div');
-            overlay2.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:1rem;';
+            overlay2.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1rem;';
 
             var box = document.createElement('div');
-            box.style.cssText = 'background:rgba(15,23,42,0.95);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem;min-width:320px;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.4);';
+            box.className = 'ravaa-dialog';
 
-            box.innerHTML = '<h4 style="margin:0 0 0.5rem;font-weight:600;color:#e2e8f0;">' + (title || 'Konfirmasi') + '</h4>' +
-                '<p style="margin:0 0 1.25rem;color:#94a3b8;font-size:0.85rem;">' + (text || '') + '</p>' +
-                '<div style="display:flex;justify-content:flex-end;gap:0.5rem;">' +
-                '<button class="btn btn-light" id="ravaa-confirm-cancel">Batal</button>' +
-                '<button class="btn btn-primary" id="ravaa-confirm-ok">Ya</button>' +
+            var iconHtml = '';
+            var iconLabels = {
+                warning: { cls: 'warning', icon: 'bi-exclamation-triangle' },
+                success: { cls: 'success', icon: 'bi-check-circle' },
+                error:   { cls: 'error',   icon: 'bi-x-circle' },
+                question:{ cls: 'question',icon: 'bi-question-circle' },
+                info:    { cls: 'info',    icon: 'bi-info-circle' }
+            };
+            var ic = iconLabels[icon] || iconLabels.warning;
+            iconHtml = '<div class="ravaa-dialog-icon ' + ic.cls + '"><i class="bi ' + ic.icon + '"></i></div>';
+
+            // Map icon to confirm button class (semantic colors)
+            var btnMap = {
+                warning: 'btn-warning',
+                success: 'btn-success',
+                error:   'btn-danger',
+                question:'btn-primary',
+                info:    'btn-primary'
+            };
+            var btnClass = btnMap[icon] || 'btn-primary';
+
+            box.innerHTML = iconHtml +
+                '<h4 class="ravaa-dialog-title">' + (title || 'Konfirmasi') + '</h4>' +
+                '<p class="ravaa-dialog-text">' + (text || '') + '</p>' +
+                '<div class="ravaa-dialog-actions">' +
+                '<button class="btn btn-secondary" id="ravaa-confirm-cancel">Batal</button>' +
+                '<button class="btn ' + btnClass + '" id="ravaa-confirm-ok">Ya, Lanjutkan</button>' +
                 '</div>';
 
             overlay2.appendChild(box);
             document.body.appendChild(overlay2);
 
+            overlay2.style.opacity = '0';
+            requestAnimationFrame(function() {
+                overlay2.style.transition = 'opacity 0.12s ease';
+                overlay2.style.opacity = '1';
+            });
+
+            function dismissConfirm(result) {
+                overlay2.style.opacity = '0';
+                document.removeEventListener('keydown', onKeyDown);
+                setTimeout(function() { overlay2.remove(); }, 120);
+                resolve(result);
+            }
+
+            function onKeyDown(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    dismissConfirm({ isConfirmed: false });
+                }
+            }
+            document.addEventListener('keydown', onKeyDown);
+
             document.getElementById('ravaa-confirm-cancel').addEventListener('click', function () {
-                overlay2.remove();
-                resolve({ isConfirmed: false });
+                dismissConfirm({ isConfirmed: false });
             });
             document.getElementById('ravaa-confirm-ok').addEventListener('click', function () {
-                overlay2.remove();
-                resolve({ isConfirmed: true });
+                dismissConfirm({ isConfirmed: true });
             });
             overlay2.addEventListener('click', function (e) {
                 if (e.target === overlay2) {
-                    overlay2.remove();
-                    resolve({ isConfirmed: false });
+                    dismissConfirm({ isConfirmed: false });
                 }
             });
+        });
+    };
+
+    // ===== Ravaa.alert (macOS style) =====
+    window.Ravaa.alert = function (title, text, icon) {
+        return new Promise(function (resolve) {
+            icon = icon || 'info';
+            // Ensure any open dropdowns are closed before showing alert dialog
+            closeAllDropdowns();
+            var overlay2 = document.createElement('div');
+            overlay2.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1rem;';
+
+            var box = document.createElement('div');
+            box.className = 'ravaa-dialog';
+
+            var iconLabels = {
+                success: { cls: 'success', icon: 'bi-check-circle' },
+                error:   { cls: 'error',   icon: 'bi-x-circle' },
+                warning: { cls: 'warning', icon: 'bi-exclamation-triangle' },
+                info:    { cls: 'info',    icon: 'bi-info-circle' }
+            };
+            var ic = iconLabels[icon] || iconLabels.info;
+            var iconHtml = '<div class="ravaa-dialog-icon ' + ic.cls + '"><i class="bi ' + ic.icon + '"></i></div>';
+
+            // Map icon to OK button class (semantic colors)
+            var btnMap = {
+                success: 'btn-success',
+                error:   'btn-danger',
+                warning: 'btn-warning',
+                info:    'btn-primary'
+            };
+            var btnClass = btnMap[icon] || 'btn-primary';
+
+            box.innerHTML = iconHtml +
+                '<h4 class="ravaa-dialog-title">' + (title || 'Informasi') + '</h4>' +
+                '<p class="ravaa-dialog-text">' + (text || '') + '</p>' +
+                '<div class="ravaa-dialog-actions">' +
+                '<button class="btn ' + btnClass + '" id="ravaa-alert-ok">Ok, got it!</button>' +
+                '</div>';
+
+            overlay2.appendChild(box);
+            document.body.appendChild(overlay2);
+
+            overlay2.style.opacity = '0';
+            requestAnimationFrame(function() {
+                overlay2.style.transition = 'opacity 0.12s ease';
+                overlay2.style.opacity = '1';
+            });
+
+            function dismissAlert(result) {
+                overlay2.style.opacity = '0';
+                document.removeEventListener('keydown', onKeyDown);
+                setTimeout(function() { overlay2.remove(); }, 120);
+                resolve(result);
+            }
+
+            function onKeyDown(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    dismissAlert({ isConfirmed: true });
+                }
+            }
+            document.addEventListener('keydown', onKeyDown);
+
+            document.getElementById('ravaa-alert-ok').addEventListener('click', function () {
+                dismissAlert({ isConfirmed: true });
+            });
+            overlay2.addEventListener('click', function (e) {
+                if (e.target === overlay2) {
+                    dismissAlert({ isConfirmed: true });
+                }
+            });
+        });
+    };
+
+    // ===== DELETE ITEM HELPER =====
+    window.Ravaa.deleteItem = function (url, title, text) {
+        title = title || 'Hapus Data';
+        text = text || 'Data yang dihapus tidak dapat dikembalikan.';
+        return window.Ravaa.confirm(title, text, 'error').then(function (result) {
+            if (result.isConfirmed) {
+                // Create a form and submit it as POST with _method=DELETE
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+                form.style.display = 'none';
+                var csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                form.appendChild(csrfInput);
+                var methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
         });
     };
 });
