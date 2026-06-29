@@ -34,7 +34,7 @@ class MediaController extends Controller
             };
         }
 
-        $media = $query->latest()->paginate($request->input('per_page', 24));
+        $media = $query->latest()->paginate($request->input('per_page', 25));
         $media->withQueryString();
 
         if ($request->expectsJson()) {
@@ -174,7 +174,7 @@ class MediaController extends Controller
             };
         }
 
-        $media = $query->latest()->paginate($request->input('per_page', 24));
+        $media = $query->latest()->paginate($request->input('per_page', 25));
 
         return response()->json([
             'data' => $media->items(),

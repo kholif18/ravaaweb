@@ -47,6 +47,10 @@
                 </div>
             </div>
             <div class="toolbar-group">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-light active" id="btn-view-grid" title="Grid View"><i class="bi bi-grid-3x3-gap"></i></button>
+                    <button type="button" class="btn btn-light" id="btn-view-list" title="List View"><i class="bi bi-list-ul"></i></button>
+                </div>
                 <select id="media-type-filter" class="form-select form-select-sm" style="min-width: 130px;">
                     <option value="">Semua Tipe</option>
                     <option value="image" {{ request('type') == 'image' ? 'selected' : '' }}>Gambar</option>
@@ -81,8 +85,8 @@
             </div>
         </div>
 
-        <!-- Media grid -->
-        <div class="media-grid" id="media-grid">
+        <!-- Media grid view -->
+        <div class="media-grid media-view" id="media-grid" data-view="grid">
             @forelse($media as $item)
                 <div class="media-item" data-id="{{ $item->id }}">
                     <div class="media-select" data-action="select" title="Pilih">
@@ -128,6 +132,55 @@
             @endforelse
         </div>
 
+        <!-- Media list view (compact) -->
+        <div class="media-list media-view" id="media-list" data-view="list" style="display: none;">
+            @forelse($media as $item)
+                <div class="media-list-item" data-id="{{ $item->id }}">
+                    <div class="media-list-select" data-action="select">
+                        <div class="form-check form-check-sm form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" data-id="{{ $item->id }}">
+                        </div>
+                    </div>
+                    <div class="media-list-thumb">
+                        @if($item->isImage())
+                            <img src="{{ $item->url }}" alt="{{ $item->name }}" loading="lazy">
+                        @else
+                            <div class="media-list-file-icon">
+                                @if($item->isVideo())
+                                    <i class="bi bi-play-circle"></i>
+                                @elseif($item->isAudio())
+                                    <i class="bi bi-music-note"></i>
+                                @else
+                                    <i class="bi bi-file-earmark"></i>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                    <div class="media-list-info">
+                        <span class="media-list-name" title="{{ $item->file_name }}">{{ $item->file_name }}</span>
+                        <span class="media-list-meta">{{ $item->human_size }} &middot; {{ strtoupper($item->extension) }} &middot; {{ $item->created_at->diffForHumans() }}</span>
+                    </div>
+                    <div class="media-list-actions">
+                        <button type="button" class="btn-icon" data-action="copy-url" data-url="{{ $item->url }}" title="Salin URL">
+                            <i class="bi bi-link-45deg"></i>
+                        </button>
+                        <button type="button" class="btn-icon" data-action="view" data-url="{{ $item->url }}" data-name="{{ $item->file_name }}" title="Lihat">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button type="button" class="btn-icon btn-danger" data-action="delete" data-id="{{ $item->id }}" data-name="{{ $item->file_name }}" title="Hapus">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            @empty
+                <div class="media-empty">
+                    <i class="bi bi-image"></i>
+                    <p>Belum ada media</p>
+                    <small>Klik tombol Upload untuk menambahkan file</small>
+                </div>
+            @endforelse
+        </div>
+
         <!-- Pagination -->
         <div class="pagination-toolbar">
             <x-pagination :paginator="$media" label="media" :perPage="$media->perPage()" />
@@ -156,6 +209,99 @@
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
         padding: 4px 0;
+    }
+
+    /* ==============================
+       MEDIA LIST VIEW (Compact)
+    ============================== */
+    .media-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        background: var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .media-list-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        background: var(--bg-surface);
+        transition: background 0.15s;
+        cursor: pointer;
+    }
+
+    .media-list-item:hover {
+        background: var(--bg-surface-hover);
+    }
+
+    .media-list-item.selected {
+        background: var(--accent-light);
+    }
+
+    .media-list-select {
+        flex-shrink: 0;
+    }
+
+    .media-list-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--bg-surface-alt);
+    }
+
+    .media-list-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .media-list-file-icon {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--text-muted);
+    }
+
+    .media-list-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .media-list-name {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .media-list-meta {
+        display: block;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 1px;
+    }
+
+    .media-list-actions {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .media-list-item:hover .media-list-actions {
+        opacity: 1;
     }
 
     .media-item {
@@ -505,6 +651,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedIds = new Set();
     let searchTimeout;
+    let currentView = localStorage.getItem('media-view') || 'grid';
+
+    // ==================== View Toggle ====================
+    const btnGrid = document.getElementById('btn-view-grid');
+    const btnList = document.getElementById('btn-view-list');
+    const gridView = document.getElementById('media-grid');
+    const listView = document.getElementById('media-list');
+
+    function setView(view) {
+        currentView = view;
+        localStorage.setItem('media-view', view);
+        if (view === 'grid') {
+            gridView.style.display = '';
+            listView.style.display = 'none';
+            btnGrid.classList.add('active');
+            btnList.classList.remove('active');
+        } else {
+            gridView.style.display = 'none';
+            listView.style.display = '';
+            btnGrid.classList.remove('active');
+            btnList.classList.add('active');
+        }
+    }
+
+    btnGrid.addEventListener('click', () => setView('grid'));
+    btnList.addEventListener('click', () => setView('list'));
+    setView(currentView);
 
     // Search with debounce
     searchInput.addEventListener('input', function() {
@@ -582,7 +755,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Select media
+    // Select media (grid view)
     grid.addEventListener('click', function(e) {
         const action = e.target.closest('[data-action]');
         if (!action) return;
@@ -595,11 +768,68 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedIds.has(id)) {
                 selectedIds.delete(id);
                 mediaItem.classList.remove('selected');
+                // Sync list view checkbox
+                const listCb = listView.querySelector('input[data-id="' + id + '"]');
+                if (listCb) listCb.checked = false;
             } else {
                 selectedIds.add(id);
                 mediaItem.classList.add('selected');
+                const listCb = listView.querySelector('input[data-id="' + id + '"]');
+                if (listCb) listCb.checked = true;
             }
             updateBulkUI();
+        }
+
+        if (actionType === 'copy-url') {
+            navigator.clipboard.writeText(action.dataset.url);
+            Ravaa.toast('URL berhasil disalin!', 'success');
+        }
+
+        if (actionType === 'view') {
+            openGallery(action.dataset.id);
+        }
+
+        if (actionType === 'delete') {
+            Ravaa.confirm('Hapus Media?', `File "${action.dataset.name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`, 'error').then(function(result) {
+                if (result.isConfirmed) {
+                    deleteMedia(action.dataset.id);
+                }
+            });
+        }
+    });
+
+    // Select media (list view)
+    listView.addEventListener('click', function(e) {
+        const action = e.target.closest('[data-action]');
+        const checkbox = e.target.closest('.form-check-input');
+
+        // Handle checkbox click
+        if (checkbox && checkbox.dataset.id) {
+            const id = checkbox.dataset.id;
+            const item = checkbox.closest('.media-list-item');
+            if (checkbox.checked) {
+                selectedIds.add(id);
+                item.classList.add('selected');
+            } else {
+                selectedIds.delete(id);
+                item.classList.remove('selected');
+            }
+            // Sync grid view
+            const gridItem = gridView.querySelector('.media-item[data-id="' + id + '"]');
+            if (gridItem) gridItem.classList.toggle('selected', checkbox.checked);
+            updateBulkUI();
+            return;
+        }
+
+        if (!action) return;
+
+        const actionType = action.dataset.action;
+        const mediaItem = action.closest('.media-list-item');
+
+        if (actionType === 'select') {
+            const cb = mediaItem.querySelector('.form-check-input');
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change'));
         }
 
         if (actionType === 'copy-url') {
@@ -632,7 +862,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     deselectAllBtn.addEventListener('click', function() {
         selectedIds.clear();
-        document.querySelectorAll('.media-item.selected').forEach(el => el.classList.remove('selected'));
+        document.querySelectorAll('.media-item.selected, .media-list-item.selected').forEach(el => el.classList.remove('selected'));
+        listView.querySelectorAll('.form-check-input:checked').forEach(cb => cb.checked = false);
         updateBulkUI();
     });
 
