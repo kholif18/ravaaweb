@@ -757,6 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'ArrowLeft') navigateGallery(-1);
         if (e.key === 'ArrowRight') navigateGallery(1);
     });
+});
 </script>
 @endpush
 @endsection
