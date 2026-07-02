@@ -18,11 +18,26 @@
     </li>
 @endsection
 
+
 @section('content')
 <form id="product-form" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 <div class="row g-4">
+    <!-- Global Error Display -->
+    @if ($errors->any())
+    <div class="col-12">
+        <div class="alert alert-danger mb-0">
+            <div class="fw-bold mb-1">Terjadi kesalahan validasi:</div>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
     <!-- ========== MAIN CONTENT (80%) ========== -->
     <div class="col-lg-8">
         <!-- Nama & Slug -->
@@ -59,9 +74,8 @@
             </div>
             <div class="card-body">
                 <div class="fv-row mb-0">
-                    <textarea class="form-control form-control-sm"
-                              name="short_description" rows="3"
-                              placeholder="Deskripsi singkat produk...">{{ old('short_description', $product->short_description) }}</textarea>
+                    <div id="short-description-editor">{!! old('short_description', $product->short_description) !!}</div>
+                    <input type="hidden" name="short_description" id="short-description-input">
                     @error('short_description')
                         <div class="text-danger fs-8 mt-1">{{ $message }}</div>
                     @enderror
@@ -191,7 +205,7 @@
         </div>
 
         <!-- Varian Produk -->
-        <div class="glass-card mb-4" id="variant-section" style="{{ $product->variant_types ? '' : 'display:none' }}">
+        <div class="glass-card mb-4" id="variant-section">
             <div class="card-header">
                 <div class="card-title"><i class="bi bi-palette me-1"></i> Varian Produk</div>
                 <button type="button" class="btn btn-outline-primary btn-sm" id="btn-add-variant-type">
@@ -369,9 +383,8 @@
             </div>
             <div class="card-body">
                 <div class="fv-row mb-0">
-                    <textarea class="form-control form-control-sm"
-                              name="description" rows="8"
-                              placeholder="Deskripsi lengkap produk...">{{ old('description', $product->description) }}</textarea>
+                    <div id="description-editor">{!! old('description', $product->description) !!}</div>
+                    <input type="hidden" name="description" id="description-input">
                     @error('description')
                         <div class="text-danger fs-8 mt-1">{{ $message }}</div>
                     @enderror
@@ -402,8 +415,8 @@
                                            name="features[{{ $fIndex }}][value]" placeholder="Nilai"
                                            value="{{ old('features.'.$fIndex.'.value', $feature['value'] ?? '') }}">
                                 </div>
-                                <button type="button" class="btn-remove-variant" onclick="this.closest('.feature-row').remove(); checkFeaturesEmpty();">
-                                    <i class="bi bi-x-lg"></i>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.feature-row').remove(); checkFeaturesEmpty();" title="Hapus Fitur">
+                                    <i class="bi bi-x"></i>
                                 </button>
                             </div>
                         @endforeach
@@ -600,7 +613,65 @@
 </div>
 
 @push('styles')
+{{-- Quill Rich Text Editor CSS --}}
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 <style>
+    /* ===== Quill glass theme overrides ===== */
+    .ql-toolbar.ql-snow {
+        background: var(--bg-surface-hover) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: var(--r-md) var(--r-md) 0 0 !important;
+        padding: 6px 8px !important;
+        font-family: 'Inter', sans-serif;
+    }
+    .ql-container.ql-snow {
+        border: 1px solid var(--glass-border) !important;
+        border-top: none !important;
+        border-radius: 0 0 var(--r-md) var(--r-md) !important;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+    }
+    .ql-editor {
+        min-height: 100px;
+        color: var(--text-primary);
+        padding: 10px 12px;
+    }
+    .ql-editor.ql-blank::before {
+        color: var(--text-muted);
+        font-style: normal;
+        font-size: 0.8rem;
+    }
+    .ql-snow .ql-stroke { stroke: var(--text-secondary) !important; }
+    .ql-snow .ql-fill { fill: var(--text-secondary) !important; }
+    .ql-snow .ql-picker-label { color: var(--text-secondary) !important; }
+    .ql-snow .ql-picker-label::before { color: var(--text-secondary) !important; }
+    .ql-snow .ql-picker-options {
+        background: var(--bg-surface) !important;
+        border-color: var(--glass-border) !important;
+        border-radius: var(--r-sm) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        padding: 4px !important;
+    }
+    .ql-snow .ql-picker-item:hover { color: var(--accent) !important; }
+    .ql-snow .ql-active .ql-stroke { stroke: var(--accent) !important; }
+    .ql-snow .ql-active .ql-fill { fill: var(--accent) !important; }
+    .ql-snow .ql-active { color: var(--accent) !important; }
+    .ql-snow a { color: var(--accent) !important; }
+    .ql-toolbar.ql-snow .ql-formats { margin-right: 6px; }
+    .ql-snow .ql-tooltip {
+        background: var(--bg-surface) !important;
+        border-color: var(--glass-border) !important;
+        color: var(--text-primary) !important;
+        border-radius: var(--r-sm) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+    .ql-snow .ql-tooltip input { color: var(--text-primary) !important; }
+    .ql-editor h1, .ql-editor h2, .ql-editor h3 { color: var(--text-primary); }
+    .ql-editor p, .ql-editor li { color: var(--text-primary); font-size: 0.8rem; line-height: 1.6; }
+    .ql-editor blockquote { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--text-secondary); }
+    .ql-editor code { background: var(--bg-surface-hover); padding: 2px 6px; border-radius: var(--r-sm); font-size: 0.78rem; }
+    .ql-editor pre { background: var(--bg-surface-hover); border-radius: var(--r-sm); padding: 10px; }
+
     .variant-type-tag {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 4px 12px; background: var(--accent-light); color: var(--accent);
@@ -658,6 +729,7 @@
         display: flex; gap: 8px; align-items: end; margin-bottom: 8px;
     }
     .feature-row .fv-row { margin-bottom: 0; }
+
     .product-media-thumb {
         position: relative; width: 60px; height: 60px;
         border-radius: 8px; overflow: hidden;
@@ -674,16 +746,12 @@
         text-align: center; font-size: 9px; font-weight: 600;
         background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 2px;
     }
-    .btn-remove-variant {
-        width: 32px; height: 32px; border-radius: 8px; border: none;
-        background: rgba(239,68,68,0.1); color: #ef4444;
-        display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .btn-remove-variant:hover { background: #ef4444; color: #fff; }
 </style>
 @endpush
 
 @push('scripts')
+{{-- Quill Rich Text Editor JS --}}
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('product-form');
@@ -694,6 +762,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const noVariantForm = document.getElementById('no-variant-form');
     const variantSection = document.getElementById('variant-section');
     const generateWrapper = document.getElementById('generate-variant-wrapper');
+
+    // ==========================================
+    // QUILL RICH TEXT EDITORS
+    // ==========================================
+    var quillToolbar = [
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['blockquote', 'code-block'],
+        ['link'],
+        ['clean']
+    ];
+
+    var shortDescQuill = new Quill('#short-description-editor', {
+        theme: 'snow',
+        modules: { toolbar: quillToolbar },
+        placeholder: 'Deskripsi singkat produk (ditampilkan di list/preview)...'
+    });
+
+    var descQuill = new Quill('#description-editor', {
+        theme: 'snow',
+        modules: { toolbar: quillToolbar },
+        placeholder: 'Deskripsi lengkap produk...'
+    });
+
+    // Sync before form submit
+    form.addEventListener('submit', function() {
+        document.getElementById('short-description-input').value = shortDescQuill.root.innerHTML;
+        document.getElementById('description-input').value = descQuill.root.innerHTML;
+    });
 
     // ==========================================
     // AUTO-GENERATE SLUG
@@ -789,19 +887,24 @@ document.addEventListener('DOMContentLoaded', function() {
         variantTypesContainer.innerHTML = '';
 
         if (variantTypes.length === 0) {
-            variantSection.style.display = 'none';
+            // Show no-variant form, keep variant section visible (button "Tambah Tipe" is inside it)
             noVariantForm.style.display = '';
+            noVariantForm.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
+            generateWrapper.classList.add('d-none');
             generatedVariants.innerHTML = '';
             return;
         }
 
-        variantSection.style.display = '';
+        // Hide no-variant form, variant section is always visible
         noVariantForm.style.display = 'none';
+        noVariantForm.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
 
         variantTypes.forEach(function(type, index) {
             const div = document.createElement('div');
             div.className = 'mb-3';
             div.innerHTML = `
+                <input type="hidden" name="variant_types[${index}][name]" value="${escapeHtml(type.name)}">
+                ${type.values.map((v, vIndex) => `<input type="hidden" name="variant_types[${index}][values][${vIndex}]" value="${escapeHtml(v)}">`).join('')}
                 <div class="d-flex align-items-center justify-content-between mb-1">
                     <div class="variant-type-tag">
                         <i class="bi bi-tag"></i> ${escapeHtml(type.name)}
@@ -881,7 +984,10 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'variant-card';
         card.dataset.index = index;
 
-        const attrJson = JSON.stringify(attributes).replace(/"/g, '&quot;');
+        let attrInputs = '';
+        for (const key in attributes) {
+            attrInputs += `<input type="hidden" name="variants[${index}][attributes][${escapeHtml(key)}]" value="${escapeHtml(attributes[key])}">`;
+        }
 
         card.innerHTML = `
             <div class="variant-card-header">
@@ -890,7 +996,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${escapeHtml(label)}
                 </div>
             </div>
-            <input type="hidden" name="variants[${index}][attributes]" value='${attrJson}'>
+            ${attrInputs}
 
             <div class="d-flex gap-3 align-items-start">
                 <div class="media-picker-wrapper">
@@ -1138,8 +1244,8 @@ document.addEventListener('DOMContentLoaded', function() {
                        name="features[${featureIndex}][value]" placeholder="Nilai"
                        value="${escapeHtml(value)}">
             </div>
-            <button type="button" class="btn-remove-variant" onclick="this.closest('.feature-row').remove(); checkFeaturesEmpty();">
-                <i class="bi bi-x-lg"></i>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.feature-row').remove(); checkFeaturesEmpty();" title="Hapus Fitur">
+                <i class="bi bi-x"></i>
             </button>
         `;
         container.appendChild(row);

@@ -22,6 +22,20 @@
 <form id="product-form" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 <div class="row g-4">
+    <!-- Global Error Display -->
+    @if ($errors->any())
+    <div class="col-12">
+        <div class="alert alert-danger mb-0">
+            <div class="fw-bold mb-1">Terjadi kesalahan validasi:</div>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
     <!-- ========== MAIN CONTENT ========== -->
     <div class="col-md-8">
         <!-- Nama & Slug -->
@@ -58,9 +72,8 @@
             </div>
             <div class="card-body">
                 <div class="fv-row mb-0">
-                    <textarea class="form-control form-control-sm"
-                              name="short_description" rows="3"
-                              placeholder="Deskripsi singkat produk (ditampilkan di list/preview)...">{{ old('short_description') }}</textarea>
+                    <div id="short-description-editor">{!! old('short_description') !!}</div>
+                    <input type="hidden" name="short_description" id="short-description-input">
                     @error('short_description')
                         <div class="text-danger fs-8 mt-1">{{ $message }}</div>
                     @enderror
@@ -80,6 +93,10 @@
                 <div id="variant-types-container">
                     <!-- Variant types will be added here by JS -->
                 </div>
+                <div id="variant-empty-hint" class="variant-empty-hint">
+                    <i class="bi bi-palette"></i>
+                    Belum ada tipe varian. Klik <strong>"Tambah Tipe"</strong> untuk menambah.
+                </div>
 
                 <div id="generate-variant-wrapper" class="d-none mt-3">
                     <button type="button" class="btn btn-primary btn-sm" id="btn-generate-variants">
@@ -96,7 +113,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Tanpa Varian - Form Utama (shown when no variant types) -->
         <div class="glass-card mb-4" id="no-variant-form">
             <div class="card-header">
@@ -221,9 +238,8 @@
             </div>
             <div class="card-body">
                 <div class="fv-row mb-0">
-                    <textarea class="form-control form-control-sm"
-                              name="description" rows="8"
-                              placeholder="Deskripsi lengkap produk...">{{ old('description') }}</textarea>
+                    <div id="description-editor">{!! old('description') !!}</div>
+                    <input type="hidden" name="description" id="description-input">
                     @error('description')
                         <div class="text-danger fs-8 mt-1">{{ $message }}</div>
                     @enderror
@@ -417,9 +433,69 @@
         </div>
     </div>
 </div>
+@endsection
 
 @push('styles')
+{{-- Quill Rich Text Editor CSS --}}
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 <style>
+    /* ===== Quill glass theme overrides ===== */
+    .ql-toolbar.ql-snow {
+        background: var(--bg-surface-hover) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: var(--r-md) var(--r-md) 0 0 !important;
+        padding: 6px 8px !important;
+        font-family: 'Inter', sans-serif;
+    }
+    .ql-container.ql-snow {
+        border: 1px solid var(--glass-border) !important;
+        border-top: none !important;
+        border-radius: 0 0 var(--r-md) var(--r-md) !important;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+    }
+    .ql-editor {
+        min-height: 80px;
+        color: var(--text-primary);
+        padding: 10px 12px;
+    }
+    .ql-editor.ql-blank::before {
+        color: var(--text-muted);
+        font-style: normal;
+        font-size: 0.8rem;
+    }
+    .ql-snow .ql-stroke { stroke: var(--text-secondary) !important; }
+    .ql-snow .ql-fill { fill: var(--text-secondary) !important; }
+    .ql-snow .ql-picker-label { color: var(--text-secondary) !important; }
+    .ql-snow .ql-picker-label::before { color: var(--text-secondary) !important; }
+    .ql-snow .ql-picker-options {
+        background: var(--bg-surface) !important;
+        border-color: var(--glass-border) !important;
+        border-radius: var(--r-sm) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        padding: 4px !important;
+    }
+    .ql-snow .ql-picker-item:hover { color: var(--accent) !important; }
+    .ql-snow .ql-active .ql-stroke { stroke: var(--accent) !important; }
+    .ql-snow .ql-active .ql-fill { fill: var(--accent) !important; }
+    .ql-snow .ql-active { color: var(--accent) !important; }
+    .ql-snow a { color: var(--accent) !important; }
+    .ql-toolbar.ql-snow .ql-formats { margin-right: 6px; }
+    .ql-snow .ql-tooltip {
+        background: var(--bg-surface) !important;
+        border-color: var(--glass-border) !important;
+        color: var(--text-primary) !important;
+        border-radius: var(--r-sm) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+    .ql-snow .ql-tooltip input { color: var(--text-primary) !important; }
+    .ql-editor h1, .ql-editor h2, .ql-editor h3 { color: var(--text-primary); }
+    .ql-editor p, .ql-editor li { color: var(--text-primary); font-size: 0.8rem; line-height: 1.6; }
+    .ql-editor blockquote { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--text-secondary); }
+    .ql-editor code { background: var(--bg-surface-hover); padding: 2px 6px; border-radius: var(--r-sm); font-size: 0.78rem; }
+    .ql-editor pre { background: var(--bg-surface-hover); border-radius: var(--r-sm); padding: 10px; }
+
+    /* ===== Variant styles ===== */
     .variant-type-tag {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 4px 12px; background: var(--accent-light); color: var(--accent);
@@ -431,12 +507,8 @@
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; font-size: 10px; transition: all 0.15s;
     }
-    .variant-type-tag .remove-type:hover {
-        background: var(--danger); color: #fff;
-    }
-    .variant-type-values {
-        display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
-    }
+    .variant-type-tag .remove-type:hover { background: var(--danger); color: #fff; }
+    .variant-type-values { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
     .variant-type-values .value-chip {
         display: inline-flex; align-items: center; gap: 4px;
         padding: 2px 8px; background: rgba(0,0,0,0.04); color: var(--text-secondary);
@@ -446,10 +518,7 @@
         border: 1px solid var(--glass-border); border-radius: var(--r-md);
         padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.01);
     }
-    .variant-card-header {
-        display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 8px;
-    }
+    .variant-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .variant-card-header .variant-label {
         font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);
         display: flex; align-items: center; gap: 6px;
@@ -464,23 +533,23 @@
         display: flex; align-items: center; justify-content: center;
         background: var(--bg-surface-hover); cursor: pointer; position: relative;
     }
-    .variant-image-preview img {
-        width: 100%; height: 100%; object-fit: cover;
-    }
-    .variant-image-preview .placeholder-icon {
-        font-size: 20px; color: var(--text-muted);
-    }
-    .variant-image-preview input[type="file"] {
-        position: absolute; inset: 0; opacity: 0; cursor: pointer;
-    }
-    .feature-row {
-        display: flex; gap: 8px; align-items: end; margin-bottom: 8px;
-    }
+    .variant-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .variant-image-preview .placeholder-icon { font-size: 20px; color: var(--text-muted); }
+    .variant-image-preview input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    /* ===== Feature row ===== */
+    .feature-row { display: flex; gap: 8px; align-items: end; margin-bottom: 8px; }
     .feature-row .fv-row { margin-bottom: 0; }
+
+    /* ===== Empty variant hint ===== */
+    .variant-empty-hint { text-align: center; padding: 1rem 0.5rem; color: var(--text-muted); font-size: 0.8rem; }
+    .variant-empty-hint i { font-size: 1.5rem; display: block; margin-bottom: 0.4rem; opacity: 0.5; }
 </style>
 @endpush
 
 @push('scripts')
+{{-- Quill Rich Text Editor JS --}}
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('product-form');
@@ -491,6 +560,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const noVariantForm = document.getElementById('no-variant-form');
     const variantSection = document.getElementById('variant-section');
     const generateWrapper = document.getElementById('generate-variant-wrapper');
+    const emptyHint = document.getElementById('variant-empty-hint');
+
+    // ==========================================
+    // QUILL RICH TEXT EDITORS
+    // ==========================================
+    var quillToolbar = [
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['blockquote', 'code-block'],
+        ['link'],
+        ['clean']
+    ];
+
+    var shortDescQuill = new Quill('#short-description-editor', {
+        theme: 'snow',
+        modules: { toolbar: quillToolbar },
+        placeholder: 'Deskripsi singkat produk (ditampilkan di list/preview)...'
+    });
+
+    var descQuill = new Quill('#description-editor', {
+        theme: 'snow',
+        modules: { toolbar: quillToolbar },
+        placeholder: 'Deskripsi lengkap produk...'
+    });
+
+    // Sync before form submit
+    form.addEventListener('submit', function() {
+        document.getElementById('short-description-input').value = shortDescQuill.root.innerHTML;
+        document.getElementById('description-input').value = descQuill.root.innerHTML;
+    });
 
     // ==========================================
     // AUTO-GENERATE SLUG
@@ -582,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Save variant type on Enter key in inputs
     const variantModalNameInput = document.getElementById('variant-type-name');
     const variantModalValuesInput = document.getElementById('variant-type-values');
-    [variantModalNameInput, variantModalValuesInput].forEach(inp => {
+    [variantModalNameInput, variantModalValuesInput].forEach(function(inp) {
         inp.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -594,50 +694,48 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderVariantTypes() {
         variantTypesContainer.innerHTML = '';
 
-if (variantTypes.length === 0) {
-    variantSection.classList.add('d-none');
-    noVariantForm.classList.remove('d-none');
-    // re‑enable required fields in the no‑variant form
-    const priceInput = document.querySelector('#no-variant-form input[name="price"]');
-    if (priceInput) priceInput.required = true;
-    generatedVariants.innerHTML = '';
-    return;
-}
+        if (variantTypes.length === 0) {
+            // Show no-variant form, keep variant section visible (button "Tambah Tipe" is inside it)
+            noVariantForm.style.display = '';
+            noVariantForm.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
+            emptyHint.classList.remove('d-none');
+            generateWrapper.classList.add('d-none');
+            generatedVariants.innerHTML = '';
+            return;
+        }
 
-variantSection.classList.remove('d-none');
-                noVariantForm.classList.add('d-none');
-                // disable required fields in the hidden no‑variant form
-                const priceInput = document.querySelector('#no-variant-form input[name="price"]');
-                if (priceInput) priceInput.required = false;
+        // Hide no-variant form, variant section is always visible
+        noVariantForm.style.display = 'none';
+        noVariantForm.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+        emptyHint.classList.add('d-none');
 
         variantTypes.forEach(function(type, index) {
-            const div = document.createElement('div');
+            var div = document.createElement('div');
             div.className = 'mb-3';
-            div.innerHTML = `
-                <div class="d-flex align-items-center justify-content-between mb-1">
-                    <div class="variant-type-tag">
-                        <i class="bi bi-tag"></i> ${escapeHtml(type.name)}
-                        <button type="button" class="remove-type" onclick="removeVariantType(${index})">
-                            <i class="bi bi-x"></i>
-                        </button>
-                    </div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" style="font-size:0.72rem;padding:2px 8px;"
-                            onclick="openVariantTypeModal(${index})">
-                        <i class="bi bi-pencil"></i> Edit
-                    </button>
-                </div>
-                <div class="variant-type-values">
-                    ${type.values.map(v => `<span class="value-chip">${escapeHtml(v)}</span>`).join('')}
-                </div>
-            `;
+            var inputsHtml = '<input type="hidden" name="variant_types[' + index + '][name]" value="' + escapeHtml(type.name) + '">';
+            type.values.forEach(function(v, vIndex) {
+                inputsHtml += '<input type="hidden" name="variant_types[' + index + '][values][' + vIndex + ']" value="' + escapeHtml(v) + '">';
+            });
+            div.innerHTML = inputsHtml + 
+                '<div class="d-flex align-items-center justify-content-between mb-1">' +
+                '<div class="variant-type-tag">' +
+                    '<i class="bi bi-tag"></i> ' + escapeHtml(type.name) +
+                    '<button type="button" class="remove-type" onclick="removeVariantType(' + index + ')">' +
+                        '<i class="bi bi-x"></i>' +
+                    '</button>' +
+                '</div>' +
+                '<button type="button" class="btn btn-outline-secondary btn-sm" style="font-size:0.72rem;padding:2px 8px;"' +
+                        ' onclick="openVariantTypeModal(' + index + ')">' +
+                    '<i class="bi bi-pencil"></i> Edit' +
+                '</button>' +
+            '</div>' +
+            '<div class="variant-type-values">' +
+                type.values.map(function(v) { return '<span class="value-chip">' + escapeHtml(v) + '</span>'; }).join('') +
+            '</div>';
             variantTypesContainer.appendChild(div);
         });
 
-        if (variantTypes.length >= 1) {
-            generateWrapper.classList.remove('d-none');
-        } else {
-            generateWrapper.classList.add('d-none');
-        }
+        generateWrapper.classList.remove('d-none');
     }
 
     window.removeVariantType = function(index) {
@@ -655,7 +753,7 @@ variantSection.classList.remove('d-none');
     });
 
     document.getElementById('btn-clear-variants').addEventListener('click', function() {
-        Ravaa.confirm('Hapus Semua', 'Hapus semua varian yang sudah di-generate?', 'warning').then(ok => {
+        Ravaa.confirm('Hapus Semua', 'Hapus semua varian yang sudah di-generate?', 'warning').then(function(ok) {
             if (ok) {
                 generatedVariants.innerHTML = '';
             }
@@ -665,12 +763,12 @@ variantSection.classList.remove('d-none');
     function generateVariantForms() {
         if (variantTypes.length === 0) return;
 
-        const combinations = cartesianProduct(variantTypes);
+        var combinations = cartesianProduct(variantTypes);
         generatedVariants.innerHTML = '';
 
         combinations.forEach(function(combo, index) {
-            const comboLabel = Object.entries(combo).map(([k, v]) => `${k}: ${v}`).join(' / ');
-            const card = createVariantCard(combo, index, comboLabel);
+            var comboLabel = Object.entries(combo).map(function(entry) { return entry[0] + ': ' + entry[1]; }).join(' / ');
+            var card = createVariantCard(combo, index, comboLabel);
             generatedVariants.appendChild(card);
         });
     }
@@ -678,13 +776,17 @@ variantSection.classList.remove('d-none');
     function cartesianProduct(types) {
         if (types.length === 0) return [[]];
 
-        const [first, ...rest] = types;
-        const restProduct = cartesianProduct(rest);
-        const result = [];
+        var first = types[0];
+        var rest = types.slice(1);
+        var restProduct = cartesianProduct(rest);
+        var result = [];
 
         first.values.forEach(function(value) {
             restProduct.forEach(function(combo) {
-                result.push({ [first.name]: value, ...combo });
+                var obj = {};
+                obj[first.name] = value;
+                Object.assign(obj, combo);
+                result.push(obj);
             });
         });
 
@@ -692,132 +794,105 @@ variantSection.classList.remove('d-none');
     }
 
     function createVariantCard(attributes, index, label) {
-        const card = document.createElement('div');
+        var card = document.createElement('div');
         card.className = 'variant-card';
         card.dataset.index = index;
 
-        const attrJson = JSON.stringify(attributes).replace(/"/g, '&quot;');
+        var attrInputs = '';
+        for (var key in attributes) {
+            attrInputs += '<input type="hidden" name="variants[' + index + '][attributes][' + escapeHtml(key) + ']" value="' + escapeHtml(attributes[key]) + '">';
+        }
 
-        card.innerHTML = `
-            <div class="variant-card-header">
-                <div class="variant-label">
-                    <span class="variant-badge">#${index + 1}</span>
-                    ${escapeHtml(label)}
-                </div>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGeneratedVariant(this)" title="Hapus Variant">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            <input type="hidden" name="variants[${index}][attributes]" value='${attrJson}'>
-
-                <div class="d-flex gap-3 align-items-start">
-                    <div class="media-picker-wrapper">
-                        <div class="media-picker-selected" id="variant_media_${index}-selected">
-                            <div class="media-picker-empty"><i class="bi bi-image"></i><span>Belum ada media dipilih</span></div>
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="openMediaPicker('variant_media_${index}', false, 'image')">
-                            <i class="bi bi-images"></i> Pilih Gambar
-                        </button>
-                        <input type="hidden" name="variant_images[${index}]" id="variant_media_${index}-input" value="">
-                    </div>
-
-                    <div class="flex-fill">
-                    <div class="row g-2">
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-8 fw-semibold mb-1">SKU</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   name="variants[${index}][sku]" placeholder="SKU varian">
-                        </div>
-                        <div class="col-md-3 fv-row">
-                            <label class="required fs-8 fw-semibold mb-1">Harga (Rp)</label>
-                            <input type="number" class="form-control form-control-sm"
-                                   name="variants[${index}][price]" min="0" step="100"
-                                   placeholder="0" required>
-                        </div>
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-8 fw-semibold mb-1">Berat</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   name="variants[${index}][weight]" placeholder="250g">
-                        </div>
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-8 fw-semibold mb-1">Stok</label>
-                            <input type="number" class="form-control form-control-sm"
-                                   name="variants[${index}][stock]" min="0" placeholder="0">
-                        </div>
-                    </div>
-
-                    <!-- Diskon -->
-                    <div class="form-check form-switch mt-2 mb-1">
-                        <input class="form-check-input" type="checkbox"
-                               id="variant-discount-switch-${index}"
-                               onchange="toggleVariantDiscount(${index}, this)">
-                        <label class="form-check-label fs-8 fw-semibold" for="variant-discount-switch-${index}">Diskon</label>
-                    </div>
-                    <div id="variant-discount-fields-${index}" class="d-none">
-                        <div class="row g-2">
-                            <div class="col-md-3 fv-row">
-                                <label class="fs-8 fw-semibold mb-1">Persen (%)</label>
-                                <input type="number" class="form-control form-control-sm"
-                                       name="variants[${index}][discount_percent]" min="0" max="100"
-                                       placeholder="0" oninput="calcVariantDiscount(${index}, this)">
-                            </div>
-                            <div class="col-md-3 fv-row">
-                                <label class="fs-8 fw-semibold mb-1">Harga Diskon</label>
-                                <input type="number" class="form-control form-control-sm"
-                                       name="variants[${index}][price_discount]" min="0" step="100"
-                                       placeholder="0" id="variant-price-discount-${index}">
-                            </div>
-                            <div class="col-md-3 fv-row">
-                                <label class="fs-8 fw-semibold mb-1">Mulai</label>
-                                <input type="datetime-local" class="form-control form-control-sm"
-                                       name="variants[${index}][discount_start]">
-                            </div>
-                            <div class="col-md-3 fv-row">
-                                <label class="fs-8 fw-semibold mb-1">Akhir</label>
-                                <input type="datetime-local" class="form-control form-control-sm"
-                                       name="variants[${index}][discount_end]">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dimensi -->
-                    <div class="row g-2 mt-1">
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-8 fw-semibold mb-1">Panjang</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   name="variants[${index}][length]" placeholder="cm">
-                        </div>
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-8 fw-semibold mb-1">Lebar</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   name="variants[${index}][width]" placeholder="cm">
-                        </div>
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-8 fw-semibold mb-1">Tinggi</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   name="variants[${index}][height]" placeholder="cm">
-                        </div>
-                    </div>
-
-                    <!-- Toggles -->
-                    <div class="d-flex gap-3 mt-2">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox"
-                                   name="variants[${index}][is_service]" value="1"
-                                   id="variant-service-${index}"
-                                   onchange="toggleVariantService(${index}, this)">
-                            <label class="form-check-label fs-8" for="variant-service-${index}">Service</label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox"
-                                   name="variants[${index}][is_active]" value="1" checked
-                                   id="variant-active-${index}">
-                            <label class="form-check-label fs-8" for="variant-active-${index}">Aktif</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+        card.innerHTML =
+            '<div class="variant-card-header">' +
+                '<div class="variant-label">' +
+                    '<span class="variant-badge">#' + (index + 1) + '</span> ' +
+                    escapeHtml(label) +
+                '</div>' +
+                '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGeneratedVariant(this)" title="Hapus Variant">' +
+                    '<i class="bi bi-x"></i>' +
+                '</button>' +
+            '</div>' +
+            attrInputs +
+            '<div class="d-flex gap-3 align-items-start">' +
+                '<div class="media-picker-wrapper">' +
+                    '<div class="media-picker-selected" id="variant_media_' + index + '-selected">' +
+                        '<div class="media-picker-empty"><i class="bi bi-image"></i><span>Belum ada media dipilih</span></div>' +
+                    '</div>' +
+                    '<button type="button" class="btn btn-outline-primary btn-sm" onclick="openMediaPicker(\'variant_media_' + index + '\', false, \'image\')">' +
+                        '<i class="bi bi-images"></i> Pilih Gambar' +
+                    '</button>' +
+                    '<input type="hidden" name="variant_images[' + index + ']" id="variant_media_' + index + '-input" value="">' +
+                '</div>' +
+                '<div class="flex-fill">' +
+                    '<div class="row g-2">' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="fs-8 fw-semibold mb-1">SKU</label>' +
+                            '<input type="text" class="form-control form-control-sm" name="variants[' + index + '][sku]" placeholder="SKU varian">' +
+                        '</div>' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="required fs-8 fw-semibold mb-1">Harga (Rp)</label>' +
+                            '<input type="number" class="form-control form-control-sm" name="variants[' + index + '][price]" min="0" step="100" placeholder="0" required>' +
+                        '</div>' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="fs-8 fw-semibold mb-1">Berat</label>' +
+                            '<input type="text" class="form-control form-control-sm" name="variants[' + index + '][weight]" placeholder="250g">' +
+                        '</div>' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="fs-8 fw-semibold mb-1">Stok</label>' +
+                            '<input type="number" class="form-control form-control-sm" name="variants[' + index + '][stock]" min="0" placeholder="0">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="form-check form-switch mt-2 mb-1">' +
+                        '<input class="form-check-input" type="checkbox" id="variant-discount-switch-' + index + '" onchange="toggleVariantDiscount(' + index + ', this)">' +
+                        '<label class="form-check-label fs-8 fw-semibold" for="variant-discount-switch-' + index + '">Diskon</label>' +
+                    '</div>' +
+                    '<div id="variant-discount-fields-' + index + '" class="d-none">' +
+                        '<div class="row g-2">' +
+                            '<div class="col-md-3 fv-row">' +
+                                '<label class="fs-8 fw-semibold mb-1">Persen (%)</label>' +
+                                '<input type="number" class="form-control form-control-sm" name="variants[' + index + '][discount_percent]" min="0" max="100" placeholder="0" oninput="calcVariantDiscount(' + index + ', this)">' +
+                            '</div>' +
+                            '<div class="col-md-3 fv-row">' +
+                                '<label class="fs-8 fw-semibold mb-1">Harga Diskon</label>' +
+                                '<input type="number" class="form-control form-control-sm" name="variants[' + index + '][price_discount]" min="0" step="100" placeholder="0" id="variant-price-discount-' + index + '">' +
+                            '</div>' +
+                            '<div class="col-md-3 fv-row">' +
+                                '<label class="fs-8 fw-semibold mb-1">Mulai</label>' +
+                                '<input type="datetime-local" class="form-control form-control-sm" name="variants[' + index + '][discount_start]">' +
+                            '</div>' +
+                            '<div class="col-md-3 fv-row">' +
+                                '<label class="fs-8 fw-semibold mb-1">Akhir</label>' +
+                                '<input type="datetime-local" class="form-control form-control-sm" name="variants[' + index + '][discount_end]">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="row g-2 mt-1">' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="fs-8 fw-semibold mb-1">Panjang</label>' +
+                            '<input type="text" class="form-control form-control-sm" name="variants[' + index + '][length]" placeholder="cm">' +
+                        '</div>' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="fs-8 fw-semibold mb-1">Lebar</label>' +
+                            '<input type="text" class="form-control form-control-sm" name="variants[' + index + '][width]" placeholder="cm">' +
+                        '</div>' +
+                        '<div class="col-md-3 fv-row">' +
+                            '<label class="fs-8 fw-semibold mb-1">Tinggi</label>' +
+                            '<input type="text" class="form-control form-control-sm" name="variants[' + index + '][height]" placeholder="cm">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="d-flex gap-3 mt-2">' +
+                        '<div class="form-check form-switch">' +
+                            '<input class="form-check-input" type="checkbox" name="variants[' + index + '][is_service]" value="1" id="variant-service-' + index + '" onchange="toggleVariantService(' + index + ', this)">' +
+                            '<label class="form-check-label fs-8" for="variant-service-' + index + '">Service</label>' +
+                        '</div>' +
+                        '<div class="form-check form-switch">' +
+                            '<input class="form-check-input" type="checkbox" name="variants[' + index + '][is_active]" value="1" checked id="variant-active-' + index + '">' +
+                            '<label class="form-check-label fs-8" for="variant-active-' + index + '">Aktif</label>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
 
         return card;
     }
@@ -826,22 +901,21 @@ variantSection.classList.remove('d-none');
     // VARIANT DISCOUNT TOGGLE
     // ==========================================
     window.toggleVariantDiscount = function(index, checkbox) {
-        const fields = document.getElementById('variant-discount-fields-' + index);
+        var fields = document.getElementById('variant-discount-fields-' + index);
         fields.classList.toggle('d-none', !checkbox.checked);
     };
 
-    // Remove a generated variant card (only removes the UI, not persisted until form submit)
     window.removeGeneratedVariant = function(btn) {
-        const card = btn.closest('.variant-card');
+        var card = btn.closest('.variant-card');
         if (card) card.remove();
     };
 
     window.calcVariantDiscount = function(index, input) {
-        const card = input.closest('.variant-card');
-        const priceInput = card.querySelector('input[name="variants[' + index + '][price]"]');
-        const priceDiscount = card.querySelector('#variant-price-discount-' + index);
-        const percent = parseFloat(input.value) || 0;
-        const price = parseFloat(priceInput.value) || 0;
+        var card = input.closest('.variant-card');
+        var priceInput = card.querySelector('input[name="variants[' + index + '][price]"]');
+        var priceDiscount = card.querySelector('#variant-price-discount-' + index);
+        var percent = parseFloat(input.value) || 0;
+        var price = parseFloat(priceInput.value) || 0;
         if (percent > 0 && price > 0) {
             priceDiscount.value = Math.round(price * (1 - percent / 100));
         } else {
@@ -853,8 +927,8 @@ variantSection.classList.remove('d-none');
     // VARIANT SERVICE TOGGLE
     // ==========================================
     window.toggleVariantService = function(index, checkbox) {
-        const card = checkbox.closest('.variant-card');
-        const stockInput = card.querySelector('input[name="variants[' + index + '][stock]"]');
+        var card = checkbox.closest('.variant-card');
+        var stockInput = card.querySelector('input[name="variants[' + index + '][stock]"]');
         if (checkbox.checked) {
             stockInput.disabled = true;
             stockInput.value = '0';
@@ -867,15 +941,15 @@ variantSection.classList.remove('d-none');
     // NO-VARIANT DISCOUNT
     // ==========================================
     window.toggleNoVariantDiscount = function(checkbox) {
-        const fields = document.getElementById('no-variant-discount-fields');
+        var fields = document.getElementById('no-variant-discount-fields');
         fields.classList.toggle('d-none', !checkbox.checked);
     };
 
     window.calcNoVariantDiscount = function(input) {
-        const priceInput = document.querySelector('#no-variant-form input[name="price"]');
-        const priceDiscount = document.getElementById('no-price-discount');
-        const percent = parseFloat(input.value) || 0;
-        const price = parseFloat(priceInput.value) || 0;
+        var priceInput = document.querySelector('#no-variant-form input[name="price"]');
+        var priceDiscount = document.getElementById('no-price-discount');
+        var percent = parseFloat(input.value) || 0;
+        var price = parseFloat(priceInput.value) || 0;
         if (percent > 0 && price > 0) {
             priceDiscount.value = Math.round(price * (1 - percent / 100));
         } else {
@@ -887,8 +961,8 @@ variantSection.classList.remove('d-none');
     // NO-VARIANT SERVICE TOGGLE
     // ==========================================
     window.toggleNoVariantService = function(checkbox) {
-        const stockInput = document.getElementById('no-stock');
-        const hint = document.getElementById('no-service-hint');
+        var stockInput = document.getElementById('no-stock');
+        var hint = document.getElementById('no-service-hint');
         if (checkbox.checked) {
             stockInput.disabled = true;
             stockInput.value = '0';
@@ -904,12 +978,11 @@ variantSection.classList.remove('d-none');
     // ==========================================
     window.previewVariantImage = function(input, index) {
         if (input.files && input.files[0]) {
-            const reader = new FileReader();
+            var reader = new FileReader();
             reader.onload = function(e) {
-                const preview = input.closest('.variant-image-preview');
-                preview.innerHTML = `<img src="${e.target.result}" alt="Preview">
-                    <input type="file" name="variant_images[${index}]" accept="image/*"
-                           onchange="previewVariantImage(this, ${index})">`;
+                var preview = input.closest('.variant-image-preview');
+                preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">' +
+                    '<input type="file" name="variant_images[' + index + ']" accept="image/*" onchange="previewVariantImage(this, ' + index + ')">';
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -918,41 +991,38 @@ variantSection.classList.remove('d-none');
     // ==========================================
     // FEATURES MANAGEMENT
     // ==========================================
-    let featureIndex = 0;
+    var featureIndex = 0;
 
     document.getElementById('btn-add-feature').addEventListener('click', function() {
         addFeatureRow();
     });
 
-    function addFeatureRow(title = '', value = '') {
-        const container = document.getElementById('features-container');
-        const noMsg = document.getElementById('no-features-msg');
+    function addFeatureRow(title, value) {
+        title = title || '';
+        value = value || '';
+        var container = document.getElementById('features-container');
+        var noMsg = document.getElementById('no-features-msg');
         noMsg.style.display = 'none';
 
-        const row = document.createElement('div');
+        var row = document.createElement('div');
         row.className = 'feature-row';
-        row.innerHTML = `
-            <div class="fv-row flex-fill">
-                <input type="text" class="form-control form-control-sm"
-                       name="features[${featureIndex}][title]" placeholder="Judul fitur"
-                       value="${escapeHtml(title)}">
-            </div>
-            <div class="fv-row flex-fill">
-                <input type="text" class="form-control form-control-sm"
-                       name="features[${featureIndex}][value]" placeholder="Nilai"
-                       value="${escapeHtml(value)}">
-            </div>
-            <button type="button" class="btn-remove-variant" onclick="this.closest('.feature-row').remove(); checkFeaturesEmpty();">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        `;
+        row.innerHTML =
+            '<div class="fv-row flex-fill">' +
+                '<input type="text" class="form-control form-control-sm" name="features[' + featureIndex + '][title]" placeholder="Judul fitur" value="' + escapeHtml(title) + '">' +
+            '</div>' +
+            '<div class="fv-row flex-fill">' +
+                '<input type="text" class="form-control form-control-sm" name="features[' + featureIndex + '][value]" placeholder="Nilai" value="' + escapeHtml(value) + '">' +
+            '</div>' +
+            '<button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest(\'.feature-row\').remove(); checkFeaturesEmpty();" title="Hapus Fitur">' +
+                '<i class="bi bi-x"></i>' +
+            '</button>';
         container.appendChild(row);
         featureIndex++;
     }
 
     window.checkFeaturesEmpty = function() {
-        const container = document.getElementById('features-container');
-        const noMsg = document.getElementById('no-features-msg');
+        var container = document.getElementById('features-container');
+        var noMsg = document.getElementById('no-features-msg');
         noMsg.style.display = container.children.length === 0 ? 'block' : 'none';
     };
 
@@ -960,11 +1030,56 @@ variantSection.classList.remove('d-none');
     // UTILS
     // ==========================================
     function escapeHtml(text) {
-        const div = document.createElement('div');
+        var div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // ==========================================
+    // HYDRATE FROM OLD INPUT (ON VALIDATION ERROR)
+    // ==========================================
+    const oldVariantTypesObj = {!! json_encode(old('variant_types', [])) !!};
+    if (Object.keys(oldVariantTypesObj).length > 0) {
+        let parsedTypes = Array.isArray(oldVariantTypesObj) ? oldVariantTypesObj : Object.values(oldVariantTypesObj);
+        variantTypes = parsedTypes.map(function(t) {
+            return {
+                name: t.name,
+                values: Array.isArray(t.values) ? t.values : Object.values(t.values || {})
+            };
+        });
+        renderVariantTypes();
+
+        const oldVariantsObj = {!! json_encode(old('variants', [])) !!};
+        if (Object.keys(oldVariantsObj).length > 0) {
+            let parsedVariants = Array.isArray(oldVariantsObj) ? oldVariantsObj : Object.values(oldVariantsObj);
+            generatedVariants.innerHTML = '';
+            parsedVariants.forEach(function(v, index) {
+                var attributes = v.attributes || {};
+                var comboLabel = Object.entries(attributes).map(function(entry) { return entry[0] + ': ' + entry[1]; }).join(' / ');
+                var card = createVariantCard(attributes, index, comboLabel);
+                generatedVariants.appendChild(card);
+                
+                // Re-fill values
+                if(v.price) card.querySelector('input[name="variants['+index+'][price]"]').value = v.price;
+                if(v.sku) card.querySelector('input[name="variants['+index+'][sku]"]').value = v.sku;
+                if(v.stock) card.querySelector('input[name="variants['+index+'][stock]"]').value = v.stock;
+                if(v.weight) card.querySelector('input[name="variants['+index+'][weight]"]').value = v.weight;
+                if(v.price_discount) card.querySelector('input[name="variants['+index+'][price_discount]"]').value = v.price_discount;
+            });
+        }
+    }
+
+    const oldFeaturesObj = {!! json_encode(old('features', [])) !!};
+    if (Object.keys(oldFeaturesObj).length > 0) {
+        let parsedFeatures = Array.isArray(oldFeaturesObj) ? oldFeaturesObj : Object.values(oldFeaturesObj);
+        document.getElementById('features-container').innerHTML = ''; // Clear default
+        parsedFeatures.forEach(function(f) {
+            if (f.title || f.value) {
+                addFeatureRow(f.title || '', f.value || '');
+            }
+        });
+        checkFeaturesEmpty();
     }
 });
 </script>
 @endpush
-@endsection

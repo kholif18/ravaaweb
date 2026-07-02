@@ -110,16 +110,15 @@
 
     /* Modal styles */
     .media-picker-modal .modal-content {
-        max-height: 80vh;
+        height: 90vh;
         display: flex;
         flex-direction: column;
     }
 
     .media-picker-modal .media-grid-picker {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 12px;
-        max-height: 50vh;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 16px;
         overflow-y: auto;
         padding: 4px;
     }
@@ -131,7 +130,13 @@
         border: 2px solid transparent;
         cursor: pointer;
         transition: all 0.2s;
-        aspect-ratio: 1;
+        background: var(--bg-surface-alt);
+    }
+
+    .media-picker-modal .media-picker-item::before {
+        content: "";
+        display: block;
+        padding-top: 100%;
     }
 
     .media-picker-modal .media-picker-item:hover {
@@ -143,9 +148,16 @@
         box-shadow: 0 0 0 3px var(--accent-light);
     }
 
-    .media-picker-modal .media-picker-item img {
+    .media-picker-modal .media-picker-item img,
+    .media-picker-modal .media-picker-item .file-icon {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
+    }
+
+    .media-picker-modal .media-picker-item img {
         object-fit: cover;
     }
 
@@ -165,6 +177,7 @@
         opacity: 0;
         transition: opacity 0.2s;
         font-size: 14px;
+        z-index: 2;
     }
 
     .media-picker-modal .media-picker-item:hover .pick-icon,
@@ -197,12 +210,8 @@
         display: block;
         margin-bottom: 4px;
     }
-</style>
 
-<style>
     .media-picker-modal .media-grid-picker .media-picker-item .file-icon {
-        width: 100%;
-        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -216,6 +225,7 @@
 <script>
 // Media picker state
 window.mediaPickerState = window.mediaPickerState || {};
+window.currentPickerFieldName = null;
 
 /**
  * Register a new target for the media‑picker.
@@ -237,56 +247,83 @@ window.registerMediaPickerTarget = function (fieldName) {
 };
 
 function openMediaPicker(fieldName, multiple, type) {
-    mediaPickerState[fieldName] = {
-        multiple,
-        type,
-        selected: [],
-        currentSearch: '',
-    };
+    window.currentPickerFieldName = fieldName;
+    
+    if (!mediaPickerState[fieldName]) {
+        mediaPickerState[fieldName] = {
+            multiple,
+            type,
+            selected: [],
+            selectedItems: {}, // Store HTML previews
+            currentSearch: '',
+        };
 
-    // Load existing values from hidden input
-    const input = document.getElementById(fieldName + '-input');
-    if (input && input.value) {
-        mediaPickerState[fieldName].selected = input.value.split(',').filter(Boolean);
+        // Load existing values from hidden input
+        const input = document.getElementById(fieldName + '-input');
+        if (input && input.value) {
+            mediaPickerState[fieldName].selected = input.value.split(',').filter(Boolean);
+            
+            // Scrape existing HTML for these items from the DOM
+            const thumbs = document.querySelectorAll(`#${fieldName}-selected .media-picker-thumb`);
+            thumbs.forEach(thumb => {
+                const btn = thumb.querySelector('.remove-media');
+                if (btn) {
+                    const match = btn.getAttribute('onclick').match(/'([^']+)'\)$/);
+                    if (match && match[1]) {
+                        const id = match[1];
+                        const thumbContent = thumb.cloneNode(true);
+                        const btnToRemove = thumbContent.querySelector('.remove-media');
+                        if (btnToRemove) btnToRemove.remove();
+                        mediaPickerState[fieldName].selectedItems[id] = thumbContent.innerHTML;
+                    }
+                }
+            });
+        }
+    } else {
+        mediaPickerState[fieldName].multiple = multiple;
+        mediaPickerState[fieldName].type = type;
     }
 
     // Create or show modal
     let modal = document.getElementById('media-picker-modal');
     if (!modal) {
-        modal = createMediaPickerModal(fieldName);
+        modal = createMediaPickerModal();
         document.body.appendChild(modal);
     }
 
-    loadMediaPickerItems(fieldName, 1);
+    document.getElementById('picker-search').value = mediaPickerState[fieldName].currentSearch || '';
+    document.getElementById('picker-type-filter').value = mediaPickerState[fieldName].type || '';
+
+    loadMediaPickerItems(1);
     new bootstrap.Modal(modal).show();
 }
 
-function createMediaPickerModal(fieldName) {
+function createMediaPickerModal() {
     const modal = document.createElement('div');
     modal.id = 'media-picker-modal';
     modal.className = 'modal fade media-picker-modal';
     modal.tabIndex = -1;
     modal.innerHTML = `
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content glass-card" style="max-height:80vh;display:flex;flex-direction:column;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 95vw; width: 1200px;">
+            <div class="modal-content glass-card" style="height: 85vh; display: flex; flex-direction: column;">
                 <div class="card-header">
                     <div class="card-title">Pilih Media</div>
                     <div class="card-header-btns">
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                 </div>
-                <div class="card-body" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
-                    <div class="upload-zone" id="picker-upload-zone">
+                <div class="card-body" style="flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 1.5rem;">
+                    <div class="upload-zone" id="picker-upload-zone" style="margin-bottom: 1rem; padding: 15px;">
                         <i class="bi bi-cloud-arrow-up"></i>
                         <span>Klik atau seret file untuk upload</span>
                         <input type="file" id="picker-file-input" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx" style="display:none;">
                     </div>
                     <div class="d-flex align-items-center gap-2 mb-3">
-                        <div class="input-group input-group-sm" style="max-width:280px;">
+                        <div class="input-group input-group-sm" style="max-width: 320px;">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
                             <input type="text" class="form-control" id="picker-search" placeholder="Cari media...">
                         </div>
-                        <select class="form-select form-select-sm" style="width:130px;" id="picker-type-filter">
+                        <select class="form-select form-select-sm" style="width: 150px;" id="picker-type-filter">
                             <option value="">Semua Tipe</option>
                             <option value="image">Gambar</option>
                             <option value="video">Video</option>
@@ -294,12 +331,12 @@ function createMediaPickerModal(fieldName) {
                             <option value="document">Dokumen</option>
                         </select>
                     </div>
-                    <div class="media-grid-picker" id="picker-grid" style="flex:1;overflow-y:auto;"></div>
-                    <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="media-grid-picker" id="picker-grid" style="flex: 1; overflow-y: auto; padding-right: 5px;"></div>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                         <small class="text-muted" id="picker-count">0 item</small>
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
-                            <button type="button" class="btn btn-primary btn-sm" id="picker-confirm-btn" onclick="confirmMediaPicker('${fieldName}')">
+                            <button type="button" class="btn btn-primary btn-sm" id="picker-confirm-btn" onclick="confirmMediaPicker()">
                                 <i class="bi bi-check-lg"></i> Pilih
                             </button>
                         </div>
@@ -313,13 +350,17 @@ function createMediaPickerModal(fieldName) {
     let searchTimeout;
     modal.querySelector('#picker-search').addEventListener('input', function() {
         clearTimeout(searchTimeout);
-        mediaPickerState[fieldName].currentSearch = this.value;
-        searchTimeout = setTimeout(() => loadMediaPickerItems(fieldName, 1), 400);
+        if (window.currentPickerFieldName) {
+            mediaPickerState[window.currentPickerFieldName].currentSearch = this.value;
+            searchTimeout = setTimeout(() => loadMediaPickerItems(1), 400);
+        }
     });
 
     modal.querySelector('#picker-type-filter').addEventListener('change', function() {
-        mediaPickerState[fieldName].type = this.value;
-        loadMediaPickerItems(fieldName, 1);
+        if (window.currentPickerFieldName) {
+            mediaPickerState[window.currentPickerFieldName].type = this.value;
+            loadMediaPickerItems(1);
+        }
     });
 
     // Upload zone
@@ -332,11 +373,15 @@ function createMediaPickerModal(fieldName) {
     uploadZone.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadZone.style.background = '';
-        if (e.dataTransfer.files.length) pickerUploadFiles(fieldName, e.dataTransfer.files);
+        if (e.dataTransfer.files.length && window.currentPickerFieldName) {
+            pickerUploadFiles(window.currentPickerFieldName, e.dataTransfer.files);
+        }
     });
 
     fileInput.addEventListener('change', function() {
-        if (this.files.length) pickerUploadFiles(fieldName, this.files);
+        if (this.files.length && window.currentPickerFieldName) {
+            pickerUploadFiles(window.currentPickerFieldName, this.files);
+        }
     });
 
     return modal;
@@ -359,7 +404,7 @@ async function pickerUploadFiles(fieldName, files) {
         });
 
         if (response.ok) {
-            loadMediaPickerItems(fieldName, 1);
+            loadMediaPickerItems(1);
         } else {
             const data = await response.json();
             alert(data.message || 'Upload gagal');
@@ -369,7 +414,9 @@ async function pickerUploadFiles(fieldName, files) {
     }
 }
 
-async function loadMediaPickerItems(fieldName, page) {
+async function loadMediaPickerItems(page) {
+    const fieldName = window.currentPickerFieldName;
+    if (!fieldName) return;
     const state = mediaPickerState[fieldName];
     const grid = document.getElementById('picker-grid');
     const countEl = document.getElementById('picker-count');
@@ -393,7 +440,7 @@ async function loadMediaPickerItems(fieldName, page) {
             div.dataset.id = item.id;
             div.dataset.url = item.url;
             div.dataset.name = item.file_name;
-            div.onclick = () => togglePickerItem(fieldName, item.id);
+            div.onclick = () => togglePickerItem(item.id);
 
             if (item.mime_type && item.mime_type.startsWith('image/')) {
                 div.innerHTML = `<img src="${item.url}" alt="${item.file_name}"><div class="pick-icon"><i class="bi bi-check-lg"></i></div>`;
@@ -420,7 +467,7 @@ async function loadMediaPickerItems(fieldName, page) {
                 btn.type = 'button';
                 btn.className = 'btn btn-sm ' + (i === page ? 'btn-primary' : 'btn-light');
                 btn.textContent = i;
-                btn.onclick = () => loadMediaPickerItems(fieldName, i);
+                btn.onclick = () => loadMediaPickerItems(i);
                 pagDiv.appendChild(btn);
             }
             grid.appendChild(pagDiv);
@@ -430,9 +477,12 @@ async function loadMediaPickerItems(fieldName, page) {
     }
 }
 
-function togglePickerItem(fieldName, id) {
+function togglePickerItem(id) {
+    const fieldName = window.currentPickerFieldName;
+    if (!fieldName) return;
     const state = mediaPickerState[fieldName];
     const idStr = String(id);
+    const itemEl = document.querySelector(`#picker-grid .media-picker-item[data-id="${idStr}"]`);
 
     if (state.multiple) {
         const idx = state.selected.indexOf(idStr);
@@ -440,9 +490,31 @@ function togglePickerItem(fieldName, id) {
             state.selected.splice(idx, 1);
         } else {
             state.selected.push(idStr);
+            if (itemEl) {
+                let previewHtml = '';
+                const img = itemEl.querySelector('img');
+                if (img) {
+                    previewHtml = `<img src="${img.src}" alt="">`;
+                } else {
+                    const icon = itemEl.querySelector('.file-icon i');
+                    previewHtml = `<div class="media-thumb-icon"><i class="${icon ? icon.className : 'bi bi-file'}"></i></div>`;
+                }
+                state.selectedItems[idStr] = previewHtml;
+            }
         }
     } else {
         state.selected = [idStr];
+        if (itemEl) {
+            let previewHtml = '';
+            const img = itemEl.querySelector('img');
+            if (img) {
+                previewHtml = `<img src="${img.src}" alt="">`;
+            } else {
+                const icon = itemEl.querySelector('.file-icon i');
+                previewHtml = `<div class="media-thumb-icon"><i class="${icon ? icon.className : 'bi bi-file'}"></i></div>`;
+            }
+            state.selectedItems[idStr] = previewHtml;
+        }
     }
 
     // Update visual selection
@@ -451,49 +523,56 @@ function togglePickerItem(fieldName, id) {
     });
 }
 
-function confirmMediaPicker(fieldName) {
+function confirmMediaPicker(overrideFieldName) {
+    const fieldName = overrideFieldName || window.currentPickerFieldName;
+    if (!fieldName) return;
     const state = mediaPickerState[fieldName];
     const input = document.getElementById(fieldName + '-input');
     const selectedContainer = document.getElementById(fieldName + '-selected');
 
-    input.value = state.selected.join(',');
-
-    // Update preview
-    if (state.selected.length === 0) {
-        selectedContainer.innerHTML = `
-            <div class="media-picker-empty">
-                <i class="bi bi-image"></i>
-                <span>Belum ada media dipilih</span>
-            </div>
-        `;
-    } else {
-        selectedContainer.innerHTML = '';
-        state.selected.forEach(id => {
-            const item = document.querySelector(`#picker-grid .media-picker-item[data-id="${id}"]`);
-            if (item) {
-                const thumb = document.createElement('div');
-                thumb.className = 'media-picker-thumb';
-                const img = item.querySelector('img');
-                if (img) {
-                    thumb.innerHTML = `<img src="${img.src}" alt=""><button type="button" class="remove-media" onclick="removePickerItem('${fieldName}', '${id}')"><i class="bi bi-x"></i></button>`;
-                } else {
-                    const icon = item.querySelector('.file-icon i');
-                    thumb.innerHTML = `<div class="media-thumb-icon"><i class="${icon ? icon.className : 'bi bi-file'}"></i></div><button type="button" class="remove-media" onclick="removePickerItem('${fieldName}', '${id}')"><i class="bi bi-x"></i></button>`;
-                }
-                selectedContainer.appendChild(thumb);
-            }
-        });
+    if (input) {
+        input.value = state.selected.join(',');
     }
 
-    // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('media-picker-modal'));
-    if (modal) modal.hide();
+    // Update preview
+    if (selectedContainer) {
+        if (state.selected.length === 0) {
+            selectedContainer.innerHTML = `
+                <div class="media-picker-empty">
+                    <i class="bi bi-image"></i>
+                    <span>Belum ada media dipilih</span>
+                </div>
+            `;
+        } else {
+            selectedContainer.innerHTML = '';
+            state.selected.forEach(id => {
+                const thumb = document.createElement('div');
+                thumb.className = 'media-picker-thumb';
+                
+                let content = state.selectedItems[id] || `<div class="media-thumb-icon"><i class="bi bi-check2"></i></div>`;
+                
+                thumb.innerHTML = content + `<button type="button" class="remove-media" onclick="removePickerItem('${fieldName}', '${id}')"><i class="bi bi-x"></i></button>`;
+                selectedContainer.appendChild(thumb);
+            });
+        }
+    }
+
+    // Close modal if called from the "Pilih" button (i.e. overrideFieldName is undefined)
+    if (!overrideFieldName) {
+        const modalEl = document.getElementById('media-picker-modal');
+        if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+    }
 }
 
 function removePickerItem(fieldName, id) {
     const state = mediaPickerState[fieldName];
-    state.selected = state.selected.filter(i => i !== String(id));
-    confirmMediaPicker(fieldName);
+    if (state) {
+        state.selected = state.selected.filter(i => i !== String(id));
+        confirmMediaPicker(fieldName);
+    }
 }
 </script>
 @endpush
