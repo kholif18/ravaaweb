@@ -243,18 +243,47 @@
                                 </button>
                             </div>
                             <input type="hidden" name="variants[{{ $vIndex }}][id]" value="{{ $variant->id }}">
-                            <input type="hidden" name="variants[{{ $vIndex }}][attributes]" value='{{ json_encode($variant->attributes) }}'>
+                            @foreach($variant->attributes as $attrKey => $attrValue)
+                                <input type="hidden" name="variants[{{ $vIndex }}][attributes][{{ $attrKey }}]" value="{{ $attrValue }}">
+                            @endforeach
 
                             <div class="d-flex gap-3 align-items-start">
                                 <!-- Image Preview -->
-                                <div class="variant-image-preview" title="Klik untuk upload gambar">
-                                    @if($variant->image)
-                                        <img src="{{ asset('storage/' . $variant->image) }}" alt="Variant image">
-                                    @else
-                                        <span class="placeholder-icon"><i class="bi bi-image"></i></span>
-                                    @endif
-                                    <input type="file" name="variant_images[{{ $vIndex }}]" accept="image/*"
-                                           onchange="previewVariantImage(this, {{ $vIndex }})">
+                                <div class="media-picker-wrapper" data-multiple="false" data-type="image">
+                                    <div class="media-picker-selected" id="variant_media_{{ $vIndex }}-selected">
+                                        @if($variant->image && $variant->media)
+                                            <div class="media-picker-thumb">
+                                                @if($variant->media->isImage())
+                                                    <img src="{{ $variant->media->url }}" alt="">
+                                                @else
+                                                    <div class="media-thumb-icon">
+                                                        @if(str_starts_with($variant->media->mime_type ?? '', 'video/'))
+                                                            <i class="bi bi-play-circle"></i>
+                                                        @elseif(str_starts_with($variant->media->mime_type ?? '', 'audio/'))
+                                                            <i class="bi bi-music-note"></i>
+                                                        @else
+                                                            <i class="bi bi-file-earmark"></i>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                                <button type="button" class="remove-media" onclick="removePickerItem('variant_media_{{ $vIndex }}', '{{ $variant->image }}')"><i class="bi bi-x"></i></button>
+                                            </div>
+                                        @else
+                                            <div class="media-picker-empty">
+                                                <i class="bi bi-image"></i>
+                                                <span>Belum ada gambar</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <button type="button"
+                                            class="btn btn-outline-primary btn-sm"
+                                            onclick="openMediaPicker('variant_media_{{ $vIndex }}', false, 'image')">
+                                        <i class="bi bi-images"></i> Pilih Gambar
+                                    </button>
+                                    <input type="hidden"
+                                           name="variant_images[{{ $vIndex }}]"
+                                           id="variant_media_{{ $vIndex }}-input"
+                                           value="{{ old('variant_images.'.$vIndex, $variant->image) }}">
                                 </div>
 
                                 <div class="flex-fill">
@@ -282,7 +311,7 @@
                                             <label class="fs-8 fw-semibold mb-1">Stok</label>
                                             <input type="number" class="form-control form-control-sm"
                                                    name="variants[{{ $vIndex }}][stock]" min="0" placeholder="0"
-                                                   value="{{ old('variants.'.$vIndex.'.stock', 0) }}">
+                                                   value="{{ old('variants.'.$vIndex.'.stock', $variant->stock) }}">
                                         </div>
                                     </div>
 
@@ -478,40 +507,29 @@
             </div>
         </div>
 
+        <!-- Gambar Utama -->
+        <div class="glass-card mb-4">
+            <div class="card-header">
+                <div class="card-title">Gambar Utama</div>
+            </div>
+            <div class="card-body">
+                <x-media-picker name="primary_media_id" :multiple="false" type="image" label="Pilih Gambar Utama"
+                    :value="$product->thumbnail_id"
+                    :media="$product->thumbnail ? collect([$product->thumbnail]) : collect()" />
+            </div>
+        </div>
+
         <!-- Gallery -->
         <div class="glass-card mb-4">
             <div class="card-header">
                 <div class="card-title">Gallery</div>
             </div>
             <div class="card-body">
-                <x-media-picker name="media_ids" :multiple="true" type="image" label="Pilih dari Library" />
-                <input type="hidden" name="primary_media_id" id="primary-media-id"
-                       value="{{ old('primary_media_id', $product->thumbnail_id) }}">
+                <x-media-picker name="media_ids" :multiple="true" type="image" label="Pilih dari Library"
+                    :value="$product->media->pluck('id')"
+                    :media="$product->media" />
             </div>
         </div>
-
-        <!-- Current Media Preview -->
-        @if($product->media->count() > 0)
-        <div class="glass-card mb-4">
-            <div class="card-header">
-                <div class="card-title">Media Terpilih</div>
-            </div>
-            <div class="card-body">
-                <div class="d-flex flex-wrap gap-2">
-                    @foreach($product->media as $media)
-                        <div class="product-media-thumb {{ $media->pivot->is_primary ? 'is-primary' : '' }}">
-                            @if($media->isImage())
-                                <img src="{{ $media->url }}" alt="{{ $media->name }}">
-                            @else
-                                <div class="media-file-icon"><i class="bi bi-file-earmark"></i></div>
-                            @endif
-                            <span class="media-badge">{{ $media->pivot->is_primary ? 'Utama' : '' }}</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-        @endif
 
         <!-- Kategori -->
         <div class="glass-card mb-4">
@@ -709,21 +727,6 @@
     .variant-card-header .variant-label .variant-badge {
         padding: 1px 6px; background: var(--accent-light); color: var(--accent);
         border-radius: var(--r-sm); font-size: 0.68rem;
-    }
-    .variant-image-preview {
-        width: 60px; height: 60px; border-radius: 8px; overflow: hidden;
-        border: 1px solid var(--glass-border); flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: var(--bg-surface-hover); cursor: pointer; position: relative;
-    }
-    .variant-image-preview img {
-        width: 100%; height: 100%; object-fit: cover;
-    }
-    .variant-image-preview .placeholder-icon {
-        font-size: 20px; color: var(--text-muted);
-    }
-    .variant-image-preview input[type="file"] {
-        position: absolute; inset: 0; opacity: 0; cursor: pointer;
     }
     .feature-row {
         display: flex; gap: 8px; align-items: end; margin-bottom: 8px;
@@ -1202,22 +1205,6 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // ==========================================
-    // VARIANT IMAGE PREVIEW
-    // ==========================================
-    window.previewVariantImage = function(input, index) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = input.closest('.variant-image-preview');
-                preview.innerHTML = `<img src="${e.target.result}" alt="Preview">
-                    <input type="file" name="variant_images[${index}]" accept="image/*"
-                           onchange="previewVariantImage(this, ${index})">`;
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    };
-
-    // ==========================================
     // FEATURES MANAGEMENT
     // ==========================================
     let featureIndex = {{ $product->features ? count($product->features) : 0 }};
@@ -1258,24 +1245,26 @@ document.addEventListener('DOMContentLoaded', function() {
         noMsg.style.display = container.children.length === 0 ? 'block' : 'none';
     };
 
-    // Init existing media preview
+    // Init existing media preview from preloaded values
     initExistingMediaPreview();
 
     function initExistingMediaPreview() {
         const input = document.getElementById('media_ids-input');
         const preview = document.getElementById('media_ids-selected');
-        if (input && input.value && preview) {
-            const state = { selected: input.value.split(',').filter(Boolean) };
-            if (state.selected.length > 0) {
-                preview.innerHTML = '';
-                state.selected.forEach(id => {
-                    const thumb = document.createElement('div');
-                    thumb.className = 'media-picker-thumb';
-                    thumb.innerHTML = `<div class="media-thumb-icon"><i class="bi bi-image"></i></div>`;
-                    preview.appendChild(thumb);
-                });
-            }
-        }
+        if (!input || !preview) return;
+
+        const ids = input.value.split(',').filter(Boolean);
+        if (ids.length === 0) return;
+
+        // Preview is already populated by server-side Blade for existing items;
+        // only rebuild if the container still shows the empty placeholder.
+        const emptyMsg = preview.querySelector('.media-picker-empty');
+        if (!emptyMsg) return;
+
+        // We don't have thumbnail URLs in JS, so leave the "Current Media
+        // Preview" section below to display them.  Remove the empty placeholder
+        // so the picker area looks correct.
+        preview.innerHTML = '<div class="text-muted fs-8"><i class="bi bi-info-circle me-1"></i> ' + ids.length + ' gambar dipilih. Klik "Pilih dari Library" untuk mengubah.</div>';
     }
 
     // ==========================================

@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
+use App\Models\PortfolioItem;
+use App\Models\Service;
+use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class FrontendController extends Controller
 {
+    private function getSettings(): array
+    {
+        return Setting::allAsArray();
+    }
+
     private function dummyProducts(): array
     {
         return [
@@ -83,13 +91,16 @@ class FrontendController extends Controller
     {
         $categories = array_map(fn($c) => (object) $c, $this->dummyCategories());
         $products = array_map(fn($p) => (object) $p, $this->dummyProducts());
-        return view('frontend.home', compact('categories', 'products'));
+        $banners = Banner::active()->ordered()->get();
+        $settings = $this->getSettings();
+        return view('frontend.home', compact('categories', 'products', 'banners', 'settings'));
     }
 
     public function layanan()
     {
-        $services = array_map(fn($s) => (object) $s, $this->dummyServices());
-        return view('frontend.layanan', compact('services'));
+        $services = Service::active()->ordered()->get();
+        $settings = $this->getSettings();
+        return view('frontend.layanan', compact('services', 'settings'));
     }
 
     public function product(Request $request)
@@ -114,8 +125,9 @@ class FrontendController extends Controller
         }
 
         $products = array_values($products);
+        $settings = $this->getSettings();
 
-        return view('frontend.product', compact('categories', 'products'));
+        return view('frontend.product', compact('categories', 'products', 'settings'));
     }
 
     public function detailProduct($slug)
@@ -128,25 +140,29 @@ class FrontendController extends Controller
         }
 
         $relatedProducts = collect($products)->where('category', $product->category)->where('id', '!=', $product->id)->take(4)->values()->all();
+        $settings = $this->getSettings();
 
-        return view('frontend.detail-product', compact('product', 'relatedProducts'));
+        return view('frontend.detail-product', compact('product', 'relatedProducts', 'settings'));
     }
 
     public function portofolio()
     {
-        $portfolioItems = array_map(fn($p) => (object) $p, $this->dummyPortfolio());
-        return view('frontend.portofolio', compact('portfolioItems'));
+        $portfolioItems = PortfolioItem::active()->ordered()->get();
+        $settings = $this->getSettings();
+        return view('frontend.portofolio', compact('portfolioItems', 'settings'));
     }
 
     public function softwareHouse()
     {
-        $portfolioItems = array_map(fn($p) => (object) $p, $this->dummyPortfolio());
-        $services = (object) collect($this->dummyServices())->firstWhere('slug', 'software-house');
-        return view('frontend.software-house', compact('portfolioItems', 'services'));
+        $portfolioItems = PortfolioItem::active()->ordered()->get();
+        $service = Service::where('name', 'Software House')->first();
+        $settings = $this->getSettings();
+        return view('frontend.software-house', compact('portfolioItems', 'service', 'settings'));
     }
 
     public function contact()
     {
-        return view('frontend.contact');
+        $settings = $this->getSettings();
+        return view('frontend.contact', compact('settings'));
     }
 }

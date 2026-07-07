@@ -49,7 +49,19 @@
 
     <ul class="nav-item">
         <li>
-            <a class="nav-link {{ request()->is('admin/banners*') ? 'active' : '' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('admin.services.*') ? 'active' : '' }}" href="{{ route('admin.services.index') }}">
+                <i class="bi bi-headset"></i>
+                <span>Layanan</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link {{ request()->routeIs('admin.portfolio.*') ? 'active' : '' }}" href="{{ route('admin.portfolio.index') }}">
+                <i class="bi bi-briefcase"></i>
+                <span>Portfolio</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
                 <i class="bi bi-images"></i>
                 <span>Banner / Hero</span>
             </a>
@@ -67,7 +79,7 @@
 
     <ul class="nav-item">
         <li>
-            <a class="nav-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
                 <i class="bi bi-gear"></i>
                 <span>Pengaturan Umum</span>
             </a>

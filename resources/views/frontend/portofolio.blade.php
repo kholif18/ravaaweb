@@ -26,12 +26,14 @@
                                     <span class="tech-tag">{{ $tech }}</span>
                                 @endforeach
                             </div>
-                            <a href="https://wa.me/6282233377661?text={{ urlencode('Halo Ravaa Creative, saya tertarik dengan proyek ' . $item->title . '. Mohon info lebih lanjut.') }}"
+                            @if($settings['whatsapp'] ?? null)
+                            <a href="https://wa.me/{{ $settings['whatsapp'] }}?text={{ urlencode($settings['whatsapp_message'] ?? 'Halo, saya tertarik dengan proyek ' . $item->title . '. Mohon info lebih lanjut.') }}"
                                class="btn btn-whatsapp"
                                target="_blank"
                                rel="noopener">
                                 <i class="fab fa-whatsapp"></i> WhatsApp
                             </a>
+                            @endif
                         </div>
                     </div>
                 @empty

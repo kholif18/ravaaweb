@@ -527,15 +527,6 @@
         padding: 1px 6px; background: var(--accent-light); color: var(--accent);
         border-radius: var(--r-sm); font-size: 0.68rem;
     }
-    .variant-image-preview {
-        width: 60px; height: 60px; border-radius: 8px; overflow: hidden;
-        border: 1px solid var(--glass-border); flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: var(--bg-surface-hover); cursor: pointer; position: relative;
-    }
-    .variant-image-preview img { width: 100%; height: 100%; object-fit: cover; }
-    .variant-image-preview .placeholder-icon { font-size: 20px; color: var(--text-muted); }
-    .variant-image-preview input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
     /* ===== Feature row ===== */
     .feature-row { display: flex; gap: 8px; align-items: end; margin-bottom: 8px; }
@@ -970,21 +961,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             stockInput.disabled = false;
             hint.style.display = 'none';
-        }
-    };
-
-    // ==========================================
-    // VARIANT IMAGE PREVIEW
-    // ==========================================
-    window.previewVariantImage = function(input, index) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var preview = input.closest('.variant-image-preview');
-                preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">' +
-                    '<input type="file" name="variant_images[' + index + ']" accept="image/*" onchange="previewVariantImage(this, ' + index + ')">';
-            };
-            reader.readAsDataURL(input.files[0]);
         }
     };
 

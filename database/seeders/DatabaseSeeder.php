@@ -37,5 +37,17 @@ class DatabaseSeeder extends Seeder
 
         // Seed produk
         $this->call(ProductSeeder::class);
+
+        // Seed pengaturan umum
+        $this->call(SettingSeeder::class);
+
+        // Seed layanan
+        $this->call(ServiceSeeder::class);
+
+        // Seed portfolio
+        $this->call(PortfolioSeeder::class);
+
+        // Seed banner
+        $this->call(BannerSeeder::class);
     }
 }

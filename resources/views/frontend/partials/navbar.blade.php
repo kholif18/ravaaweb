@@ -2,7 +2,7 @@
     <div class="navbar-inner">
         <a href="{{ url('/') }}" class="navbar-logo">
             <i class="fas fa-palette"></i>
-            Ravaa<span>Creative</span>
+            {{ $settings['site_name'] ?? 'Ravaa Creative' }}
         </a>
 
         <ul class="navbar-links">

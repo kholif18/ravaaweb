@@ -17,7 +17,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'thumbnail', 'media'])
+        $query = Product::with(['category', 'thumbnail', 'media', 'variants'])
             ->withCount('variants');
 
         if ($search = $request->input('search')) {
@@ -94,6 +94,7 @@ class ProductController extends Controller
             'variants.*.attributes' => 'nullable|array',
             'variants.*.sku' => 'nullable|string|max:50',
             'variants.*.price' => 'required_with:variants|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
             'variants.*.price_discount' => 'nullable|numeric|min:0',
             'variants.*.discount_percent' => 'nullable|numeric|min:0|max:100',
             'variants.*.discount_start' => 'nullable|date',
@@ -104,7 +105,8 @@ class ProductController extends Controller
             'variants.*.length' => 'nullable|string|max:50',
             'variants.*.width' => 'nullable|string|max:50',
             'variants.*.height' => 'nullable|string|max:50',
-            'variants.*.image' => 'nullable|image|max:2048',
+            'variant_images' => 'nullable|array',
+            'variant_images.*' => 'nullable|integer|exists:media,id',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -132,47 +134,44 @@ class ProductController extends Controller
                         'is_primary' => $mediaId == $request->input('primary_media_id'),
                     ]);
                 }
+            }
 
-                if ($request->filled('primary_media_id')) {
-                    $product->update(['thumbnail_id' => $request->input('primary_media_id')]);
-                } else {
-                    $firstMediaId = $request->input('media_ids')[0];
-                    $product->update(['thumbnail_id' => $firstMediaId]);
-                    $product->media()->updateExistingPivot($firstMediaId, ['is_primary' => true]);
+            // Save primary media / thumbnail independently
+            if ($request->filled('primary_media_id')) {
+                $product->update(['thumbnail_id' => $request->input('primary_media_id')]);
+                // Also ensure it's attached to gallery with is_primary flag
+                if (!$request->filled('media_ids') || !in_array($request->input('primary_media_id'), $request->input('media_ids', []))) {
+                    $maxOrder = $product->media()->max('product_media.sort_order') ?? -1;
+                    $product->media()->attach($request->input('primary_media_id'), [
+                        'sort_order' => $maxOrder + 1,
+                        'is_primary' => true,
+                    ]);
                 }
+            } elseif ($request->filled('media_ids')) {
+                // No primary selected but gallery exists → set first as primary
+                $firstMediaId = $request->input('media_ids')[0];
+                $product->update(['thumbnail_id' => $firstMediaId]);
+                $product->media()->updateExistingPivot($firstMediaId, ['is_primary' => true]);
             }
 
             // Create variants
             if ($request->filled('variants')) {
+                $variantImages = $request->input('variant_images', []);
+
                 foreach ($request->input('variants') as $index => $variantData) {
                     $variantData['product_id'] = $product->id;
 
-                    // Handle image upload
-                    if ($request->hasFile("variants.{$index}.image")) {
-                        $file = $request->file("variants.{$index}.image");
-                        $path = $file->store('products/variants', 'public');
-                        $variantData['image'] = $path;
+                    // If a media ID was picked for this variant, store it
+                    if (!empty($variantImages[$index])) {
+                        $variantData['image'] = $variantImages[$index];
                     }
-                    unset($variantData['image']); // image handled separately via file upload
 
                     $product->variants()->create(collect($variantData)->only([
-                        'attributes', 'sku', 'price', 'price_discount',
+                        'attributes', 'sku', 'price', 'stock', 'price_discount',
                         'discount_percent', 'discount_start', 'discount_end',
                         'is_active', 'is_service', 'weight', 'length', 'width', 'height',
+                        'image',
                     ])->toArray());
-                }
-
-                // Handle variant images separately (file uploads)
-                if ($request->hasFiles('variant_images')) {
-                    $variantImages = $request->file('variant_images');
-                    $variants = $product->variants->toArray();
-                    foreach ($variantImages as $index => $file) {
-                        if (isset($variants[$index])) {
-                            $path = $file->store('products/variants', 'public');
-                            ProductVariant::where('id', $variants[$index]['id'])
-                                ->update(['image' => $path]);
-                        }
-                    }
                 }
             }
 
@@ -185,7 +184,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load(['category', 'media', 'tags', 'variants']);
+        $product->load(['category', 'media', 'tags', 'variants.media', 'thumbnail']);
         $categories = Category::orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
 
@@ -233,6 +232,7 @@ class ProductController extends Controller
             'variants.*.attributes' => 'nullable|array',
             'variants.*.sku' => 'nullable|string|max:50',
             'variants.*.price' => 'required_with:variants|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
             'variants.*.price_discount' => 'nullable|numeric|min:0',
             'variants.*.discount_percent' => 'nullable|numeric|min:0|max:100',
             'variants.*.discount_start' => 'nullable|date',
@@ -261,8 +261,13 @@ class ProductController extends Controller
             $product->tags()->sync($request->input('tag_ids', []));
 
             // Sync media from library
-            $mediaIds = $request->input('media_ids', []);
+            $mediaIds = $request->input('media_ids') ?? [];
             $primaryId = $request->input('primary_media_id');
+
+            // Ensure primary_id is in the gallery list
+            if (!empty($primaryId) && !in_array($primaryId, $mediaIds)) {
+                $mediaIds[] = $primaryId;
+            }
 
             $product->media()->detach();
             foreach ($mediaIds as $index => $mediaId) {
@@ -272,9 +277,10 @@ class ProductController extends Controller
                 ]);
             }
 
-            if (!empty($mediaIds)) {
-                $thumbId = $primaryId ?? $mediaIds[0];
-                $product->update(['thumbnail_id' => $thumbId]);
+            if (!empty($primaryId)) {
+                $product->update(['thumbnail_id' => $primaryId]);
+            } elseif (!empty($mediaIds)) {
+                $product->update(['thumbnail_id' => $mediaIds[0]]);
             } else {
                 $product->update(['thumbnail_id' => null]);
             }
@@ -298,18 +304,18 @@ class ProductController extends Controller
 
             // Handle variants
             if ($request->filled('variants')) {
+                $variantImages = $request->input('variant_images', []);
+
                 foreach ($request->input('variants') as $index => $variantData) {
                     $variantAttributes = collect($variantData)->only([
-                        'attributes', 'sku', 'price', 'price_discount',
+                        'attributes', 'sku', 'price', 'stock', 'price_discount',
                         'discount_percent', 'discount_start', 'discount_end',
                         'is_active', 'is_service', 'weight', 'length', 'width', 'height',
                     ])->toArray();
 
-                    // Handle variant image upload
-                    if ($request->hasFile("variants.{$index}.image")) {
-                        $file = $request->file("variants.{$index}.image");
-                        $path = $file->store('products/variants', 'public');
-                        $variantAttributes['image'] = $path;
+                    // If a media ID was picked for this variant, store it
+                    if (!empty($variantImages[$index])) {
+                        $variantAttributes['image'] = $variantImages[$index];
                     }
 
                     if (!empty($variantData['id'])) {
@@ -335,10 +341,10 @@ class ProductController extends Controller
             $media->deleteFile();
         }
 
-        // Delete variant images
+        // Delete variant media files from disk
         foreach ($product->variants as $variant) {
-            if ($variant->image) {
-                Storage::disk('public')->delete($variant->image);
+            if ($variant->media) {
+                $variant->media->deleteFile();
             }
         }
 
@@ -362,8 +368,8 @@ class ProductController extends Controller
                 $media->deleteFile();
             }
             foreach ($product->variants as $variant) {
-                if ($variant->image) {
-                    Storage::disk('public')->delete($variant->image);
+                if ($variant->media) {
+                    $variant->media->deleteFile();
                 }
             }
             $product->delete();

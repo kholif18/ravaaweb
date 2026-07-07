@@ -156,10 +156,12 @@ $allFeatures = $product->type === 'service'
 
         {{-- CTAs --}}
         <div class="detail-ctas">
-          <a href="https://wa.me/6282233377661?text=Halo%20Ravaa%20Creative%2C%20saya%20tertarik%20dengan%20produk%20{{ urlencode($product->name) }}%20-%20{{ urlencode($product->description) }}"
+          @if($settings['whatsapp'] ?? null)
+          <a href="https://wa.me/{{ $settings['whatsapp'] }}?text={{ urlencode($settings['whatsapp_message'] ?? 'Halo, saya tertarik dengan produk ' . $product->name) }}"
              class="btn btn-whatsapp btn-lg" target="_blank">
             <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
           </a>
+          @endif
           <a href="{{ url('/product') }}" class="btn btn-outline btn-lg">
             <i class="fas fa-arrow-left"></i> Kembali
           </a>

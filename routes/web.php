@@ -61,4 +61,23 @@ Route::prefix('admin')
         Route::put('products/{product}/media-order', [App\Http\Controllers\Admin\ProductController::class, 'updateMediaOrder'])->name('products.media.order');
         Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
 
+        // Settings
+        Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+        Route::put('settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+
+        // Services
+        Route::delete('services/bulk-delete', [App\Http\Controllers\Admin\ServiceController::class, 'bulkDestroy'])->name('services.bulk.destroy');
+        Route::put('services/{service}/status', [App\Http\Controllers\Admin\ServiceController::class, 'updateStatus'])->name('services.status.update');
+        Route::resource('services', App\Http\Controllers\Admin\ServiceController::class)->except(['show']);
+
+        // Portfolio
+        Route::delete('portfolio/bulk-delete', [App\Http\Controllers\Admin\PortfolioItemController::class, 'bulkDestroy'])->name('portfolio.bulk.destroy');
+        Route::put('portfolio/{portfolioItem}/status', [App\Http\Controllers\Admin\PortfolioItemController::class, 'updateStatus'])->name('portfolio.status.update');
+        Route::resource('portfolio', App\Http\Controllers\Admin\PortfolioItemController::class)->except(['show']);
+
+        // Banners
+        Route::delete('banners/bulk-delete', [App\Http\Controllers\Admin\BannerController::class, 'bulkDestroy'])->name('banners.bulk.destroy');
+        Route::put('banners/{banner}/status', [App\Http\Controllers\Admin\BannerController::class, 'updateStatus'])->name('banners.status.update');
+        Route::resource('banners', App\Http\Controllers\Admin\BannerController::class)->except(['show']);
+
     });

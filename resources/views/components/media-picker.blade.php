@@ -3,15 +3,62 @@
     'multiple' => false,
     'type' => 'image',
     'label' => 'Pilih dari Library',
+    'value' => '',
+    'media' => null, // Collection/array of Media objects for pre-rendering thumbnails
 ])
 
-<div class="media-picker-wrapper">
+@php
+    // Normalize value: accept array, Collection, or comma-separated string
+    $mediaValue = '';
+    if ($value) {
+        if (is_array($value)) {
+            $mediaValue = implode(',', $value);
+        } elseif ($value instanceof \Illuminate\Support\Collection) {
+            $mediaValue = $value->implode(',');
+        } else {
+            $mediaValue = (string) $value;
+        }
+    }
+
+    // Normalize media objects for pre-rendering — always a Collection
+    $mediaObjects = collect();
+    if ($media) {
+        if ($media instanceof \Illuminate\Support\Collection) {
+            $mediaObjects = $media->values();
+        } elseif (is_array($media)) {
+            $mediaObjects = collect($media);
+        }
+    }
+@endphp
+
+<div class="media-picker-wrapper" data-multiple="{{ $multiple ? 'true' : 'false' }}" data-type="{{ $type }}">
     <!-- Selected media preview -->
     <div class="media-picker-selected" id="{{ $name }}-selected">
-        <div class="media-picker-empty">
-            <i class="bi bi-image"></i>
-            <span>Belum ada media dipilih</span>
-        </div>
+        @if($mediaObjects->count() > 0)
+            @foreach($mediaObjects as $item)
+                <div class="media-picker-thumb">
+                    @if($item->isImage())
+                        <img src="{{ $item->url }}" alt="{{ $item->name }}">
+                    @else
+                        <div class="media-thumb-icon">
+                            @if(str_starts_with($item->mime_type ?? '', 'video/'))
+                                <i class="bi bi-play-circle"></i>
+                            @elseif(str_starts_with($item->mime_type ?? '', 'audio/'))
+                                <i class="bi bi-music-note"></i>
+                            @else
+                                <i class="bi bi-file-earmark"></i>
+                            @endif
+                        </div>
+                    @endif
+                    <button type="button" class="remove-media" onclick="removePickerItem('{{ $name }}', '{{ $item->id }}')"><i class="bi bi-x"></i></button>
+                </div>
+            @endforeach
+        @else
+            <div class="media-picker-empty">
+                <i class="bi bi-image"></i>
+                <span>Belum ada media dipilih</span>
+            </div>
+        @endif
     </div>
 
     <!-- Open picker button -->
@@ -19,7 +66,15 @@
         <i class="bi bi-images"></i> {{ $label }}
     </button>
 
-    <input type="hidden" name="{{ $name }}" id="{{ $name }}-input" value="">
+    <input type="hidden" name="{{ $name }}" id="{{ $name }}-input" value="{{ $mediaValue }}">
+    <!-- Dynamic array inputs for multi-select will be created by JS -->
+    @if($multiple && $mediaValue)
+        @foreach(explode(',', $mediaValue) as $mediaId)
+            @if(trim($mediaId) !== '')
+                <input type="hidden" name="{{ $name }}[]" value="{{ trim($mediaId) }}" class="dynamic-media-id">
+            @endif
+        @endforeach
+    @endif
     @if($multiple)
         <input type="hidden" name="{{ $name }}_order" id="{{ $name }}-order-input" value="">
     @endif
@@ -246,6 +301,70 @@ window.registerMediaPickerTarget = function (fieldName) {
     }
 };
 
+/**
+ * Initialize media picker state from pre-rendered DOM thumbnails.
+ * Called on page load for edit pages that already have selected media.
+ */
+window.initMediaPickerFromDOM = function (fieldName, multiple, type) {
+    if (mediaPickerState[fieldName]) return; // Already initialized
+
+    const preview = document.getElementById(fieldName + '-selected');
+    if (!preview) return;
+
+    const thumbs = preview.querySelectorAll('.media-picker-thumb');
+    if (thumbs.length === 0) return;
+
+    mediaPickerState[fieldName] = {
+        multiple: multiple,
+        type: type || '',
+        selected: [],
+        selectedItems: {},
+        currentSearch: '',
+    };
+
+    thumbs.forEach(thumb => {
+        const btn = thumb.querySelector('.remove-media');
+        if (btn) {
+            const onclick = btn.getAttribute('onclick');
+            const match = onclick ? onclick.match(/'([^']+)'\)$/) : null;
+            if (match && match[1]) {
+                const id = match[1];
+                mediaPickerState[fieldName].selected.push(id);
+
+                // Clone thumb without the remove button for stored preview
+                const thumbClone = thumb.cloneNode(true);
+                const btnClone = thumbClone.querySelector('.remove-media');
+                if (btnClone) btnClone.remove();
+                mediaPickerState[fieldName].selectedItems[id] = thumbClone.innerHTML;
+            }
+        }
+    });
+
+    // Sync hidden input
+    const input = document.getElementById(fieldName + '-input');
+    if (input) {
+        input.value = mediaPickerState[fieldName].selected.join(',');
+    }
+};
+
+// Auto-initialize on DOM ready
+document.addEventListener('DOMContentLoaded', function () {
+    // Find all media picker wrappers and init from DOM
+    document.querySelectorAll('.media-picker-wrapper').forEach(wrapper => {
+        const input = wrapper.querySelector('input[type="hidden"][id$="-input"]');
+        if (!input) return;
+        const fieldName = input.id.replace('-input', '');
+        const preview = document.getElementById(fieldName + '-selected');
+        if (!preview) return;
+        const hasThumbs = preview.querySelectorAll('.media-picker-thumb').length > 0;
+        if (hasThumbs && !mediaPickerState[fieldName]) {
+            const isMultiple = wrapper.dataset.multiple === 'true';
+            const pickerType = wrapper.dataset.type || '';
+            initMediaPickerFromDOM(fieldName, isMultiple, pickerType);
+        }
+    });
+});
+
 function openMediaPicker(fieldName, multiple, type) {
     window.currentPickerFieldName = fieldName;
     
@@ -258,10 +377,31 @@ function openMediaPicker(fieldName, multiple, type) {
             currentSearch: '',
         };
 
-        // Load existing values from hidden input
-        const input = document.getElementById(fieldName + '-input');
-        if (input && input.value) {
-            mediaPickerState[fieldName].selected = input.value.split(',').filter(Boolean);
+        // Load existing values from hidden inputs
+        const wrapper = document.getElementById(fieldName + '-input')
+            ? document.getElementById(fieldName + '-input').closest('.media-picker-wrapper')
+            : null;
+
+        let existingIds = [];
+
+        // Prefer dynamic array inputs (new format) if present
+        if (wrapper) {
+            const arrInputs = wrapper.querySelectorAll('input.dynamic-media-id');
+            if (arrInputs.length > 0) {
+                arrInputs.forEach(inp => { if (inp.value) existingIds.push(inp.value); });
+            }
+        }
+
+        // Fallback to legacy single comma-separated input
+        if (existingIds.length === 0) {
+            const input = document.getElementById(fieldName + '-input');
+            if (input && input.value) {
+                existingIds = input.value.split(',').filter(Boolean);
+            }
+        }
+
+        if (existingIds.length > 0) {
+            mediaPickerState[fieldName].selected = existingIds;
             
             // Scrape existing HTML for these items from the DOM
             const thumbs = document.querySelectorAll(`#${fieldName}-selected .media-picker-thumb`);
@@ -529,8 +669,27 @@ function confirmMediaPicker(overrideFieldName) {
     const state = mediaPickerState[fieldName];
     const input = document.getElementById(fieldName + '-input');
     const selectedContainer = document.getElementById(fieldName + '-selected');
+    const wrapper = input ? input.closest('.media-picker-wrapper') : null;
 
-    if (input) {
+    // Determine if this picker is in multiple mode
+    const isMultiple = state.multiple;
+
+    if (isMultiple && wrapper) {
+        // Remove existing dynamic array inputs
+        wrapper.querySelectorAll('input.dynamic-media-id').forEach(el => el.remove());
+        // Create individual hidden inputs for each selected ID so Laravel receives an array
+        state.selected.forEach(id => {
+            const arrInput = document.createElement('input');
+            arrInput.type = 'hidden';
+            arrInput.name = fieldName + '[]';
+            arrInput.value = id;
+            arrInput.className = 'dynamic-media-id';
+            wrapper.appendChild(arrInput);
+        });
+        // Keep the original input empty (used only for state restoration)
+        input.value = state.selected.join(',');
+    } else if (input) {
+        // Single mode: keep original behavior
         input.value = state.selected.join(',');
     }
 

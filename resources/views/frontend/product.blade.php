@@ -52,7 +52,9 @@
                             <p>{{ $product->description }}</p>
                             <div class="prod-card-actions">
                                 <a href="/product/{{ $product->slug }}" class="btn btn-primary btn-sm">Detail</a>
-                                <a href="https://wa.me/6282233377661?text={{ urlencode('Halo, saya tertarik dengan ' . $product->name) }}" class="btn btn-whatsapp btn-sm" target="_blank">WhatsApp</a>
+                                @if($settings['whatsapp'] ?? null)
+                                <a href="https://wa.me/{{ $settings['whatsapp'] }}?text={{ urlencode($settings['whatsapp_message'] ?? 'Halo, saya tertarik dengan ' . $product->name) }}" class="btn btn-whatsapp btn-sm" target="_blank">WhatsApp</a>
+                                @endif
                             </div>
                         </div>
                     </div>

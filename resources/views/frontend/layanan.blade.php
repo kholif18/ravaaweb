@@ -27,11 +27,13 @@
                                 @endforeach
                             </ul>
                         @endif
-                        <a href="https://wa.me/6282233377661?text=Halo%20Ravaa%20Creative%2C%20saya%20tertarik%20dengan%20layanan%20{{ urlencode($service->name) }}..."
+                        @if($settings['whatsapp'] ?? null)
+                        <a href="https://wa.me/{{ $settings['whatsapp'] }}?text={{ urlencode($settings['whatsapp_message'] ?? 'Halo, saya tertarik dengan layanan ' . $service->name) }}"
                            class="btn btn-whatsapp btn-sm"
                            target="_blank">
                             <i class="fab fa-whatsapp"></i> Konsultasi Sekarang
                         </a>
+                        @endif
                     </div>
                 @empty
                     <p>Belum ada layanan tersedia.</p>
@@ -46,11 +48,13 @@
                 <span class="section-label">Butuh Bantuan?</span>
                 <h2 class="section-title" style="max-width:600px;margin:0 auto 12px;">Hubungi Tim Kami</h2>
                 <p style="color:var(--text-secondary);margin:0 auto 28px;max-width:480px;">Dapatkan konsultasi gratis mengenai kebutuhan project Anda.</p>
-                <a href="https://wa.me/6282233377661?text=Halo%20Ravaa%20Creative%2C%20saya%20ingin%20konsultasi"
+                @if($settings['whatsapp'] ?? null)
+                <a href="https://wa.me/{{ $settings['whatsapp'] }}?text={{ urlencode($settings['whatsapp_message'] ?? 'Halo, saya ingin konsultasi') }}"
                    class="btn btn-whatsapp btn-lg"
                    target="_blank">
                     <i class="fab fa-whatsapp"></i> Hubungi Kami
                 </a>
+                @endif
             </div>
         </div>
     </section>

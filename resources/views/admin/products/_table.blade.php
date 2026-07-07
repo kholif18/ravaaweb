@@ -50,7 +50,20 @@
                         </span>
                     </td>
                     <td>
-                        @if($product->price_discount)
+                        @if($product->variants_count > 0 && $product->variants->count() > 0)
+                            @php
+                                $prices = $product->variants->map(fn($v) => (float) ($v->price_discount > 0 ? $v->price_discount : $v->price));
+                                $minPrice = $prices->min();
+                                $maxPrice = $prices->max();
+                            @endphp
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">
+                                @if($minPrice == $maxPrice)
+                                    Rp {{ number_format($minPrice, 0, ',', '.') }}
+                                @else
+                                    Rp {{ number_format($minPrice, 0, ',', '.') }} - {{ number_format($maxPrice, 0, ',', '.') }}
+                                @endif
+                            </div>
+                        @elseif($product->price_discount)
                             <div style="font-size: 0.72rem; color: var(--text-muted); text-decoration: line-through;">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                             <div style="font-size: 0.8rem; font-weight: 600; color: var(--danger, #ef4444);">Rp {{ number_format($product->price_discount, 0, ',', '.') }}</div>
                         @else

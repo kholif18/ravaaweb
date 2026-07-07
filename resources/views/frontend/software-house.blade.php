@@ -17,11 +17,12 @@
             <p class="section-subtitle">Kami menyediakan layanan pengembangan software end-to-end yang disesuaikan dengan kebutuhan bisnis Anda.</p>
 
             <div class="service-grid">
+                @foreach($service->features ?? [] as $feature)
                 <div class="sh-card">
                     <div class="svc-card-icon">
-                        <i class="fas fa-laptop-code"></i>
+                        <i class="{{ $service->icon ?? 'fas fa-code' }}"></i>
                     </div>
-                    <h3>Aplikasi Web</h3>
+                    <h3>{{ $feature }}</h3>
                     <ul class="svc-features">
                         <li>Analisis Kebutuhan</li>
                         <li>UI/UX Design</li>
@@ -30,56 +31,9 @@
                         <li>Deployment</li>
                         <li>Maintenance</li>
                     </ul>
-                    <a href="https://wa.me/6282233377661?text=Halo%20saya%20tertarik%20dengan%20layanan%20Aplikasi%20Web" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
+                    <a href="https://wa.me/{{ $settings['whatsapp'] ?? '' }}?text={{ urlencode('Halo, saya tertarik dengan layanan ' . $feature) }}" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
                 </div>
-
-                <div class="sh-card">
-                    <div class="svc-card-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Mobile App</h3>
-                    <ul class="svc-features">
-                        <li>Analisis Kebutuhan</li>
-                        <li>UI/UX Design</li>
-                        <li>Development</li>
-                        <li>Testing</li>
-                        <li>Deployment</li>
-                        <li>Maintenance</li>
-                    </ul>
-                    <a href="https://wa.me/6282233377661?text=Halo%20saya%20tertarik%20dengan%20layanan%20Mobile%20App" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
-                </div>
-
-                <div class="sh-card">
-                    <div class="svc-card-icon">
-                        <i class="fas fa-cloud"></i>
-                    </div>
-                    <h3>API &amp; Integration</h3>
-                    <ul class="svc-features">
-                        <li>Analisis Kebutuhan</li>
-                        <li>UI/UX Design</li>
-                        <li>Development</li>
-                        <li>Testing</li>
-                        <li>Deployment</li>
-                        <li>Maintenance</li>
-                    </ul>
-                    <a href="https://wa.me/6282233377661?text=Halo%20saya%20tertarik%20dengan%20layanan%20API%20%26%20Integration" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
-                </div>
-
-                <div class="sh-card">
-                    <div class="svc-card-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>IoT &amp; Embedded</h3>
-                    <ul class="svc-features">
-                        <li>Analisis Kebutuhan</li>
-                        <li>UI/UX Design</li>
-                        <li>Development</li>
-                        <li>Testing</li>
-                        <li>Deployment</li>
-                        <li>Maintenance</li>
-                    </ul>
-                    <a href="https://wa.me/6282233377661?text=Halo%20saya%20tertarik%20dengan%20layanan%20IoT%20%26%20Embedded" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>

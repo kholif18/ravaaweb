@@ -14,6 +14,7 @@ return new class extends Migration
             $table->text('attributes')->nullable(); // JSON: {"Ukuran":"S","Warna":"Hijau"}
             $table->string('sku')->nullable();
             $table->decimal('price', 12, 2)->default(0);
+            $table->integer('stock')->default(0);
             $table->decimal('price_discount', 12, 2)->nullable();
             $table->decimal('discount_percent', 5, 2)->nullable();
             $table->datetime('discount_start')->nullable();
