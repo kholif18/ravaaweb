@@ -54,12 +54,16 @@
 1. **Backend** ✅
    - `ProductController` — full CRUD + bulk delete + media order
    - Routes: resource + bulk-delete + media-order
-2. **Views** 🔄
+2. **Views** ✅
    - `admin/products/index.blade.php` — compact table ✅
    - `admin/products/_table.blade.php` — compact layout ✅
    - `admin/products/create.blade.php` — form with media picker ✅
    - `admin/products/edit.blade.php` — form with media picker ✅
-   - **Belum**: variant management dynamic, product gallery reorder
+   - **Belum**: variant management UI (dynamic add/remove), product gallery reorder UI
+3. **Bugfix & UI Enhancements** ✅
+   - Edit modal `modal.show()` ditambahkan pada Banners, Portfolio, Services, Categories, Tags.
+   - Icon picker pada Services, Categories, Tags diganti menjadi `<select>` dengan preview ikon.
+   - Field `image_media_id` di Services dihapus (tidak dipakai di frontend).
 
 ## Fase 6: Integrasi Backend ke Frontend ⏳ BELUM
 
@@ -113,3 +117,13 @@
 ---
 
 *Terakhir diperbarui: 29 Juni 2026*
+
+## Prioritas Selanjutnya (Ringkasan)
+
+- **Variant UI**: Implementasi dinamis untuk menambah/​menghapus varian pada form produk.
+- **Gallery reorder UI**: Drag‑and‑drop atau tombol up/down untuk mengatur urutan gambar produk.
+- **Integrasi Backend → Frontend**: Ganti data statis di `FrontendController` dengan query Eloquent, buat route `/catalog` & `/product/{slug}`, tampilkan gambar utama, varian, badge.
+- **Responsive UI/UX**: Media query breakpoints, lazy‑load, pagination UI glass‑style, filter pill, CTA WhatsApp.
+- **Pengujian & CI**: Unit & feature test untuk model & route, browser test via Dusk/Cypress, CI pipeline GitHub Actions.
+- **Halaman Admin Tambahan**: CRUD Banner, Home Builder, Settings, Users, Role & Permission, Reports, System Logs.
+- **Optimasi & Deployment**: Asset build (minify, versioning), cache header, query caching, SEO (meta tags, sitemap), Docker production (config & route cache), monitoring (logs, alerts).

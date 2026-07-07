@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class Service extends Model
@@ -15,7 +14,6 @@ class Service extends Model
         'name',
         'slug',
         'icon',
-        'image_media_id',
         'description',
         'features',
         'order',
@@ -30,11 +28,6 @@ class Service extends Model
         'features' => 'array',
         'is_featured' => 'boolean',
     ];
-
-    public function imageMedia(): BelongsTo
-    {
-        return $this->belongsTo(Media::class, 'image_media_id');
-    }
 
     protected static function booted(): void
     {

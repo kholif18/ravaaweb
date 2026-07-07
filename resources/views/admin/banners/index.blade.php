@@ -233,6 +233,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const form = document.getElementById('kt_modal_edit_banner_form');
             form.action = form.dataset.updateUrl.replace(':id', b.id);
+            // Tampilkan modal edit
+            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_banner'));
+            modal.show();
         }
     };
 

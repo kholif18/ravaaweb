@@ -346,6 +346,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const form = document.getElementById('kt_modal_edit_portfolio_form');
             form.action = form.dataset.updateUrl.replace(':id', p.id);
+            // Tampilkan modal edit
+            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_portfolio'));
+            modal.show();
         }
     };
 

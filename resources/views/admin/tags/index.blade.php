@@ -357,6 +357,8 @@ async function editTag(id) {
 
             const form = document.getElementById('kt_modal_edit_tag_form');
             form.action = form.dataset.updateUrl.replace(':id', tag.id);
+            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_tag'));
+            modal.show();
         } else {
             Ravaa.toast(data.message || 'Gagal memuat data tag', 'error');
         }

@@ -567,6 +567,8 @@ async function editCategory(id) {
             // Set form action
             const form = document.getElementById('kt_modal_edit_category_form');
             form.action = form.dataset.updateUrl.replace(':id', category.id);
+            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_category'));
+            modal.show();
         } else {
             Ravaa.toast(data.message || 'Gagal memuat data kategori', 'error');
         }

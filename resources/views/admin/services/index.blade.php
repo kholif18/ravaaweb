@@ -79,13 +79,62 @@
                             <input type="text" class="form-control form-control-sm" name="name" placeholder="Desain Grafis" required>
                         </div>
                         <div class="col-md-4 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Icon (FA)</label>
-                            <input type="text" class="form-control form-control-sm" name="icon" placeholder="fa-solid fa-paint-brush">
+                            <label class="fs-7 fw-semibold mb-1">Icon</label>
+                            <select class="form-select form-select-sm" name="icon" id="add_service_icon">
+                                <option value="">Pilih Icon...</option>
+                                <optgroup label="Desain &amp; Percetakan">
+                                    <option value="fas fa-paint-brush">🎨 Paint Brush</option>
+                                    <option value="fas fa-palette">🎨 Palette</option>
+                                    <option value="fas fa-print">🖨️ Print</option>
+                                    <option value="fas fa-tshirt">👕 T-Shirt</option>
+                                    <option value="fas fa-pen-fancy">🖊️ Pen</option>
+                                    <option value="fas fa-pencil-ruler">📐 Pencil Ruler</option>
+                                    <option value="fas fa-camera">📷 Camera</option>
+                                    <option value="fas fa-video">🎥 Video</option>
+                                    <option value="fas fa-film">🎬 Film</option>
+                                    <option value="fas fa-music">🎵 Music</option>
+                                    <option value="fas fa-magic">✨ Magic</option>
+                                </optgroup>
+                                <optgroup label="Teknologi">
+                                    <option value="fas fa-code">💻 Code</option>
+                                    <option value="fas fa-laptop-code">🖥️ Laptop Code</option>
+                                    <option value="fas fa-desktop">🖥️ Desktop</option>
+                                    <option value="fas fa-mobile-alt">📱 Mobile</option>
+                                    <option value="fas fa-tablet-alt">📱 Tablet</option>
+                                    <option value="fas fa-database">🗄️ Database</option>
+                                    <option value="fas fa-cloud">☁️ Cloud</option>
+                                    <option value="fas fa-server">🖧 Server</option>
+                                    <option value="fas fa-shield-alt">🛡️ Shield</option>
+                                    <option value="fas fa-robot">🤖 Robot</option>
+                                    <option value="fas fa-cogs">⚙️ Cogs</option>
+                                </optgroup>
+                                <optgroup label="Bisnis &amp; Pemasaran">
+                                    <option value="fas fa-bullhorn">📢 Bullhorn</option>
+                                    <option value="fas fa-chart-line">📈 Chart Line</option>
+                                    <option value="fas fa-chart-bar">📊 Chart Bar</option>
+                                    <option value="fas fa-globe">🌐 Globe</option>
+                                    <option value="fas fa-shopping-cart">🛒 Shopping Cart</option>
+                                    <option value="fas fa-tags">🏷️ Tags</option>
+                                    <option value="fas fa-rocket">🚀 Rocket</option>
+                                    <option value="fas fa-star">⭐ Star</option>
+                                    <option value="fas fa-gem">💎 Gem</option>
+                                </optgroup>
+                                <optgroup label="Lainnya">
+                                    <option value="fas fa-wrench">🔧 Wrench</option>
+                                    <option value="fas fa-tools">🛠️ Tools</option>
+                                    <option value="fas fa-lightbulb">💡 Lightbulb</option>
+                                    <option value="fas fa-bolt">⚡ Bolt</option>
+                                    <option value="fas fa-heart">❤️ Heart</option>
+                                    <option value="fas fa-handshake">🤝 Handshake</option>
+                                    <option value="fas fa-phone-alt">📞 Phone</option>
+                                    <option value="fas fa-envelope">📧 Envelope</option>
+                                    <option value="fas fa-comments">💬 Comments</option>
+                                </optgroup>
+                            </select>
+                            <div class="form-text fs-8 mt-1">
+                                Preview: <i class="fas fa-paint-brush" id="add_icon_preview"></i>
+                            </div>
                         </div>
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-1">Gambar Layanan</label>
-                        <x-media-picker name="image_media_id" type="image" label="Pilih Gambar" />
                     </div>
                     <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-1">Fitur (satu per baris)</label>
@@ -154,14 +203,61 @@
                             <input type="text" class="form-control form-control-sm" name="name" id="edit_service_name" required>
                         </div>
                         <div class="col-md-4 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Icon (FA)</label>
-                            <input type="text" class="form-control form-control-sm" name="icon" id="edit_service_icon">
-                        </div>
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-1">Gambar Layanan</label>
-                        <div id="edit_service_image_media_picker">
-                            <x-media-picker name="image_media_id" type="image" label="Pilih Gambar" />
+                            <label class="fs-7 fw-semibold mb-1">Icon</label>
+                            <select class="form-select form-select-sm" name="icon" id="edit_service_icon">
+                                <option value="">Pilih Icon...</option>
+                                <optgroup label="Desain &amp; Percetakan">
+                                    <option value="fas fa-paint-brush">🎨 Paint Brush</option>
+                                    <option value="fas fa-palette">🎨 Palette</option>
+                                    <option value="fas fa-print">🖨️ Print</option>
+                                    <option value="fas fa-tshirt">👕 T-Shirt</option>
+                                    <option value="fas fa-pen-fancy">🖊️ Pen</option>
+                                    <option value="fas fa-pencil-ruler">📐 Pencil Ruler</option>
+                                    <option value="fas fa-camera">📷 Camera</option>
+                                    <option value="fas fa-video">🎥 Video</option>
+                                    <option value="fas fa-film">🎬 Film</option>
+                                    <option value="fas fa-music">🎵 Music</option>
+                                    <option value="fas fa-magic">✨ Magic</option>
+                                </optgroup>
+                                <optgroup label="Teknologi">
+                                    <option value="fas fa-code">💻 Code</option>
+                                    <option value="fas fa-laptop-code">🖥️ Laptop Code</option>
+                                    <option value="fas fa-desktop">🖥️ Desktop</option>
+                                    <option value="fas fa-mobile-alt">📱 Mobile</option>
+                                    <option value="fas fa-tablet-alt">📱 Tablet</option>
+                                    <option value="fas fa-database">🗄️ Database</option>
+                                    <option value="fas fa-cloud">☁️ Cloud</option>
+                                    <option value="fas fa-server">🖧 Server</option>
+                                    <option value="fas fa-shield-alt">🛡️ Shield</option>
+                                    <option value="fas fa-robot">🤖 Robot</option>
+                                    <option value="fas fa-cogs">⚙️ Cogs</option>
+                                </optgroup>
+                                <optgroup label="Bisnis &amp; Pemasaran">
+                                    <option value="fas fa-bullhorn">📢 Bullhorn</option>
+                                    <option value="fas fa-chart-line">📈 Chart Line</option>
+                                    <option value="fas fa-chart-bar">📊 Chart Bar</option>
+                                    <option value="fas fa-globe">🌐 Globe</option>
+                                    <option value="fas fa-shopping-cart">🛒 Shopping Cart</option>
+                                    <option value="fas fa-tags">🏷️ Tags</option>
+                                    <option value="fas fa-rocket">🚀 Rocket</option>
+                                    <option value="fas fa-star">⭐ Star</option>
+                                    <option value="fas fa-gem">💎 Gem</option>
+                                </optgroup>
+                                <optgroup label="Lainnya">
+                                    <option value="fas fa-wrench">🔧 Wrench</option>
+                                    <option value="fas fa-tools">🛠️ Tools</option>
+                                    <option value="fas fa-lightbulb">💡 Lightbulb</option>
+                                    <option value="fas fa-bolt">⚡ Bolt</option>
+                                    <option value="fas fa-heart">❤️ Heart</option>
+                                    <option value="fas fa-handshake">🤝 Handshake</option>
+                                    <option value="fas fa-phone-alt">📞 Phone</option>
+                                    <option value="fas fa-envelope">📧 Envelope</option>
+                                    <option value="fas fa-comments">💬 Comments</option>
+                                </optgroup>
+                            </select>
+                            <div class="form-text fs-8 mt-1">
+                                Preview: <i class="fas fa-paint-brush" id="edit_icon_preview"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="fv-row mb-3">
@@ -243,6 +339,23 @@ document.addEventListener('DOMContentLoaded', function() {
         Ravaa.toast('{{ session('error') }}', 'error');
     @endif
 
+    // Helper: update icon preview element
+    function updateIconPreview(elementId, iconClass) {
+        const preview = document.getElementById(elementId);
+        if (preview) {
+            // Remove all existing classes and add the new icon class
+            preview.className = iconClass || 'fas fa-paint-brush';
+        }
+    }
+
+    // Icon preview on select change
+    document.getElementById('add_service_icon')?.addEventListener('change', function() {
+        updateIconPreview('add_icon_preview', this.value);
+    });
+    document.getElementById('edit_service_icon')?.addEventListener('change', function() {
+        updateIconPreview('edit_icon_preview', this.value);
+    });
+
     // Helper: convert features array to newline-separated text
     function featuresToText(features) {
         if (!features || !Array.isArray(features)) return '';
@@ -303,20 +416,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const s = data.service;
             document.getElementById('edit_service_id').value = s.id;
             document.getElementById('edit_service_name').value = s.name;
-            document.getElementById('edit_service_description').value = s.description || '';
+            document.getElementById('edit_service_icon').value = s.icon || '';
             document.getElementById('edit_service_features').value = featuresToText(s.features);
             document.getElementById('edit_service_order').value = s.order;
             document.getElementById('edit_service_status').value = s.status;
             document.getElementById('edit_service_featured').checked = s.is_featured;
             document.getElementById('edit_service_meta_title').value = s.meta_title || '';
             document.getElementById('edit_service_meta_description').value = s.meta_description || '';
-            // Pre-set media picker for image_media_id
-            if (s.image_media_id) {
-                const pickerInput = document.querySelector('#edit_service_image_media_picker input[name="image_media_id"]');
-                if (pickerInput) pickerInput.value = s.image_media_id;
-            }
+            // Update icon preview
+            updateIconPreview('edit_icon_preview', s.icon || '');
             const form = document.getElementById('kt_modal_edit_service_form');
             form.action = form.dataset.updateUrl.replace(':id', s.id);
+            // Tampilkan modal edit
+            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_service'));
+            modal.show();
         }
     };
 
