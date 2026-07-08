@@ -1,5 +1,6 @@
 @php
     $perPage = request('per_page', 15);
+    $tab = $tab ?? request('tab', 'publish');
 @endphp
 
 <div class="table-responsive">
@@ -8,15 +9,20 @@
             <tr>
                 <th style="width: 32px;">
                     <div class="form-check" style="margin: 0;">
-                        <input class="form-check-input" type="checkbox" id="select-all-products">
+                        <input class="form-check-input" type="checkbox" id="select-all">
                     </div>
                 </th>
                 <th style="min-width: 200px;">Produk</th>
                 <th style="min-width: 100px;">Kategori</th>
+                @if($tab !== 'trash')
                 <th style="min-width: 100px;">Harga</th>
                 <th style="width: 60px;">Stok</th>
+                @endif
+                @if($tab === 'trash')
+                <th style="min-width: 140px;">Dihapus</th>
+                @endif
                 <th style="width: 70px;">Status</th>
-                <th style="width: 70px;" class="text-center">Aksi</th>
+                <th style="width: 100px;" class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -24,7 +30,7 @@
                 <tr>
                     <td>
                         <div class="form-check" style="margin: 0;">
-                            <input class="form-check-input" type="checkbox" value="{{ $product->id }}">
+                            <input class="form-check-input select-item" type="checkbox" value="{{ $product->id }}">
                         </div>
                     </td>
                     <td>
@@ -35,9 +41,15 @@
                                 <div class="product-thumb-placeholder"><i class="bi bi-image"></i></div>
                             @endif
                             <div>
-                                <a href="{{ route('admin.products.edit', $product) }}" class="text-hover-primary fw-semibold" style="color: var(--text-primary); text-decoration: none; font-size: 0.82rem;">
-                                    {{ Str::limit($product->name, 40) }}
-                                </a>
+                                @if($tab === 'trash')
+                                    <span style="color: var(--text-primary); font-size: 0.82rem; font-weight: 500;">
+                                        {{ Str::limit($product->name, 40) }}
+                                    </span>
+                                @else
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="text-hover-primary fw-semibold" style="color: var(--text-primary); text-decoration: none; font-size: 0.82rem;">
+                                        {{ Str::limit($product->name, 40) }}
+                                    </a>
+                                @endif
                                 @if($product->sku)
                                     <div style="font-size: 0.7rem; color: var(--text-muted);">SKU: {{ $product->sku }}</div>
                                 @endif
@@ -49,6 +61,7 @@
                             {{ $product->category->name ?? '-' }}
                         </span>
                     </td>
+                    @if($tab !== 'trash')
                     <td>
                         @if($product->variants_count > 0 && $product->variants->count() > 0)
                             @php
@@ -77,8 +90,16 @@
                             <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Habis</span>
                         @endif
                     </td>
+                    @endif
+                    @if($tab === 'trash')
+                    <td style="font-size: 0.78rem; color: var(--text-muted);">
+                        {{ $product->deleted_at ? $product->deleted_at->diffForHumans() : '-' }}
+                    </td>
+                    @endif
                     <td>
-                        @if($product->status === 'active')
+                        @if($tab === 'trash')
+                            <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Sampah</span>
+                        @elseif($product->status === 'active')
                             <span class="badge" style="background: rgba(34,197,94,0.1); color: #15803d; font-size: 0.7rem;">Aktif</span>
                         @else
                             <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Nonaktif</span>
@@ -86,25 +107,48 @@
                     </td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-icon btn-sm" style="width: 28px; height: 28px; border-radius: 6px; background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent);" title="Edit">
-                                <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
-                            </a>
-                            <button type="button" class="btn btn-icon btn-sm btn-delete-product"
-                                    data-id="{{ $product->id }}"
-                                    data-name="{{ $product->name }}"
-                                    title="Hapus"
-                                    style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
-                                <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
-                            </button>
+                            @if($tab === 'trash')
+                                <button type="button" class="btn btn-icon btn-sm btn-restore-product"
+                                        data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}"
+                                        title="Pulihkan"
+                                        style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); color: #15803d;">
+                                    <i class="bi bi-arrow-counterclockwise" style="font-size: 0.75rem;"></i>
+                                </button>
+                                <button type="button" class="btn btn-icon btn-sm btn-force-delete-product"
+                                        data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}"
+                                        title="Hapus Permanen"
+                                        style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
+                                    <i class="bi bi-trash3" style="font-size: 0.75rem;"></i>
+                                </button>
+                            @else
+                                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-icon btn-sm" style="width: 28px; height: 28px; border-radius: 6px; background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent);" title="Edit">
+                                    <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
+                                </a>
+                                <button type="button" class="btn btn-icon btn-sm btn-delete-product"
+                                        data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}"
+                                        title="Hapus"
+                                        style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
+                                    <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                                </button>
+                            @endif
                         </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="text-center" style="padding: 40px 0;">
+                    <td colspan="{{ $tab === 'trash' ? '6' : '7' }}" class="text-center" style="padding: 40px 0;">
                         <div style="color: var(--text-muted);">
-                            <i class="bi bi-inbox" style="font-size: 1.5rem; display: block; margin-bottom: 8px;"></i>
-                            <span style="font-size: 0.82rem;">Tidak ada produk ditemukan</span>
+                            <i class="bi {{ $tab === 'trash' ? 'bi-trash' : 'bi-inbox' }}" style="font-size: 1.5rem; display: block; margin-bottom: 8px;"></i>
+                            <span style="font-size: 0.82rem;">
+                                @if($tab === 'trash')
+                                    Tidak ada produk di sampah
+                                @else
+                                    Tidak ada produk ditemukan
+                                @endif
+                            </span>
                         </div>
                     </td>
                 </tr>
@@ -113,63 +157,23 @@
     </table>
 </div>
 
-<!-- Pagination -->
-<div class="pagination-toolbar">
+<!-- Pagination & Bulk Delete -->
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
+    <div>
+        @if($tab === 'trash')
+            <button type="button" class="btn btn-sm btn-success" id="bulk-restore-btn" style="display: none;">
+                <i class="bi bi-arrow-counterclockwise"></i> Pulihkan
+            </button>
+            <button type="button" class="btn btn-sm btn-danger" id="bulk-force-delete-btn" style="display: none;">
+                <i class="bi bi-trash3"></i> Hapus Permanen
+            </button>
+        @else
+            <button type="button" class="btn btn-sm btn-light-danger" id="bulk-delete-btn" style="display: none;">
+                <i class="bi bi-trash"></i> Hapus
+            </button>
+        @endif
+    </div>
     <x-pagination :paginator="$products" label="produk" :perPage="$perPage" />
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Select all checkbox
-    const selectAll = document.getElementById('select-all-products');
-    const checkboxes = document.querySelectorAll('#kt_products_table tbody .form-check-input');
 
-    if (selectAll) {
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(cb => {
-                cb.checked = selectAll.checked;
-                const row = cb.closest('tr');
-                if (selectAll.checked) {
-                    row.classList.add('selected');
-                } else {
-                    row.classList.remove('selected');
-                }
-            });
-            document.dispatchEvent(new CustomEvent('productSelectionChanged'));
-        });
-    }
-
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            const row = this.closest('tr');
-            if (this.checked) {
-                row.classList.add('selected');
-            } else {
-                row.classList.remove('selected');
-            }
-            document.dispatchEvent(new CustomEvent('productSelectionChanged'));
-        });
-    });
-
-    // Delete single product
-    document.querySelectorAll('.btn-delete-product').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const name = this.dataset.name;
-            Ravaa.confirm('Hapus Produk?', `Produk "${name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`, 'error').then(function(result) {
-                if (result.isConfirmed) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '/admin/products/' + id;
-                    form.innerHTML = `
-                        @csrf
-                        @method('DELETE')
-                    `;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-    });
-});
-</script>

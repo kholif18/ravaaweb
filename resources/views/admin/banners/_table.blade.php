@@ -9,6 +9,7 @@
                 <th style="width:32px;">
                     <div class="form-check" style="margin:0;"><input class="form-check-input" type="checkbox" id="select-all"></div>
                 </th>
+                <th style="width:32px;"></th>
                 <th style="width:80px;">Gambar</th>
                 <th style="min-width:160px;">Judul</th>
                 <th style="min-width:140px;">Subtitle</th>
@@ -18,10 +19,13 @@
                 <th style="width:70px;" class="text-center">Aksi</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable-banners">
             @forelse($banners as $banner)
-            <tr>
+            <tr data-id="{{ $banner->id }}">
                 <td><div class="form-check" style="margin:0;"><input class="form-check-input select-item" type="checkbox" value="{{ $banner->id }}"></div></td>
+                <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
+                    <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
+                </td>
                 <td>
                     @if($banner->image)
                         <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" style="width:60px;height:35px;border-radius:6px;object-fit:cover;">
@@ -62,7 +66,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center" style="padding:40px 0;">
+                <td colspan="9" class="text-center" style="padding:40px 0;">
                     <div style="color:var(--text-muted);">
                         <i class="bi bi-inbox" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
                         <span style="font-size:0.82rem;">Tidak ada banner ditemukan</span>
@@ -74,6 +78,11 @@
     </table>
 </div>
 
-<div class="pagination-toolbar">
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
+    <div>
+        <button type="button" class="btn btn-sm btn-light-danger" id="bulk-delete-btn" style="display: none;">
+            <i class="bi bi-trash"></i> Hapus Terpilih
+        </button>
+    </div>
     <x-pagination :paginator="$banners" label="banner" :perPage="$perPage" />
 </div>

@@ -11,7 +11,7 @@
             </th>
             <th>Nama Tag</th>
             <th style="width: 140px;">Warna</th>
-            <th style="width: 50px;">Aksi</th>
+            <th style="width: 100px;" class="text-center">Aksi</th>
         </tr>
     </thead>
     <tbody>
@@ -45,27 +45,21 @@
                     {{ ucfirst($tag->color) }}
                 </span>
             </td>
-            <td class="table-actions">
-                <button class="dropdown-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="#" 
-                           onclick="editTag({{ $tag->id }})"
-                           data-bs-toggle="modal" data-bs-target="#kt_modal_edit_tag">
-                            <i class="bi bi-pencil"></i> <span class="dropdown-item-text">Edit</span>
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="#" 
-                           onclick="deleteTag({{ $tag->id }}, '{{ $tag->name }}')" 
-                           style="color: var(--danger);">
-                            <i class="bi bi-trash"></i> <span class="dropdown-item-text">Hapus</span>
-                        </a>
-                    </li>
-                </ul>
+            <td class="text-center">
+                <div class="d-flex justify-content-center gap-1">
+                    <button type="button" class="btn btn-icon btn-sm"
+                            onclick="editTag({{ $tag->id }})"
+                            title="Edit"
+                            style="width: 28px; height: 28px; border-radius: 6px; background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent);">
+                        <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
+                    </button>
+                    <button type="button" class="btn btn-icon btn-sm"
+                            onclick="deleteTag({{ $tag->id }}, '{{ $tag->name }}')"
+                            title="Hapus"
+                            style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
+                        <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                    </button>
+                </div>
             </td>
         </tr>
         @endforeach
@@ -89,7 +83,9 @@
 <!-- Pagination Footer -->
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
     <div>
-        {{-- Bulk delete button jika diperlukan --}}
+        <button type="button" class="btn btn-sm btn-light-danger" id="bulk-delete-btn" style="display: none;">
+            <i class="bi bi-trash"></i> Hapus Terpilih
+        </button>
     </div>
     <x-pagination :paginator="$tags" :perPage="$filters['per_page'] ?? 10" label="tag" />
 </div>

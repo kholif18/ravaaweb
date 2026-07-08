@@ -132,5 +132,42 @@ Route::prefix('admin')
 
 *Catatan*: Semua halaman harus dilindungi middleware `auth:admin` serta pengecekan permission melalui Spatie.  Pastikan setiap perubahan diuji dengan unit & feature test, lalu jalankan pipeline CI sebelum merge.
 
-
-frontend-design buat halaman admin create product, buat 2 kolom 80% kiri, 20% kanan. form utama kanan Nama produk, form slug kecil (autogenerate dari nama) jika tidak di isi. selanjutnya deskripsi singkat text editor. bawahnya tombol varian produk yang akan di generate oleh js, tombol ini menampilkan form di bawahnya jenis misalnya ukuran atau warna, bisa di tambah bisa di hapus kemudian ada tombol untuk menambah detail misal ada 1 tipe misal ukuran memunculkan modal untuk memasukkan ukuran di pisah dengan | contoh S | M | L dll. kalau ada warna berrti dalam modal juga ada warna di bawahnya misal Hijau | Coklat | Biru dll kemudian ada tombol generate, untuk membuat form di bawah vrian, perpaduan warna dan ukuran, form SKU, form Harga, misal mau diskon berikan tombol switch button untuk mengaktifkan form diskon di lengkapi form percent untuk kalkulasi berapa persen diskonnya, form tanggal start dan end diskon, Berat dan dimensi (opsional) picker gmbar untuk tiap varian produk ada preview gambarnya. jika tidak ada varian maka hanya ada from SKU, Harga, switch tombol dikon jika on maka munculkan percent dan harga diskon, form tanggal start dan end diskon, berat dan diimensi opsional, tombol stock (hanya menampilkan ready stok tanpa input jumlah stok) tambah tombol switch untuk service karena service tidak perlu stok buat juga ini di form generate variant. di bawahnya deskripsi lengkap teks editor dan feature (opsional). bagian kolom kanan tombol publish dan draft/archieve gambar kalau tidak bisa di kanan berarti taruh di kolom kiri di atas deskripsi dengan gambar utama dan gallery, jika di kanan bisa taruh di bawah tombol publish ini. kemudian pemilihan kategory, tag dan beberapa pengaturan lainnya jika perlu
+1. Maksud field "Urutan/Order" di halaman admin
+Di ketiga modul (Banner, Layanan/Service, Portofolio/PortfolioItem) ada kolom order dengan definisi yang sama:
+- Skema (semua tiga migration sama): $table->integer('order')->default(0);
+- Validasi backend (semua tiga controller sama): 'order' => 'required|integer|min:0'
+- Cara dipakai untuk menampilkan (lihat scope ordered() dan controller index):
+- Banner: orderBy('order')->orderBy('id') — sortir berdasarkan order ASC, lalu tie-break dengan id ASC.
+- Service: orderBy('order')->orderBy('name') — tie-break dengan name ASC (alfabetis).
+- Portfolio: orderBy('order')->orderBy('title') — tie-break dengan title ASC (alfabetis).
+Intinya: order adalah angka urutan tampil manual. Angka lebih kecil tampil lebih dulu. Sistem tidak mencegah nilai ganda — ini by design.
+2. Apa yang terjadi kalau nomornya sama?
+Backend tidak menolak, karena:
+- ❌ Tidak ada unique constraint di database. Saya cek SHOW INDEX:
+- banners: hanya PRIMARY + FK image_media_id — tidak ada index di order.
+- services: PRIMARY + slug unique + FK — tidak ada index di order.
+- portfolio_items: PRIMARY + slug unique + FK — tidak ada index di order.
+- ❌ Tidak ada rule unique:order di $request->validate([...]) di ketiga controller. Hanya required|integer|min:0.
+- ✅ Yang ada hanyalah tie-break di query: kalau order sama, urutan akhir di‑sort oleh kolom kedua (id/name/title).
+Jadi jawaban langsung untuk: "apakah backend dan front tidak di desain agar menyimpan nilai agar tidak bisa sama?" — Benar, keduanya memang TIDAK didesain mencegah duplikat. Sekarang ada 3 svc/banner/portfolio dengan order = 0 pun akan tetap tersimpan. Urutannya fallback ke id/name/title.
+3. Apakah ini masalah / apa rekomendasinya?
+Tergantung strategi yang Anda inginkan. Ada 3 pendekatan umum, dan saya butuh keputusan Anda sebelum menulis kode:
+Pendekatan	Perilaku	Cocok untuk
+A. Biarkan duplikat (status quo)	order hanya sort hint, tie-break by id/name. Admin bisa isi bebas.	Kasus sederhana, item statis.
+B. Unique per-tabel	Tambah unique('order') di DB + 'unique:banners,order' di validasi. Tolak duplikat dengan error.	Mode "slot" — tiap item punya 1 posisi unik.
+C. Auto-renumber (float/list)&	Frontend pakai drag-drop, backend simpan array [id => new_order] dan re-urut semua baris (padah seragam, lalu tiap kali simpan, semua record di bawahnya di-shift +1). Lanjut pakai tie-break sebagai jaring-jaring.	UX paling nyata — admin cukup drag drop, tidak perlu mikir angka.
+Rekomendasi saya
+Pilih C (Auto-renumber + tie-break), karena:
+1. Paling user friendly — admin tidak perlu pusing hitung angka unik.
+2. Tetap kompatibel dgn kode sekarang (scope ordered masih bekerja).
+3. Menghilangkan edge case "dua item sama-sama order=1, urutan jadi non-deterministik" tanpa memaksa admin menghafal slot kosong.
+Implementasi yang saya sarankan (nanti, setelah Anda setuju):
+1. Tambah endpoint berjalan POST /admin/{banners,services,portfolio}/reorder yang menerima array {ids: [3, 1, 2]}, lalu di dalam DB transaction update order = index untuk masing-masing id.
+2. Tambah index index('order') (non-unique) di 3 tabel untuk optimasi query sort. Index non-unik cukup — unique justru melarang renumber yang sah.
+3. Jangan tambahkan unique:... validasi di create/update form — itu akan menyulitkan workflow isi manual.
+4. Frontend (Blade) pakai SortableJS pada baris tabel, setelah drop panggil endpoint /reorder.
+5. Sisakan input order di form create/edit sebagai override manual (advanced), tapi default-nya next-number (= max(order)+1).
+Sebelum saya menulis kode apa pun, mohon konfirmasi:
+- Pilih pendekatan A, B, atau C?
+- Kalau C: boleh saya tambahkan library SortableJS secara lokal (CDN sudah ada di project? Saya review layout admin dulu sebelum appliance), serta route baru + test feature?
+- Apakah perubahan ini untuk Banner + Service + Portfolio sekaligus, atau per-modul saja?

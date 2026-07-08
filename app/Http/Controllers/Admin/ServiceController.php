@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ServiceController extends Controller
@@ -47,7 +48,7 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'features' => 'nullable|array',
             'features.*' => 'nullable|string|max:255',
-            'order'    => 'required|integer|min:0',
+            'order'    => 'nullable|integer|min:0',
             'status'   => 'required|in:active,inactive',
             'is_featured' => 'boolean',
             'meta_title'       => 'nullable|string|max:255',
@@ -60,6 +61,11 @@ class ServiceController extends Controller
         }
 
         $validated['is_featured'] = $request->boolean('is_featured');
+
+        // Auto-assign order if not explicitly provided
+        if (!isset($validated['order']) || $validated['order'] === null) {
+            $validated['order'] = (Service::max('order') ?? 0) + 1;
+        }
 
         Service::create($validated);
 
@@ -88,7 +94,7 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'features' => 'nullable|array',
             'features.*' => 'nullable|string|max:255',
-            'order'    => 'required|integer|min:0',
+            'order'    => 'nullable|integer|min:0',
             'status'   => 'required|in:active,inactive',
             'is_featured' => 'boolean',
             'meta_title'       => 'nullable|string|max:255',
@@ -135,6 +141,26 @@ class ServiceController extends Controller
 
         return redirect()->route('admin.services.index')
             ->with('success', count($ids) . ' layanan berhasil dihapus!');
+    }
+
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'required|integer|exists:services,id',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['ids'] as $index => $id) {
+                Service::where('id', $id)->update(['order' => $index]);
+            }
+        });
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Urutan layanan berhasil diperbarui!']);
+        }
+
+        return redirect()->back()->with('success', 'Urutan layanan berhasil diperbarui!');
     }
 
     public function updateStatus(Request $request, Service $service)

@@ -34,7 +34,7 @@
         <div class="table-toolbar">
             <div class="toolbar-group">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 280px;">
+                    <div class="input-group input-group-sm" style="max-width: 200px;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control"
                                data-kt-service-table-filter="search"
@@ -42,17 +42,15 @@
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
+                    <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
                     <button type="button" class="btn btn-light btn-sm" id="kt_service_reset_filter">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
                 </div>
-            </div>
-            <div class="toolbar-group">
-                <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
-                    <option value="">Semua Status</option>
-                    <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
-                    <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                </select>
             </div>
         </div>
 
@@ -142,18 +140,14 @@
                         <div class="form-text fs-8">Setiap baris = satu fitur</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-4 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Urutan</label>
-                            <input type="number" class="form-control form-control-sm" name="order" min="0" value="0">
-                        </div>
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Status</label>
                             <select class="form-select form-select-sm" name="status">
                                 <option value="active">Aktif</option>
                                 <option value="inactive">Nonaktif</option>
                             </select>
                         </div>
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Unggulan</label>
                             <div class="form-check form-switch mt-2">
                                 <input class="form-check-input" type="checkbox" name="is_featured" value="1">
@@ -266,18 +260,14 @@
                         <div class="form-text fs-8">Setiap baris = satu fitur</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-4 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Urutan</label>
-                            <input type="number" class="form-control form-control-sm" name="order" id="edit_service_order" min="0">
-                        </div>
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Status</label>
                             <select class="form-select form-select-sm" name="status" id="edit_service_status">
                                 <option value="active">Aktif</option>
                                 <option value="inactive">Nonaktif</option>
                             </select>
                         </div>
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Unggulan</label>
                             <div class="form-check form-switch mt-2">
                                 <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="edit_service_featured">
@@ -338,6 +328,38 @@ document.addEventListener('DOMContentLoaded', function() {
     @if(session('error'))
         Ravaa.toast('{{ session('error') }}', 'error');
     @endif
+
+    // ===== SORTABLE DRAG-AND-DROP =====
+    function initSortable() {
+        var tbody = document.getElementById('sortable-services');
+        if (!tbody || tbody.children.length === 0) return;
+        if (tbody._sortable) tbody._sortable.destroy();
+        tbody._sortable = Sortable.create(tbody, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                var ids = Array.from(tbody.querySelectorAll('tr[data-id]'))
+                    .map(function(tr) { return parseInt(tr.dataset.id); });
+                fetch('{{ route("admin.services.reorder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success) Ravaa.toast(data.message || 'Urutan berhasil diperbarui', 'success');
+                })
+                .catch(function() { Ravaa.toast('Gagal memperbarui urutan', 'error'); });
+            }
+        });
+    }
+    initSortable();
 
     // Helper: update icon preview element
     function updateIconPreview(elementId, iconClass) {
@@ -418,7 +440,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_service_name').value = s.name;
             document.getElementById('edit_service_icon').value = s.icon || '';
             document.getElementById('edit_service_features').value = featuresToText(s.features);
-            document.getElementById('edit_service_order').value = s.order;
             document.getElementById('edit_service_status').value = s.status;
             document.getElementById('edit_service_featured').checked = s.is_featured;
             document.getElementById('edit_service_meta_title').value = s.meta_title || '';
@@ -444,6 +465,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
+    // ===== BULK SELECT & DELETE =====
+    const tableContainer = document.getElementById('kt_service_table_container');
+
+    function updateBulkDeleteButton() {
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        if (selectedIds.length > 0) {
+            bulkDeleteBtn.style.display = 'inline-block';
+            bulkDeleteBtn.innerHTML = '<i class="bi bi-trash"></i> Hapus Terpilih (' + selectedIds.length + ')';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+    }
+
+    function initializeTableEvents() {
+        const selectAll = document.getElementById('select-all');
+        const selectItems = tableContainer.querySelectorAll('.select-item');
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                selectItems.forEach(item => { item.checked = this.checked; });
+                updateBulkDeleteButton();
+            });
+        }
+        selectItems.forEach(item => {
+            item.addEventListener('change', updateBulkDeleteButton);
+        });
+        // Reset bulk button state after table re-render
+        updateBulkDeleteButton();
+    }
+    initializeTableEvents();
+
+    // Use event delegation on document for bulk delete button
+    // (Works even after AJAX table re-render since #bulk-delete-btn lives inside tableContainer)
+    document.addEventListener('click', function(e) {
+        const bulkDeleteBtn = e.target.closest('#bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        if (selectedIds.length === 0) {
+            Ravaa.toast('Silakan pilih layanan yang akan dihapus', 'warning');
+            return;
+        }
+        Ravaa.confirm('Hapus Layanan Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> layanan. Tindakan ini tidak dapat dibatalkan!`, 'warning')
+        .then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
+                document.getElementById('bulk-delete-form').submit();
+            }
+        });
+    });
+
     // Status toggle
     window.toggleStatus = function(id, status, name) {
         const action = status === 'active' ? 'Aktifkan' : 'Nonaktifkan';
@@ -460,7 +535,6 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Filters
-    const tableContainer = document.getElementById('kt_service_table_container');
     const searchInput = document.querySelector('[data-kt-service-table-filter="search"]');
     const statusFilter = document.querySelector('select[name="status"]');
     const resetBtn = document.getElementById('kt_service_reset_filter');
@@ -477,6 +551,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             tableContainer.innerHTML = await response.text();
             window.history.pushState({}, '', url.toString());
+            initSortable();
+            initializeTableEvents();
         } catch (e) { Ravaa.toast('Gagal memfilter', 'error'); }
         finally { tableContainer.style.opacity = '1'; }
     }

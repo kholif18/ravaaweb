@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('page-title', 'Banner / Hero')
+@section('page-title', 'Testimoni')
 
 @section('breadcrumb')
     <li>
@@ -10,7 +10,7 @@
     </li>
     <li class="bc-separator"><i class="bi bi-chevron-right"></i></li>
     <li>
-        <a href="{{ route('admin.banners.index') }}">Banner / Hero</a>
+        <a href="{{ route('admin.testimonials.index') }}">Testimoni</a>
     </li>
 @endsection
 
@@ -22,9 +22,9 @@
 
 <div class="glass-card">
     <div class="card-header">
-        <div class="card-title">Daftar Banner</div>
+        <div class="card-title">Daftar Testimoni</div>
         <div class="card-header-btns">
-            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_banner">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_testimonial">
                 <i class="bi bi-plus-circle"></i> Tambah
             </button>
         </div>
@@ -34,71 +34,84 @@
         <div class="table-toolbar">
             <div class="toolbar-group">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 280px;">
+                    <div class="input-group input-group-sm" style="max-width:200px;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control"
-                               data-kt-banner-table-filter="search"
-                               placeholder="Cari Banner..."
+                               data-kt-testimonial-table-filter="search"
+                               placeholder="Cari Testimoni..."
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
-                    <button type="button" class="btn btn-light btn-sm" id="kt_banner_reset_filter">
+                    <select name="status" class="form-select form-select-sm" style="min-width:110px;">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                    <button type="button" class="btn btn-light btn-sm" id="kt_testimonial_reset_filter">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="kt_banner_table_container">
-            @include('admin.banners._table')
+        <div id="kt_testimonial_table_container">
+            @include('admin.testimonials._table')
         </div>
     </div>
 </div>
 
-<!-- Modal Add Banner -->
-<div class="modal fade" id="kt_modal_add_banner" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-600px">
+<!-- Modal Add Testimonial -->
+<div class="modal fade" id="kt_modal_add_testimonial" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-550px">
         <div class="modal-content">
             <div class="modal-header py-3">
-                <h3 class="fw-bold">Tambah Banner</h3>
+                <h3 class="fw-bold">Tambah Testimoni</h3>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></div>
             </div>
-            <form id="kt_modal_add_banner_form" action="{{ route('admin.banners.store') }}" method="POST">
+            <form id="kt_modal_add_testimonial_form" action="{{ route('admin.testimonials.store') }}" method="POST">
                 @csrf
                 <div class="modal-body py-4 px-4">
-                    <div class="fv-row mb-3">
-                        <label class="required fs-7 fw-semibold mb-1">Judul Banner</label>
-                        <input type="text" class="form-control form-control-sm" name="title" placeholder="Selamat Datang di Ravaa Creative" required>
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-1">Subtitle</label>
-                        <input type="text" class="form-control form-control-sm" name="subtitle" placeholder="Solusi kreatif untuk bisnis Anda">
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-1">Gambar Banner</label>
-                        <x-media-picker name="image_media_id" type="image" label="Pilih Gambar" />
-                    </div>
                     <div class="row mb-3">
                         <div class="col-md-6 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Teks CTA</label>
-                            <input type="text" class="form-control form-control-sm" name="cta_text" placeholder="Lihat Katalog">
+                            <label class="required fs-7 fw-semibold mb-1">Nama Klien</label>
+                            <input type="text" class="form-control form-control-sm" name="client_name" placeholder="John Doe" required>
                         </div>
                         <div class="col-md-6 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">URL CTA</label>
-                            <input type="url" class="form-control form-control-sm" name="cta_url" placeholder="/product">
+                            <label class="fs-7 fw-semibold mb-1">Foto Klien</label>
+                            <x-media-picker name="image_media_id" type="image" label="Pilih Foto" />
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Badge</label>
-                            <input type="text" class="form-control form-control-sm" name="badge" placeholder="Baru">
+                            <label class="fs-7 fw-semibold mb-1">Jabatan</label>
+                            <input type="text" class="form-control form-control-sm" name="position" placeholder="CEO">
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-7 fw-semibold mb-1">Perusahaan</label>
+                            <input type="text" class="form-control form-control-sm" name="company" placeholder="PT Maju Jaya">
+                        </div>
+                    </div>
+                    <div class="fv-row mb-3">
+                        <label class="required fs-7 fw-semibold mb-1">Isi Testimoni</label>
+                        <textarea class="form-control form-control-sm" rows="3" name="content" placeholder="Kesan dan pesan klien..." required></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-7 fw-semibold mb-1">Rating</label>
+                            <select class="form-select form-select-sm" name="rating">
+                                <option value="5">5 ★</option>
+                                <option value="4">4 ★</option>
+                                <option value="3">3 ★</option>
+                                <option value="2">2 ★</option>
+                                <option value="1">1 ★</option>
+                            </select>
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Status</label>
-                            <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" name="is_active" value="1" checked>
-                                <label class="form-check-label fs-8">Aktif</label>
-                            </div>
+                            <select class="form-select form-select-sm" name="status">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Nonaktif</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -111,53 +124,61 @@
     </div>
 </div>
 
-<!-- Modal Edit Banner -->
-<div class="modal fade" id="kt_modal_edit_banner" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-600px">
+<!-- Modal Edit Testimonial -->
+<div class="modal fade" id="kt_modal_edit_testimonial" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-550px">
         <div class="modal-content">
             <div class="modal-header py-3">
-                <h3 class="fw-bold">Edit Banner</h3>
+                <h3 class="fw-bold">Edit Testimoni</h3>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></div>
             </div>
-            <form id="kt_modal_edit_banner_form" method="POST" data-update-url="{{ route('admin.banners.update', ':id') }}">
+            <form id="kt_modal_edit_testimonial_form" method="POST" data-update-url="{{ route('admin.testimonials.update', ':id') }}">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="id" id="edit_banner_id">
+                <input type="hidden" name="id" id="edit_testimonial_id">
                 <div class="modal-body py-4 px-4">
-                    <div class="fv-row mb-3">
-                        <label class="required fs-7 fw-semibold mb-1">Judul Banner</label>
-                        <input type="text" class="form-control form-control-sm" name="title" id="edit_banner_title" required>
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-1">Subtitle</label>
-                        <input type="text" class="form-control form-control-sm" name="subtitle" id="edit_banner_subtitle">
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-1">Gambar Banner</label>
-                        <x-media-picker name="edit_image_media_id" type="image" label="Pilih Gambar" />
-                        <input type="hidden" name="image_media_id" id="edit_image_media_id_value">
-                    </div>
                     <div class="row mb-3">
                         <div class="col-md-6 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Teks CTA</label>
-                            <input type="text" class="form-control form-control-sm" name="cta_text" id="edit_banner_cta_text">
+                            <label class="required fs-7 fw-semibold mb-1">Nama Klien</label>
+                            <input type="text" class="form-control form-control-sm" name="client_name" id="edit_testimonial_client_name" required>
                         </div>
                         <div class="col-md-6 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">URL CTA</label>
-                            <input type="url" class="form-control form-control-sm" name="cta_url" id="edit_banner_cta_url">
+                            <label class="fs-7 fw-semibold mb-1">Foto Klien</label>
+                            <x-media-picker name="edit_image_media_id" type="image" label="Pilih Foto" />
+                            <input type="hidden" name="image_media_id" id="edit_image_media_id_value">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Badge</label>
-                            <input type="text" class="form-control form-control-sm" name="badge" id="edit_banner_badge">
+                            <label class="fs-7 fw-semibold mb-1">Jabatan</label>
+                            <input type="text" class="form-control form-control-sm" name="position" id="edit_testimonial_position">
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-7 fw-semibold mb-1">Perusahaan</label>
+                            <input type="text" class="form-control form-control-sm" name="company" id="edit_testimonial_company">
+                        </div>
+                    </div>
+                    <div class="fv-row mb-3">
+                        <label class="required fs-7 fw-semibold mb-1">Isi Testimoni</label>
+                        <textarea class="form-control form-control-sm" rows="3" name="content" id="edit_testimonial_content" required></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-7 fw-semibold mb-1">Rating</label>
+                            <select class="form-select form-select-sm" name="rating" id="edit_testimonial_rating">
+                                <option value="5">5 ★</option>
+                                <option value="4">4 ★</option>
+                                <option value="3">3 ★</option>
+                                <option value="2">2 ★</option>
+                                <option value="1">1 ★</option>
+                            </select>
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Status</label>
-                            <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" name="is_active" value="1" id="edit_banner_active">
-                                <label class="form-check-label fs-8">Aktif</label>
-                            </div>
+                            <select class="form-select form-select-sm" name="status" id="edit_testimonial_status">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Nonaktif</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -170,10 +191,10 @@
     </div>
 </div>
 
-<form id="delete-form" method="POST" data-delete-url="{{ route('admin.banners.destroy', ':id') }}" style="display:none;">
+<form id="delete-form" method="POST" data-delete-url="{{ route('admin.testimonials.destroy', ':id') }}" style="display:none;">
     @csrf @method('DELETE')
 </form>
-<form id="bulk-delete-form" method="POST" action="{{ route('admin.banners.bulk.destroy') }}" style="display:none;">
+<form id="bulk-delete-form" method="POST" action="{{ route('admin.testimonials.bulk.destroy') }}" style="display:none;">
     @csrf @method('DELETE')
     <input type="hidden" name="ids" id="bulk-delete-ids">
 </form>
@@ -203,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== SORTABLE DRAG-AND-DROP =====
     function initSortable() {
-        var tbody = document.getElementById('sortable-banners');
+        var tbody = document.getElementById('sortable-testimonials');
         if (!tbody || tbody.children.length === 0) return;
         if (tbody._sortable) tbody._sortable.destroy();
         tbody._sortable = Sortable.create(tbody, {
@@ -213,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
             onEnd: function() {
                 var ids = Array.from(tbody.querySelectorAll('tr[data-id]'))
                     .map(function(tr) { return parseInt(tr.dataset.id); });
-                fetch('{{ route("admin.banners.reorder") }}', {
+                fetch('{{ route("admin.testimonials.reorder") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -233,31 +254,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     initSortable();
 
-    // Edit banner function
-    window.editBanner = async function(id) {
-        const response = await fetch(`/admin/banners/${id}/edit`, {
+    // Edit testimonial function
+    window.editTestimonial = async function(id) {
+        const response = await fetch(`/admin/testimonials/${id}/edit`, {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         });
         const data = await response.json();
         if (data.success) {
-            const b = data.banner;
-            document.getElementById('edit_banner_id').value = b.id;
-            document.getElementById('edit_banner_title').value = b.title;
-            document.getElementById('edit_banner_subtitle').value = b.subtitle || '';
-            document.getElementById('edit_banner_cta_text').value = b.cta_text || '';
-            document.getElementById('edit_banner_cta_url').value = b.cta_url || '';
-            document.getElementById('edit_banner_badge').value = b.badge || '';
-            document.getElementById('edit_banner_active').checked = b.is_active;
+            const t = data.testimonial;
+            document.getElementById('edit_testimonial_id').value = t.id;
+            document.getElementById('edit_testimonial_client_name').value = t.client_name;
+            document.getElementById('edit_testimonial_position').value = t.position || '';
+            document.getElementById('edit_testimonial_company').value = t.company || '';
+            document.getElementById('edit_testimonial_content').value = t.content;
+            document.getElementById('edit_testimonial_rating').value = t.rating || 5;
+            document.getElementById('edit_testimonial_status').value = t.status;
             // Reset & init media picker for edit_image_media_id (always, even when no media)
             const editPicInput = document.getElementById('edit_image_media_id-input');
-            if (editPicInput) editPicInput.value = b.image_media_id || '';
+            if (editPicInput) editPicInput.value = t.image_media_id || '';
             const previewContainer = document.getElementById('edit_image_media_id-selected');
             if (previewContainer) {
-                if (b.image_media_id && b.media_url) {
+                if (t.image_media_id && t.media_url) {
                     previewContainer.innerHTML = `
                         <div class="media-picker-thumb">
-                            <img src="${b.media_url}" alt="${b.media_name || ''}">
-                            <button type="button" class="remove-media" onclick="removePickerItem('edit_image_media_id', '${b.image_media_id}')"><i class="bi bi-x"></i></button>
+                            <img src="${t.media_url}" alt="${t.media_name || ''}">
+                            <button type="button" class="remove-media" onclick="removePickerItem('edit_image_media_id', '${t.image_media_id}')"><i class="bi bi-x"></i></button>
                         </div>
                     `;
                 } else {
@@ -275,35 +296,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.mediaPickerState['edit_image_media_id'] = {
                     multiple: false,
                     type: 'image',
-                    selected: (b.image_media_id ? [String(b.image_media_id)] : []),
+                    selected: (t.image_media_id ? [String(t.image_media_id)] : []),
                     selectedItems: {},
                     currentSearch: '',
                 };
             } else {
-                window.mediaPickerState['edit_image_media_id'].selected = (b.image_media_id ? [String(b.image_media_id)] : []);
+                window.mediaPickerState['edit_image_media_id'].selected = (t.image_media_id ? [String(t.image_media_id)] : []);
                 window.mediaPickerState['edit_image_media_id'].selectedItems = {};
             }
-            if (b.image_media_id && b.media_url) {
-                window.mediaPickerState['edit_image_media_id'].selectedItems[b.image_media_id] = `<img src="${b.media_url}" alt="${b.media_name || ''}">`;
+            if (t.image_media_id && t.media_url) {
+                window.mediaPickerState['edit_image_media_id'].selectedItems[t.image_media_id] = `<img src="${t.media_url}" alt="${t.media_name || ''}">`;
             }
-            const form = document.getElementById('kt_modal_edit_banner_form');
-            form.action = form.dataset.updateUrl.replace(':id', b.id);
-            // Tampilkan modal edit
-            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_banner'));
+            const form = document.getElementById('kt_modal_edit_testimonial_form');
+            form.action = form.dataset.updateUrl.replace(':id', t.id);
+            const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_testimonial'));
             modal.show();
         }
     };
 
     // Copy edit_image_media_id → image_media_id on form submit
-    document.getElementById('kt_modal_edit_banner_form').addEventListener('submit', function() {
+    document.getElementById('kt_modal_edit_testimonial_form').addEventListener('submit', function() {
         const src = document.getElementById('edit_image_media_id-input');
         const dst = document.getElementById('edit_image_media_id_value');
         if (src && dst) dst.value = src.value;
     });
 
     // Delete
-    window.deleteBanner = function(id, title) {
-        Ravaa.confirm('Hapus Banner?', `Banner "${title}" akan dihapus permanen!`).then(result => {
+    window.deleteTestimonial = function(id, name) {
+        Ravaa.confirm('Hapus Testimoni?', `Testimoni dari "${name}" akan dihapus permanen!`).then(result => {
             if (result.isConfirmed) {
                 const form = document.getElementById('delete-form');
                 form.action = form.dataset.deleteUrl.replace(':id', id);
@@ -312,8 +332,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
+    // Update Status
+    window.updateStatus = function(id, status, name) {
+        const action = status === 'active' ? 'Aktifkan' : 'Nonaktifkan';
+        Ravaa.confirm(`${action} Testimoni?`, `Testimoni dari "${name}" akan di${action.toLowerCase()}.`, 'question').then(result => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/testimonials/${id}/status`;
+                form.innerHTML = `@csrf @method('PUT') <input type="hidden" name="status" value="${status}">`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    };
+
     // ===== BULK SELECT & DELETE =====
-    const tableContainer = document.getElementById('kt_banner_table_container');
+    const tableContainer = document.getElementById('kt_testimonial_table_container');
 
     function updateBulkDeleteButton() {
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
@@ -350,10 +385,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
         const selectedIds = Array.from(selectedItems).map(item => item.value);
         if (selectedIds.length === 0) {
-            Ravaa.toast('Silakan pilih banner yang akan dihapus', 'warning');
+            Ravaa.toast('Silakan pilih testimoni yang akan dihapus', 'warning');
             return;
         }
-        Ravaa.confirm('Hapus Banner Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> banner. Tindakan ini tidak dapat dibatalkan!`, 'warning')
+        Ravaa.confirm('Hapus Testimoni Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> testimoni. Tindakan ini tidak dapat dibatalkan!`, 'warning')
         .then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
@@ -363,14 +398,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Filters
-    const searchInput = document.querySelector('[data-kt-banner-table-filter="search"]');
-    const resetBtn = document.getElementById('kt_banner_reset_filter');
+    const searchInput = document.querySelector('[data-kt-testimonial-table-filter="search"]');
+    const statusFilter = document.querySelector('select[name="status"]');
+    const resetBtn = document.getElementById('kt_testimonial_reset_filter');
 
     async function applyFilters(page = 1) {
         tableContainer.style.opacity = '0.5';
         const url = new URL(window.location.href);
         const search = searchInput.value;
+        const status = statusFilter.value;
         if (search) url.searchParams.set('search', search); else url.searchParams.delete('search');
+        if (status) url.searchParams.set('status', status); else url.searchParams.delete('status');
         if (page > 1) url.searchParams.set('page', page); else url.searchParams.delete('page');
         try {
             const response = await fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
@@ -384,7 +422,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let searchTimer;
     if (searchInput) searchInput.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => applyFilters(), 500); });
-    if (resetBtn) resetBtn.addEventListener('click', () => { searchInput.value = ''; applyFilters(); });
+    if (statusFilter) statusFilter.addEventListener('change', () => applyFilters());
+    if (resetBtn) resetBtn.addEventListener('click', () => { searchInput.value = ''; statusFilter.value = ''; applyFilters(); });
 });
 </script>
 @endpush

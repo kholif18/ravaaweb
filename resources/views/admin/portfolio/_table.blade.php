@@ -9,6 +9,7 @@
                 <th style="width:32px;">
                     <div class="form-check" style="margin:0;"><input class="form-check-input" type="checkbox" id="select-all"></div>
                 </th>
+                <th style="width:32px;"></th>
                 <th style="width:60px;">Gambar</th>
                 <th style="min-width:160px;">Judul</th>
                 <th style="min-width:120px;">Kategori</th>
@@ -19,10 +20,13 @@
                 <th style="width:70px;" class="text-center">Aksi</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable-portfolio">
             @forelse($portfolioItems as $item)
-            <tr>
+            <tr data-id="{{ $item->id }}">
                 <td><div class="form-check" style="margin:0;"><input class="form-check-input select-item" type="checkbox" value="{{ $item->id }}"></div></td>
+                <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
+                    <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
+                </td>
                 <td>
                     @if($item->image)
                         <img src="{{ $item->image_url }}" alt="{{ $item->title }}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
@@ -82,6 +86,11 @@
     </table>
 </div>
 
-<div class="pagination-toolbar">
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
+    <div>
+        <button type="button" class="btn btn-sm btn-light-danger" id="bulk-delete-btn" style="display: none;">
+            <i class="bi bi-trash"></i> Hapus Terpilih
+        </button>
+    </div>
     <x-pagination :paginator="$portfolioItems" label="portfolio" :perPage="$perPage" />
 </div>

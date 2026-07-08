@@ -72,7 +72,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:100',
             'color' => 'nullable|string|max:50',
-            'order' => 'required|integer|min:1',
+            'order' => 'nullable|integer|min:0',
             'status' => 'required|in:active,inactive',
             'parent_id' => 'nullable|exists:categories,id',
             'meta_title' => 'nullable|string|max:255',
@@ -88,6 +88,12 @@ class CategoryController extends Controller
         // Default icon if not provided
         if (empty($validated['icon'])) {
             $validated['icon'] = 'fas fa-tags';
+        }
+
+        // Default order (urutan diatur via drag-and-drop)
+        if (empty($validated['order'])) {
+            $maxOrder = Category::max('order');
+            $validated['order'] = ($maxOrder ?? -1) + 1;
         }
 
         try {
@@ -194,7 +200,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:100',
             'color' => 'nullable|string|max:50',
-            'order' => 'required|integer|min:1',
+            'order' => 'nullable|integer|min:0',
             'status' => 'required|in:active,inactive',
             'parent_id' => 'nullable|exists:categories,id',
             'meta_title' => 'nullable|string|max:255',
@@ -357,6 +363,29 @@ class CategoryController extends Controller
 
         return redirect()->back()
             ->with('success', 'Status kategori berhasil diperbarui!');
+    }
+
+    /**
+     * Reorder categories via drag-and-drop.
+     */
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'required|integer|exists:categories,id',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['ids'] as $index => $id) {
+                Category::where('id', $id)->update(['order' => $index]);
+            }
+        });
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Urutan kategori berhasil diperbarui!']);
+        }
+
+        return redirect()->back()->with('success', 'Urutan kategori berhasil diperbarui!');
     }
 
     /**

@@ -19,15 +19,6 @@
     {{-- ===== ROW 1: QUICK STATS (4 columns) ===== --}}
     <div class="row mb-4">
 
-        @php
-            $stats = [
-                ['Produk', 42, 'box', 'primary'],
-                ['Kategori', 4, 'tags', 'success'],
-                ['Testimoni', 15, 'star', 'warning'],
-                ['Portfolio', 8, 'images', 'info'],
-            ];
-        @endphp
-
         @foreach($stats as [$label, $value, $icon, $color])
             <div class="col-xl-3 col-lg-6 col-md-6">
                 <div class="glass-card h-100">

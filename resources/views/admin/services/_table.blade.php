@@ -9,6 +9,7 @@
                 <th style="width:32px;">
                     <div class="form-check" style="margin:0;"><input class="form-check-input" type="checkbox" id="select-all"></div>
                 </th>
+                <th style="width:32px;"></th>
                 <th style="width:50px;">Icon</th>
                 <th style="min-width:180px;">Nama Layanan</th>
                 <th style="min-width:200px;">Deskripsi</th>
@@ -18,10 +19,13 @@
                 <th style="width:70px;" class="text-center">Aksi</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable-services">
             @forelse($services as $service)
-            <tr>
+            <tr data-id="{{ $service->id }}">
                 <td><div class="form-check" style="margin:0;"><input class="form-check-input select-item" type="checkbox" value="{{ $service->id }}"></div></td>
+                <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
+                    <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
+                </td>
                 <td>
                     <div style="width:36px;height:36px;border-radius:8px;background:rgba(var(--accent-rgb,79,110,247),0.1);display:flex;align-items:center;justify-content:center;">
                         <i class="{{ $service->icon ?? 'bi bi-gear' }}" style="color:var(--accent);font-size:0.9rem;"></i>
@@ -58,7 +62,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center" style="padding:40px 0;">
+                <td colspan="9" class="text-center" style="padding:40px 0;">
                     <div style="color:var(--text-muted);">
                         <i class="bi bi-inbox" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
                         <span style="font-size:0.82rem;">Tidak ada layanan ditemukan</span>
@@ -70,6 +74,11 @@
     </table>
 </div>
 
-<div class="pagination-toolbar">
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
+    <div>
+        <button type="button" class="btn btn-sm btn-light-danger" id="bulk-delete-btn" style="display: none;">
+            <i class="bi bi-trash"></i> Hapus Terpilih
+        </button>
+    </div>
     <x-pagination :paginator="$services" label="layanan" :perPage="$perPage" />
 </div>

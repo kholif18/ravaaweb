@@ -7,6 +7,9 @@
 {{-- ApexCharts (for dashboard charts) --}}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.44.2/dist/apexcharts.min.js"></script>
 
+{{-- SortableJS (drag-and-drop reordering) --}}
+<script src="{{ asset('admin/vendor/sortablejs/Sortable.min.js') }}"></script>
+
 {{-- Admin Core JS --}}
 <script src="{{ asset('admin/js/app.js') }}"></script>
 

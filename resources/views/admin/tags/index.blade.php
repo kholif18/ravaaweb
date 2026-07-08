@@ -31,19 +31,21 @@
     <!--begin::Card body-->
     <div class="card-body">
         {{-- Search & Filters --}}
-        <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="flex-grow-1">
-                <form id="searchForm" class="d-flex align-items-center gap-2" method="GET" action="{{ route('admin.tags.index') }}">
+        <div class="table-toolbar">
+            <div class="toolbar-group">
+                <div class="d-flex align-items-center gap-2">
                     <div class="input-group input-group-sm" style="max-width: 280px;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" name="search" 
-                               placeholder="Cari tag..." value="{{ $filters['search'] ?? '' }}">
+                        <input type="text" class="form-control"
+                               data-kt-tag-table-filter="search"
+                               placeholder="Cari tag..."
+                               name="search"
+                               value="{{ $filters['search'] ?? '' }}">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm">Cari</button>
-                    @if(request()->anyFilled(['search']))
-                        <a href="{{ route('admin.tags.index') }}" class="btn btn-light btn-sm">Reset</a>
-                    @endif
-                </form>
+                    <button type="button" class="btn btn-light btn-sm" id="kt_tag_reset_filter">
+                        <i class="bi bi-arrow-clockwise"></i> Reset
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -183,6 +185,18 @@
     </div>
 </div>
 <!--end::Modal - Edit Tag-->
+
+<!-- Hidden Forms for Actions -->
+<form id="delete-form" method="POST" data-delete-url="{{ route('admin.tags.destroy', ':id') }}" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<form id="bulk-delete-form" method="POST" action="{{ route('admin.tags.bulk.destroy') }}" style="display: none;">
+    @csrf
+    @method('DELETE')
+    <input type="hidden" name="ids" id="bulk-delete-ids">
+</form>
 @endsection
 
 @push('styles')
@@ -196,6 +210,12 @@
     .card-header-btns {
         display: flex; align-items: center; gap: 0.35rem;
     }
+    .input-group.input-group-sm .input-group-text { background: transparent; border-color: rgba(0,0,0,0.1); color: var(--text-muted); padding: 0.2rem 0.5rem; }
+    .input-group.input-group-sm .form-control { border-left: 0; }
+    .input-group.input-group-sm:focus-within .input-group-text,
+    .input-group.input-group-sm:focus-within .form-control { border-color: var(--accent); }
+    .input-group.input-group-sm:focus-within .form-control { box-shadow: 0 0 0 2px var(--accent-light); }
+    .pagination { margin: 0 !important; }
 </style>
 @endpush
 
@@ -231,6 +251,80 @@ document.addEventListener('DOMContentLoaded', function () {
             Ravaa.toast('{{ $error }}', 'error');
         @endforeach
     @endif
+
+    // ===== BULK SELECT & DELETE =====
+    const tableContainer = document.getElementById('table-container');
+
+    function updateBulkDeleteButton() {
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        if (selectedIds.length > 0) {
+            bulkDeleteBtn.style.display = 'inline-block';
+            bulkDeleteBtn.innerHTML = '<i class="bi bi-trash"></i> Hapus Terpilih (' + selectedIds.length + ')';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+    }
+
+    function initializeTableEvents() {
+        const selectAll = document.getElementById('select-all');
+        const selectItems = tableContainer.querySelectorAll('.select-item');
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                selectItems.forEach(item => { item.checked = this.checked; });
+                updateBulkDeleteButton();
+            });
+        }
+        selectItems.forEach(item => {
+            item.addEventListener('change', updateBulkDeleteButton);
+        });
+        updateBulkDeleteButton();
+    }
+    initializeTableEvents();
+
+    document.addEventListener('click', function(e) {
+        const bulkDeleteBtn = e.target.closest('#bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        if (selectedIds.length === 0) {
+            Ravaa.toast('Silakan pilih tag yang akan dihapus', 'warning');
+            return;
+        }
+        Ravaa.confirm('Hapus Tag Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> tag. Tindakan ini tidak dapat dibatalkan!`, 'warning')
+        .then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
+                document.getElementById('bulk-delete-form').submit();
+            }
+        });
+    });
+
+    // ===== FILTER =====
+    const searchInput = document.querySelector('[data-kt-tag-table-filter="search"]');
+    const resetBtn = document.getElementById('kt_tag_reset_filter');
+
+    async function applyFilters(page = 1) {
+        tableContainer.style.opacity = '0.5';
+        const url = new URL(window.location.href);
+        const search = searchInput.value;
+        if (search) url.searchParams.set('search', search); else url.searchParams.delete('search');
+        if (page > 1) url.searchParams.set('page', page); else url.searchParams.delete('page');
+        try {
+            const response = await fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            tableContainer.innerHTML = await response.text();
+            window.history.pushState({}, '', url.toString());
+            initializeTableEvents();
+        } catch (e) { Ravaa.toast('Gagal memfilter', 'error'); }
+        finally { tableContainer.style.opacity = '1'; }
+    }
+
+    let searchTimer;
+    if (searchInput) searchInput.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => applyFilters(), 500); });
+    if (resetBtn) resetBtn.addEventListener('click', () => { searchInput.value = ''; applyFilters(); });
 });
 
 // ---- Color preview sync ----
@@ -430,19 +524,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ---- Delete Tag ----
 function deleteTag(id, name) {
-    Ravaa.confirm({
-        icon: 'error',
-        title: 'Hapus Tag',
-        message: `Apakah Anda yakin ingin menghapus tag <strong>${name}</strong>?`,
-        confirmText: 'Ya, Hapus',
-        cancelText: 'Batal'
-    }).then((result) => {
+    Ravaa.confirm('Hapus Tag?', `Tag "${name}" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!`).then((result) => {
         if (result.isConfirmed) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/admin/tags/${id}`;
-            form.innerHTML = `@csrf @method('DELETE')`;
-            document.body.appendChild(form);
+            const form = document.getElementById('delete-form');
+            form.action = form.dataset.deleteUrl.replace(':id', id);
             form.submit();
         }
     });

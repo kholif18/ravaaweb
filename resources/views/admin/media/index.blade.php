@@ -41,6 +41,13 @@
                                placeholder="Cari Media..."
                                value="{{ request('search') }}">
                     </div>
+                    <select id="media-type-filter" class="form-select form-select-sm" style="min-width: 130px;">
+                        <option value="">Semua Tipe</option>
+                        <option value="image" {{ request('type') == 'image' ? 'selected' : '' }}>Gambar</option>
+                        <option value="video" {{ request('type') == 'video' ? 'selected' : '' }}>Video</option>
+                        <option value="audio" {{ request('type') == 'audio' ? 'selected' : '' }}>Audio</option>
+                        <option value="document" {{ request('type') == 'document' ? 'selected' : '' }}>Dokumen</option>
+                    </select>
                     <button type="button" class="btn btn-light btn-sm" id="media-reset-filter">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
@@ -51,13 +58,6 @@
                     <button type="button" class="btn btn-light active" id="btn-view-grid" title="Grid View"><i class="bi bi-grid-3x3-gap"></i></button>
                     <button type="button" class="btn btn-light" id="btn-view-list" title="List View"><i class="bi bi-list-ul"></i></button>
                 </div>
-                <select id="media-type-filter" class="form-select form-select-sm" style="min-width: 130px;">
-                    <option value="">Semua Tipe</option>
-                    <option value="image" {{ request('type') == 'image' ? 'selected' : '' }}>Gambar</option>
-                    <option value="video" {{ request('type') == 'video' ? 'selected' : '' }}>Video</option>
-                    <option value="audio" {{ request('type') == 'audio' ? 'selected' : '' }}>Audio</option>
-                    <option value="document" {{ request('type') == 'document' ? 'selected' : '' }}>Dokumen</option>
-                </select>
             </div>
         </div>
 

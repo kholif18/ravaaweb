@@ -34,7 +34,7 @@
         <div class="table-toolbar">
             <div class="toolbar-group">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 280px;">
+                    <div class="input-group input-group-sm" style="max-width: 200px;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control"
                                data-kt-portfolio-table-filter="search"
@@ -42,17 +42,15 @@
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
+                    <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
                     <button type="button" class="btn btn-light btn-sm" id="kt_portfolio_reset_filter">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
                 </div>
-            </div>
-            <div class="toolbar-group">
-                <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
-                    <option value="">Semua Status</option>
-                    <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
-                    <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                </select>
             </div>
         </div>
 
@@ -107,18 +105,14 @@
                         <div class="form-text fs-8">Setiap baris = satu teknologi</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Urutan</label>
-                            <input type="number" class="form-control form-control-sm" name="order" min="0" value="0">
-                        </div>
-                        <div class="col-md-3 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Status</label>
                             <select class="form-select form-select-sm" name="status">
                                 <option value="active">Aktif</option>
                                 <option value="inactive">Nonaktif</option>
                             </select>
                         </div>
-                        <div class="col-md-3 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Unggulan</label>
                             <div class="form-check form-switch mt-2">
                                 <input class="form-check-input" type="checkbox" name="is_featured" value="1">
@@ -188,9 +182,8 @@
                     </div>
                     <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-1">Gambar Proyek</label>
-                        <div id="edit_portfolio_image_media_picker">
-                            <x-media-picker name="image_media_id" type="image" label="Pilih Gambar" />
-                        </div>
+                        <x-media-picker name="edit_image_media_id" type="image" label="Pilih Gambar" />
+                        <input type="hidden" name="image_media_id" id="edit_image_media_id_value">
                     </div>
                     <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-1">Tech Stack (satu per baris)</label>
@@ -198,18 +191,14 @@
                         <div class="form-text fs-8">Setiap baris = satu teknologi</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-3 fv-row">
-                            <label class="fs-7 fw-semibold mb-1">Urutan</label>
-                            <input type="number" class="form-control form-control-sm" name="order" id="edit_portfolio_order" min="0">
-                        </div>
-                        <div class="col-md-3 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Status</label>
                             <select class="form-select form-select-sm" name="status" id="edit_portfolio_status">
                                 <option value="active">Aktif</option>
                                 <option value="inactive">Nonaktif</option>
                             </select>
                         </div>
-                        <div class="col-md-3 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Unggulan</label>
                             <div class="form-check form-switch mt-2">
                                 <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="edit_portfolio_featured">
@@ -271,6 +260,38 @@ document.addEventListener('DOMContentLoaded', function() {
         Ravaa.toast('{{ session('error') }}', 'error');
     @endif
 
+    // ===== SORTABLE DRAG-AND-DROP =====
+    function initSortable() {
+        var tbody = document.getElementById('sortable-portfolio');
+        if (!tbody || tbody.children.length === 0) return;
+        if (tbody._sortable) tbody._sortable.destroy();
+        tbody._sortable = Sortable.create(tbody, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                var ids = Array.from(tbody.querySelectorAll('tr[data-id]'))
+                    .map(function(tr) { return parseInt(tr.dataset.id); });
+                fetch('{{ route("admin.portfolio.reorder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success) Ravaa.toast(data.message || 'Urutan berhasil diperbarui', 'success');
+                })
+                .catch(function() { Ravaa.toast('Gagal memperbarui urutan', 'error'); });
+            }
+        });
+    }
+    initSortable();
+
     // Helper: convert tech array to newline-separated text
     function techToText(tech) {
         if (!tech || !Array.isArray(tech)) return '';
@@ -316,6 +337,10 @@ document.addEventListener('DOMContentLoaded', function() {
             this.appendChild(input);
         });
         this.querySelector('textarea[name="tech_text"]').remove();
+        // Copy edit_image_media_id → image_media_id before submit
+        const src = document.getElementById('edit_image_media_id-input');
+        const dst = document.getElementById('edit_image_media_id_value');
+        if (src && dst) dst.value = src.value;
         this.submit();
     });
 
@@ -334,15 +359,47 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_portfolio_project_url').value = p.project_url || '';
             document.getElementById('edit_portfolio_description').value = p.description || '';
             document.getElementById('edit_portfolio_tech').value = techToText(p.tech);
-            document.getElementById('edit_portfolio_order').value = p.order;
             document.getElementById('edit_portfolio_status').value = p.status;
             document.getElementById('edit_portfolio_featured').checked = p.is_featured;
             document.getElementById('edit_portfolio_meta_title').value = p.meta_title || '';
             document.getElementById('edit_portfolio_meta_description').value = p.meta_description || '';
-            // Pre-set media picker for image_media_id
-            if (p.image_media_id) {
-                const pickerInput = document.querySelector('#edit_portfolio_image_media_picker input[name="image_media_id"]');
-                if (pickerInput) pickerInput.value = p.image_media_id;
+            // Reset & init media picker for edit_image_media_id (always, even when no media)
+            const editPicInput = document.getElementById('edit_image_media_id-input');
+            if (editPicInput) editPicInput.value = p.image_media_id || '';
+            const previewContainer = document.getElementById('edit_image_media_id-selected');
+            if (previewContainer) {
+                if (p.image_media_id && p.media_url) {
+                    previewContainer.innerHTML = `
+                        <div class="media-picker-thumb">
+                            <img src="${p.media_url}" alt="${p.media_name || ''}">
+                            <button type="button" class="remove-media" onclick="removePickerItem('edit_image_media_id', '${p.image_media_id}')"><i class="bi bi-x"></i></button>
+                        </div>
+                    `;
+                } else {
+                    previewContainer.innerHTML = `
+                        <div class="media-picker-empty">
+                            <i class="bi bi-image"></i>
+                            <span>Belum ada media dipilih</span>
+                        </div>
+                    `;
+                }
+            }
+            // Initialize/sync media picker state
+            if (!window.mediaPickerState) window.mediaPickerState = {};
+            if (!window.mediaPickerState['edit_image_media_id']) {
+                window.mediaPickerState['edit_image_media_id'] = {
+                    multiple: false,
+                    type: 'image',
+                    selected: (p.image_media_id ? [String(p.image_media_id)] : []),
+                    selectedItems: {},
+                    currentSearch: '',
+                };
+            } else {
+                window.mediaPickerState['edit_image_media_id'].selected = (p.image_media_id ? [String(p.image_media_id)] : []);
+                window.mediaPickerState['edit_image_media_id'].selectedItems = {};
+            }
+            if (p.image_media_id && p.media_url) {
+                window.mediaPickerState['edit_image_media_id'].selectedItems[p.image_media_id] = `<img src="${p.media_url}" alt="${p.media_name || ''}">`;
             }
             const form = document.getElementById('kt_modal_edit_portfolio_form');
             form.action = form.dataset.updateUrl.replace(':id', p.id);
@@ -363,8 +420,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Filters
+    // ===== BULK SELECT & DELETE =====
     const tableContainer = document.getElementById('kt_portfolio_table_container');
+
+    function updateBulkDeleteButton() {
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        if (selectedIds.length > 0) {
+            bulkDeleteBtn.style.display = 'inline-block';
+            bulkDeleteBtn.innerHTML = '<i class="bi bi-trash"></i> Hapus Terpilih (' + selectedIds.length + ')';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+    }
+
+    function initializeTableEvents() {
+        const selectAll = document.getElementById('select-all');
+        const selectItems = tableContainer.querySelectorAll('.select-item');
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                selectItems.forEach(item => { item.checked = this.checked; });
+                updateBulkDeleteButton();
+            });
+        }
+        selectItems.forEach(item => {
+            item.addEventListener('change', updateBulkDeleteButton);
+        });
+    }
+    initializeTableEvents();
+
+    document.addEventListener('click', function(e) {
+        const bulkDeleteBtn = e.target.closest('#bulk-delete-btn');
+        if (!bulkDeleteBtn) return;
+        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+        const selectedIds = Array.from(selectedItems).map(item => item.value);
+        if (selectedIds.length === 0) {
+            Ravaa.toast('Silakan pilih portfolio yang akan dihapus', 'warning');
+            return;
+        }
+        Ravaa.confirm('Hapus Portfolio Terpilih?', `Anda akan menghapus <strong>${selectedIds.length}</strong> portfolio. Tindakan ini tidak dapat dibatalkan!`, 'warning')
+        .then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
+                document.getElementById('bulk-delete-form').submit();
+            }
+        });
+    });
+
+    // Filters
     const searchInput = document.querySelector('[data-kt-portfolio-table-filter="search"]');
     const statusFilter = document.querySelector('select[name="status"]');
     const resetBtn = document.getElementById('kt_portfolio_reset_filter');
@@ -381,6 +487,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             tableContainer.innerHTML = await response.text();
             window.history.pushState({}, '', url.toString());
+            initSortable();
+            initializeTableEvents();
         } catch (e) { Ravaa.toast('Gagal memfilter', 'error'); }
         finally { tableContainer.style.opacity = '1'; }
     }

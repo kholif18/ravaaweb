@@ -9,19 +9,23 @@
                     <input class="form-check-input" type="checkbox" id="select-all" />
                 </div>
             </th>
+            <th style="width: 32px;"></th>
             <th>Nama Kategori</th>
             <th style="width: 100px;">Status</th>
             <th style="width: 60px;">Urutan</th>
-            <th style="width: 50px;">Aksi</th>
+            <th style="width: 120px;" class="text-center">Aksi</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="sortable-categories">
         @foreach($categories as $category)
-        <tr>
+        <tr data-id="{{ $category->id }}">
             <td>
                 <div class="form-check" style="margin: 0;">
                     <input class="form-check-input select-item" type="checkbox" value="{{ $category->id }}" />
                 </div>
+            </td>
+            <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
+                <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
             </td>
             <td>
                 <div class="d-flex align-items-center gap-2">
@@ -51,39 +55,36 @@
             <td>
                 <span class="text-muted" style="font-size: 0.75rem; font-weight: 600;">{{ $category->order }}</span>
             </td>
-            <td class="table-actions">
-                <button class="dropdown-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="#" 
-                            onclick="editCategory({{ $category->id }})" 
-                            data-bs-toggle="modal" data-bs-target="#kt_modal_edit_category">
-                            <i class="bi bi-pencil"></i> <span class="dropdown-item-text">Edit</span>
-                        </a>
-                    </li>
-                    <li>
-                        @if($category->status == 'active')
-                        <a class="dropdown-item" href="#" 
-                            onclick="updateStatus({{ $category->id }}, 'inactive', '{{ $category->name }}')">
-                            <i class="bi bi-pause-circle"></i> <span class="dropdown-item-text">Nonaktifkan</span>
-                        </a>
-                        @else
-                        <a class="dropdown-item" href="#" 
-                            onclick="updateStatus({{ $category->id }}, 'active', '{{ $category->name }}')">
-                            <i class="bi bi-play-circle"></i> <span class="dropdown-item-text">Aktifkan</span>
-                        </a>
-                        @endif
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="#" 
-                            onclick="deleteCategory({{ $category->id }}, '{{ $category->name }}')" style="color: var(--danger);">
-                            <i class="bi bi-trash"></i> <span class="dropdown-item-text">Hapus</span>
-                        </a>
-                    </li>
-                </ul>
+            <td class="text-center">
+                <div class="d-flex justify-content-center gap-1">
+                    <button type="button" class="btn btn-icon btn-sm"
+                            onclick="editCategory({{ $category->id }})"
+                            title="Edit"
+                            style="width: 28px; height: 28px; border-radius: 6px; background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent);">
+                        <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
+                    </button>
+                    @if($category->status == 'active')
+                    <button type="button" class="btn btn-icon btn-sm"
+                            onclick="updateStatus({{ $category->id }}, 'inactive', '{{ $category->name }}')"
+                            title="Nonaktifkan"
+                            style="width: 28px; height: 28px; border-radius: 6px; background: rgba(234,179,8,0.1); color: #a16207;">
+                        <i class="bi bi-pause-circle" style="font-size: 0.75rem;"></i>
+                    </button>
+                    @else
+                    <button type="button" class="btn btn-icon btn-sm"
+                            onclick="updateStatus({{ $category->id }}, 'active', '{{ $category->name }}')"
+                            title="Aktifkan"
+                            style="width: 28px; height: 28px; border-radius: 6px; background: rgba(34,197,94,0.1); color: #15803d;">
+                        <i class="bi bi-play-circle" style="font-size: 0.75rem;"></i>
+                    </button>
+                    @endif
+                    <button type="button" class="btn btn-icon btn-sm"
+                            onclick="deleteCategory({{ $category->id }}, '{{ $category->name }}')"
+                            title="Hapus"
+                            style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
+                        <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                    </button>
+                </div>
             </td>
         </tr>
         @endforeach

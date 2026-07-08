@@ -17,8 +17,23 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'thumbnail', 'media', 'variants'])
-            ->withCount('variants');
+        $tab = $request->input('tab', 'publish');
+
+        if ($tab === 'trash') {
+            // Only trashed (soft-deleted) products
+            $query = Product::onlyTrashed()->with(['category', 'thumbnail', 'media', 'variants'])
+                ->withCount('variants');
+        } else {
+            // Publish = active, Draft = inactive
+            $query = Product::with(['category', 'thumbnail', 'media', 'variants'])
+                ->withCount('variants');
+
+            if ($tab === 'publish') {
+                $query->where('status', 'active');
+            } elseif ($tab === 'draft') {
+                $query->where('status', 'inactive');
+            }
+        }
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -31,10 +46,6 @@ class ProductController extends Controller
             $query->where('category_id', $categoryId);
         }
 
-        if ($status = $request->input('status')) {
-            $query->where('status', $status);
-        }
-
         if ($request->boolean('featured')) {
             $query->where('is_featured', true);
         }
@@ -43,7 +54,19 @@ class ProductController extends Controller
         $products->withQueryString();
         $categories = Category::orderBy('name')->get();
 
-        return view('admin.products.index', compact('products', 'categories'));
+        // Count for tabs
+        $countPublish = Product::where('status', 'active')->count();
+        $countDraft = Product::where('status', 'inactive')->count();
+        $countTrash = Product::onlyTrashed()->count();
+
+        if ($request->ajax()) {
+            return view('admin.products._table', compact('products', 'tab'))->render();
+        }
+
+        return view('admin.products.index', compact(
+            'products', 'categories', 'tab',
+            'countPublish', 'countDraft', 'countTrash'
+        ));
     }
 
     public function create()
@@ -179,7 +202,7 @@ class ProductController extends Controller
         });
 
         return redirect()->route('admin.products.index')
-            ->with('success', "Product \"{$product->name}\" created successfully.");
+            ->with('success', "Produk \"{$product->name}\" berhasil dibuat.");
     }
 
     public function edit(Product $product)
@@ -329,11 +352,88 @@ class ProductController extends Controller
         });
 
         return redirect()->route('admin.products.index')
-            ->with('success', "Product \"{$product->name}\" updated successfully.");
+            ->with('success', "Produk \"{$product->name}\" berhasil diperbarui.");
     }
 
+    /**
+     * Soft delete (move to trash)
+     */
     public function destroy(Product $product)
     {
+        $name = $product->name;
+        $tab = request('tab', 'publish');
+        $product->delete(); // soft delete
+
+        return redirect()->route('admin.products.index', ['tab' => $tab])
+            ->with('success', "Produk \"{$name}\" dipindahkan ke sampah.");
+    }
+
+    /**
+     * Bulk soft delete (move to trash)
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id',
+        ]);
+
+        $count = 0;
+        foreach ($request->input('ids') as $id) {
+            $product = Product::find($id);
+            if ($product) {
+                $product->delete();
+                $count++;
+            }
+        }
+
+        $tab = $request->input('tab', 'publish');
+
+        return redirect()->route('admin.products.index', ['tab' => $tab])
+            ->with('success', "{$count} produk dipindahkan ke sampah.");
+    }
+
+    /**
+     * Restore single product from trash
+     */
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->restore();
+
+        return redirect()->route('admin.products.index', ['tab' => 'trash'])
+            ->with('success', "Produk \"{$product->name}\" berhasil dipulihkan.");
+    }
+
+    /**
+     * Bulk restore products from trash
+     */
+    public function restoreMultiple(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id',
+        ]);
+
+        $count = 0;
+        foreach ($request->input('ids') as $id) {
+            $product = Product::onlyTrashed()->find($id);
+            if ($product) {
+                $product->restore();
+                $count++;
+            }
+        }
+
+        return redirect()->route('admin.products.index', ['tab' => 'trash'])
+            ->with('success', "{$count} produk berhasil dipulihkan.");
+    }
+
+    /**
+     * Permanently delete single product
+     */
+    public function forceDestroy($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
         $name = $product->name;
 
         // Delete associated media files from disk
@@ -348,13 +448,23 @@ class ProductController extends Controller
             }
         }
 
-        $product->delete();
+        // Force delete variants
+        $product->variants()->forceDelete();
 
-        return redirect()->route('admin.products.index')
-            ->with('success', "Product \"{$name}\" deleted successfully.");
+        // Detach media relationships
+        $product->media()->detach();
+
+        // Force delete the product
+        $product->forceDelete();
+
+        return redirect()->route('admin.products.index', ['tab' => 'trash'])
+            ->with('success', "Produk \"{$name}\" berhasil dihapus permanen.");
     }
 
-    public function destroyMultiple(Request $request)
+    /**
+     * Bulk permanently delete products from trash
+     */
+    public function forceDestroyMultiple(Request $request)
     {
         $request->validate([
             'ids' => 'required|array',
@@ -363,21 +473,28 @@ class ProductController extends Controller
 
         $count = 0;
         foreach ($request->input('ids') as $id) {
-            $product = Product::findOrFail($id);
-            foreach ($product->media as $media) {
-                $media->deleteFile();
-            }
-            foreach ($product->variants as $variant) {
-                if ($variant->media) {
-                    $variant->media->deleteFile();
+            $product = Product::onlyTrashed()->find($id);
+            if ($product) {
+                // Delete associated media files from disk
+                foreach ($product->media as $media) {
+                    $media->deleteFile();
                 }
+
+                foreach ($product->variants as $variant) {
+                    if ($variant->media) {
+                        $variant->media->deleteFile();
+                    }
+                }
+
+                $product->variants()->forceDelete();
+                $product->media()->detach();
+                $product->forceDelete();
+                $count++;
             }
-            $product->delete();
-            $count++;
         }
 
-        return redirect()->route('admin.products.index')
-            ->with('success', "{$count} products deleted.");
+        return redirect()->route('admin.products.index', ['tab' => 'trash'])
+            ->with('success', "{$count} produk berhasil dihapus permanen.");
     }
 
     public function updateMediaOrder(Request $request, Product $product)

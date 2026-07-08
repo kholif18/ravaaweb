@@ -677,7 +677,7 @@ body {
    FORMS
    ============================================= */
 .form-control, .form-select {
-  display: block; width: 100%; padding: 0.4rem 0.65rem;
+  display: block; width: 100%; padding: 0.25rem 0.65rem;
   font-size: 0.8rem; font-family: inherit;
   background: var(--bg-surface); border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--r-md); color: var(--text-primary);
@@ -786,7 +786,10 @@ textarea.form-control { min-height: 60px; resize: vertical; }
 }
 .table-toolbar .toolbar-group .form-control-sm,
 .table-toolbar .toolbar-group .form-select-sm {
-  padding: 0.25rem 0.5rem; font-size: 0.75rem;
+  height: 30px; padding: 0.25rem 0.5rem; font-size: 0.75rem; line-height: 1.5;
+}
+.table-toolbar .toolbar-group .form-select-sm {
+  padding-right: 1.75rem;
 }
 
 /* Filter bar (dropdown filters) */
@@ -1811,4 +1814,16 @@ label.required::after, .fv-row label.required::after {
     left: 0.75rem; width: 45%; text-align: left;
     font-weight: 600; color: var(--text-muted);
   }
+}
+
+/* ===== SORTABLE DRAG-AND-DROP ===== */
+.sortable-ghost {
+  opacity: 0.4;
+  background: rgba(var(--accent-rgb, 79, 110, 247), 0.08);
+}
+.drag-handle:hover {
+  color: var(--accent) !important;
+}
+.drag-handle:active {
+  cursor: grabbing;
 }

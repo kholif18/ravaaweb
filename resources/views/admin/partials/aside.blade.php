@@ -61,6 +61,12 @@
             </a>
         </li>
         <li>
+            <a class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}" href="{{ route('admin.testimonials.index') }}">
+                <i class="bi bi-chat-quote"></i>
+                <span>Testimoni</span>
+            </a>
+        </li>
+        <li>
             <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
                 <i class="bi bi-images"></i>
                 <span>Banner / Hero</span>

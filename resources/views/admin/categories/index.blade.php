@@ -38,7 +38,7 @@
         <div class="table-toolbar">
             <div class="toolbar-group">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 280px;">
+                    <div class="input-group input-group-sm" style="max-width: 200px;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control" 
                                data-kt-category-table-filter="search" 
@@ -46,26 +46,24 @@
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
+                    <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                    <select name="parent" class="form-select form-select-sm" style="min-width: 150px;">
+                        <option value="">Semua Parent</option>
+                        <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Root</option>
+                        @foreach($parentCategories as $parent)
+                            <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->name }}
+                            </option>
+                        @endforeach
+                    </select>
                     <button type="button" class="btn btn-light btn-sm" id="kt_category_reset_filter">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
                 </div>
-            </div>
-            <div class="toolbar-group">
-                <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
-                    <option value="">Semua Status</option>
-                    <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
-                    <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                </select>
-                <select name="parent" class="form-select form-select-sm" style="min-width: 150px;">
-                    <option value="">Semua Parent</option>
-                    <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Root</option>
-                    @foreach($parentCategories as $parent)
-                        <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
-                            {{ $parent->name }}
-                        </option>
-                    @endforeach
-                </select>
             </div>
         </div>
         <!--end::Toolbar-->
@@ -113,7 +111,7 @@
                     </div>
                     
                     <div class="row mb-3">
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="required fs-7 fw-semibold mb-1">Icon</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">
@@ -147,14 +145,8 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="col-md-4 fv-row">
-                            <label class="required fs-7 fw-semibold mb-1">Urutan</label>
-                            <input type="number" class="form-control form-control-sm" 
-                                   min="1" max="100" value="1" name="order" required />
-                        </div>
 
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Warna</label>
                             <select class="form-select form-select-sm" name="color" id="add_category_color">
                                 <option value="primary" selected>Blue</option>
@@ -272,7 +264,7 @@
                     </div>
                     
                     <div class="row mb-3">
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="required fs-7 fw-semibold mb-1">Icon</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">
@@ -309,17 +301,8 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="col-md-4 fv-row">
-                            <label class="required fs-7 fw-semibold mb-1">Urutan</label>
-                            <input type="number" class="form-control form-control-sm" 
-                                   min="1" max="100" 
-                                   name="order" 
-                                   id="edit_category_order"
-                                   required />
-                        </div>
 
-                        <div class="col-md-4 fv-row">
+                        <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">Warna</label>
                             <select class="form-select form-select-sm" name="color" id="edit_category_color">
                                 <option value="primary">Blue</option>
@@ -538,7 +521,6 @@ async function editCategory(id) {
             document.getElementById('edit_category_icon').value = category.icon;
             document.getElementById('icon_preview').className = category.icon;
             document.getElementById('edit_category_color').value = category.color || 'primary';
-            document.getElementById('edit_category_order').value = category.order;
             document.getElementById('edit_category_status').value = category.status;
             document.getElementById('edit_category_parent').value = category.parent_id || '';
             document.getElementById('edit_category_slug').value = category.slug;
@@ -824,6 +806,38 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
+    // ===== SORTABLE DRAG-AND-DROP =====
+    function initSortable() {
+        var tbody = document.getElementById('sortable-categories');
+        if (!tbody || tbody.children.length === 0) return;
+        if (tbody._sortable) tbody._sortable.destroy();
+        tbody._sortable = Sortable.create(tbody, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                var ids = Array.from(tbody.querySelectorAll('tr[data-id]'))
+                    .map(function(tr) { return parseInt(tr.dataset.id); });
+                fetch('{{ route("admin.categories.reorder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success) Ravaa.toast(data.message || 'Urutan berhasil diperbarui', 'success');
+                })
+                .catch(function() { Ravaa.toast('Gagal memperbarui urutan', 'error'); });
+            }
+        });
+    }
+    initSortable();
+
     // Handle Filters
     const tableContainer = document.getElementById('kt_category_table_container');
     const searchInput = document.querySelector('[data-kt-category-table-filter="search"]');
@@ -880,6 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Re-initialize any components if needed (like checkboxes)
             initializeTableEvents();
+            initSortable();
 
         } catch (error) {
             console.error('Error filtering:', error);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BannerController extends Controller
 {
@@ -43,11 +44,16 @@ class BannerController extends Controller
             'cta_text' => 'nullable|string|max:100',
             'cta_url'  => 'nullable|string|max:500',
             'badge'    => 'nullable|string|max:100',
-            'order'    => 'required|integer|min:0',
+            'order'    => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
+
+        // Auto-assign order if not explicitly provided
+        if (!isset($validated['order']) || $validated['order'] === null) {
+            $validated['order'] = (Banner::max('order') ?? 0) + 1;
+        }
 
         Banner::create($validated);
 
@@ -61,9 +67,15 @@ class BannerController extends Controller
 
     public function edit(Banner $banner)
     {
+        $data = $banner->toArray();
+        if ($banner->imageMedia) {
+            $data['media_url'] = $banner->imageMedia->url;
+            $data['media_name'] = $banner->imageMedia->file_name;
+        }
+
         return response()->json([
             'success' => true,
-            'banner' => $banner,
+            'banner' => $data,
         ]);
     }
 
@@ -77,7 +89,7 @@ class BannerController extends Controller
             'cta_text' => 'nullable|string|max:100',
             'cta_url'  => 'nullable|string|max:500',
             'badge'    => 'nullable|string|max:100',
-            'order'    => 'required|integer|min:0',
+            'order'    => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
 
@@ -116,6 +128,26 @@ class BannerController extends Controller
 
         return redirect()->route('admin.banners.index')
             ->with('success', count($ids) . ' banner berhasil dihapus!');
+    }
+
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'required|integer|exists:banners,id',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['ids'] as $index => $id) {
+                Banner::where('id', $id)->update(['order' => $index]);
+            }
+        });
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Urutan banner berhasil diperbarui!']);
+        }
+
+        return redirect()->back()->with('success', 'Urutan banner berhasil diperbarui!');
     }
 
     public function updateStatus(Request $request, Banner $banner)

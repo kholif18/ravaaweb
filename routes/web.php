@@ -38,13 +38,21 @@ Route::prefix('admin')
 
         // Dashboard
         Route::get('/dashboard', function () {
-            return view('admin.dashboard.index');
+            $stats = [
+                ['Produk', \App\Models\Product::count(), 'box', 'primary'],
+                ['Kategori', \App\Models\Category::count(), 'tags', 'success'],
+                ['Testimoni', \App\Models\Testimonial::count(), 'star', 'warning'],
+                ['Portfolio', \App\Models\PortfolioItem::count(), 'images', 'info'],
+            ];
+
+            return view('admin.dashboard.index', compact('stats'));
         })->name('dashboard');
 
         // Categories
         Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk.destroy');
-        Route::resource('categories', CategoryController::class);
         Route::put('categories/{category}/status', [CategoryController::class, 'updateStatus'])->name('categories.status.update');
+        Route::post('categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
+        Route::resource('categories', CategoryController::class);
 
         // Tags
         Route::delete('tags/bulk-delete', [App\Http\Controllers\Admin\TagController::class, 'bulkDestroy'])->name('tags.bulk.destroy');
@@ -58,6 +66,10 @@ Route::prefix('admin')
 
         // Products
         Route::delete('products/bulk-delete', [App\Http\Controllers\Admin\ProductController::class, 'destroyMultiple'])->name('products.bulk.destroy');
+        Route::put('products/bulk-restore', [App\Http\Controllers\Admin\ProductController::class, 'restoreMultiple'])->name('products.bulk.restore');
+        Route::delete('products/force-delete', [App\Http\Controllers\Admin\ProductController::class, 'forceDestroyMultiple'])->name('products.force.destroy');
+        Route::put('products/{id}/restore', [App\Http\Controllers\Admin\ProductController::class, 'restore'])->name('products.restore');
+        Route::delete('products/{id}/force', [App\Http\Controllers\Admin\ProductController::class, 'forceDestroy'])->name('products.force');
         Route::put('products/{product}/media-order', [App\Http\Controllers\Admin\ProductController::class, 'updateMediaOrder'])->name('products.media.order');
         Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
 
@@ -68,16 +80,25 @@ Route::prefix('admin')
         // Services
         Route::delete('services/bulk-delete', [App\Http\Controllers\Admin\ServiceController::class, 'bulkDestroy'])->name('services.bulk.destroy');
         Route::put('services/{service}/status', [App\Http\Controllers\Admin\ServiceController::class, 'updateStatus'])->name('services.status.update');
+        Route::post('services/reorder', [App\Http\Controllers\Admin\ServiceController::class, 'reorder'])->name('services.reorder');
         Route::resource('services', App\Http\Controllers\Admin\ServiceController::class)->except(['show']);
 
         // Portfolio
         Route::delete('portfolio/bulk-delete', [App\Http\Controllers\Admin\PortfolioItemController::class, 'bulkDestroy'])->name('portfolio.bulk.destroy');
         Route::put('portfolio/{portfolioItem}/status', [App\Http\Controllers\Admin\PortfolioItemController::class, 'updateStatus'])->name('portfolio.status.update');
+        Route::post('portfolio/reorder', [App\Http\Controllers\Admin\PortfolioItemController::class, 'reorder'])->name('portfolio.reorder');
         Route::resource('portfolio', App\Http\Controllers\Admin\PortfolioItemController::class)->except(['show']);
+
+        // Testimonials
+        Route::delete('testimonials/bulk-delete', [App\Http\Controllers\Admin\TestimonialController::class, 'bulkDestroy'])->name('testimonials.bulk.destroy');
+        Route::put('testimonials/{testimonial}/status', [App\Http\Controllers\Admin\TestimonialController::class, 'updateStatus'])->name('testimonials.status.update');
+        Route::post('testimonials/reorder', [App\Http\Controllers\Admin\TestimonialController::class, 'reorder'])->name('testimonials.reorder');
+        Route::resource('testimonials', App\Http\Controllers\Admin\TestimonialController::class)->except(['show']);
 
         // Banners
         Route::delete('banners/bulk-delete', [App\Http\Controllers\Admin\BannerController::class, 'bulkDestroy'])->name('banners.bulk.destroy');
         Route::put('banners/{banner}/status', [App\Http\Controllers\Admin\BannerController::class, 'updateStatus'])->name('banners.status.update');
+        Route::post('banners/reorder', [App\Http\Controllers\Admin\BannerController::class, 'reorder'])->name('banners.reorder');
         Route::resource('banners', App\Http\Controllers\Admin\BannerController::class)->except(['show']);
 
     });

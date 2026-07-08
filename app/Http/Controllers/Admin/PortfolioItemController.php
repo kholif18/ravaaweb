@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PortfolioItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PortfolioItemController extends Controller
@@ -52,7 +53,7 @@ class PortfolioItemController extends Controller
             'tech'         => 'nullable|array',
             'tech.*'       => 'nullable|string|max:100',
             'project_url'  => 'nullable|string|max:500',
-            'order'        => 'required|integer|min:0',
+            'order'        => 'nullable|integer|min:0',
             'status'       => 'required|in:active,inactive',
             'is_featured'  => 'boolean',
             'meta_title'       => 'nullable|string|max:255',
@@ -66,6 +67,11 @@ class PortfolioItemController extends Controller
 
         $validated['is_featured'] = $request->boolean('is_featured');
 
+        // Auto-assign order if not explicitly provided
+        if (!isset($validated['order']) || $validated['order'] === null) {
+            $validated['order'] = (PortfolioItem::max('order') ?? 0) + 1;
+        }
+
         PortfolioItem::create($validated);
 
         if ($request->ajax()) {
@@ -78,9 +84,15 @@ class PortfolioItemController extends Controller
 
     public function edit(PortfolioItem $portfolioItem)
     {
+        $data = $portfolioItem->toArray();
+        if ($portfolioItem->imageMedia) {
+            $data['media_url'] = $portfolioItem->imageMedia->url;
+            $data['media_name'] = $portfolioItem->imageMedia->file_name;
+        }
+
         return response()->json([
             'success' => true,
-            'portfolioItem' => $portfolioItem,
+            'portfolioItem' => $data,
         ]);
     }
 
@@ -97,7 +109,7 @@ class PortfolioItemController extends Controller
             'tech'         => 'nullable|array',
             'tech.*'       => 'nullable|string|max:100',
             'project_url'  => 'nullable|string|max:500',
-            'order'        => 'required|integer|min:0',
+            'order'        => 'nullable|integer|min:0',
             'status'       => 'required|in:active,inactive',
             'is_featured'  => 'boolean',
             'meta_title'       => 'nullable|string|max:255',
@@ -144,6 +156,26 @@ class PortfolioItemController extends Controller
 
         return redirect()->route('admin.portfolio.index')
             ->with('success', count($ids) . ' portfolio berhasil dihapus!');
+    }
+
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'required|integer|exists:portfolio_items,id',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['ids'] as $index => $id) {
+                PortfolioItem::where('id', $id)->update(['order' => $index]);
+            }
+        });
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Urutan portfolio berhasil diperbarui!']);
+        }
+
+        return redirect()->back()->with('success', 'Urutan portfolio berhasil diperbarui!');
     }
 
     public function updateStatus(Request $request, PortfolioItem $portfolioItem)
