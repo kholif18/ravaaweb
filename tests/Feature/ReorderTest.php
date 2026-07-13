@@ -43,9 +43,10 @@ class ReorderTest extends TestCase
 
         $this->loginAsAdmin();
 
-        $response = $this->postJson(route('admin.banners.reorder'), [
-            'ids' => [$banner3->id, $banner1->id, $banner2->id],
-        ]);
+        $response = $this->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->postJson(route('admin.banners.reorder'), [
+                'ids' => [$banner3->id, $banner1->id, $banner2->id],
+            ]);
 
         $response->assertOk()
             ->assertJson(['success' => true]);
@@ -63,9 +64,10 @@ class ReorderTest extends TestCase
 
         $this->loginAsAdmin();
 
-        $response = $this->postJson(route('admin.services.reorder'), [
-            'ids' => [$service2->id, $service3->id, $service1->id],
-        ]);
+        $response = $this->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->postJson(route('admin.services.reorder'), [
+                'ids' => [$service2->id, $service3->id, $service1->id],
+            ]);
 
         $response->assertOk()
             ->assertJson(['success' => true]);
@@ -83,9 +85,10 @@ class ReorderTest extends TestCase
 
         $this->loginAsAdmin();
 
-        $response = $this->postJson(route('admin.portfolio.reorder'), [
-            'ids' => [$item3->id, $item2->id, $item1->id],
-        ]);
+        $response = $this->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->postJson(route('admin.portfolio.reorder'), [
+                'ids' => [$item3->id, $item2->id, $item1->id],
+            ]);
 
         $response->assertOk()
             ->assertJson(['success' => true]);

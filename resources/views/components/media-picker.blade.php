@@ -66,6 +66,10 @@
         <i class="bi bi-images"></i> {{ $label }}
     </button>
 
+    @if($multiple)
+    <div class="gallery-reorder-hint"><i class="bi bi-arrows-move"></i> Seret gambar untuk mengubah urutan</div>
+    @endif
+
     <input type="hidden" name="{{ $name }}" id="{{ $name }}-input" value="{{ $mediaValue }}">
     <!-- Dynamic array inputs for multi-select will be created by JS -->
     @if($multiple && $mediaValue)
@@ -274,6 +278,15 @@
         font-size: 32px;
         color: var(--text-muted);
     }
+
+    /* Gallery reorder drag-and-drop */
+    .media-picker-thumb[draggable="true"] { cursor: grab; }
+    .media-picker-thumb[draggable="true"]:active { cursor: grabbing; }
+    .media-picker-thumb.drag-over { border-color: var(--accent) !important; box-shadow: 0 0 0 2px var(--accent-light); transform: scale(1.05); }
+    .media-picker-thumb.dragging { opacity: 0.3; transform: scale(0.95); }
+    .media-picker-thumb { transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s; }
+    .gallery-reorder-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+    .gallery-reorder-hint i { font-size: 0.75rem; }
 </style>
 
 @push('scripts')
@@ -361,6 +374,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const isMultiple = wrapper.dataset.multiple === 'true';
             const pickerType = wrapper.dataset.type || '';
             initMediaPickerFromDOM(fieldName, isMultiple, pickerType);
+        }
+    });
+
+    // Init gallery reorder for existing multi-select pickers
+    document.querySelectorAll('.media-picker-wrapper[data-multiple="true"]').forEach(wrapper => {
+        const input = wrapper.querySelector('input[type="hidden"][id$="-input"]');
+        if (input) {
+            const fieldName = input.id.replace('-input', '');
+            setTimeout(function() { initGalleryReorder(fieldName); }, 100);
         }
     });
 });
@@ -724,6 +746,9 @@ function confirmMediaPicker(overrideFieldName) {
             if (modal) modal.hide();
         }
     }
+
+    // Init drag-and-drop reorder after rendering
+    setTimeout(function() { initGalleryReorder(fieldName); }, 50);
 }
 
 function removePickerItem(fieldName, id) {
@@ -731,6 +756,106 @@ function removePickerItem(fieldName, id) {
     if (state) {
         state.selected = state.selected.filter(i => i !== String(id));
         confirmMediaPicker(fieldName);
+    }
+}
+
+// ===== GALLERY REORDER (drag-and-drop) =====
+function initGalleryReorder(fieldName) {
+    const container = document.getElementById(fieldName + '-selected');
+    if (!container) return;
+    const wrapper = container.closest('.media-picker-wrapper');
+    if (!wrapper || wrapper.dataset.multiple !== 'true') return;
+
+    // Remove old listeners by cloning
+    container.querySelectorAll('.media-picker-thumb').forEach(thumb => {
+        if (thumb._galleryDragHandlers) return;
+        thumb._galleryDragHandlers = true;
+        thumb.draggable = true;
+
+        thumb.addEventListener('dragstart', function(e) {
+            window._galleryDraggedEl = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', '');
+        });
+
+        thumb.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (this !== window._galleryDraggedEl) {
+                this.classList.add('drag-over');
+            }
+        });
+
+        thumb.addEventListener('dragleave', function() {
+            this.classList.remove('drag-over');
+        });
+
+        thumb.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            const dragged = window._galleryDraggedEl;
+            if (dragged && dragged !== this) {
+                const allThumbs = [...container.querySelectorAll('.media-picker-thumb')];
+                const draggedIdx = allThumbs.indexOf(dragged);
+                const droppedIdx = allThumbs.indexOf(this);
+                if (draggedIdx < droppedIdx) {
+                    container.insertBefore(dragged, this.nextSibling);
+                } else {
+                    container.insertBefore(dragged, this);
+                }
+                syncGalleryOrder(fieldName);
+            }
+        });
+
+        thumb.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+            container.querySelectorAll('.media-picker-thumb').forEach(t => t.classList.remove('drag-over'));
+            window._galleryDraggedEl = null;
+        });
+    });
+}
+
+function syncGalleryOrder(fieldName) {
+    const container = document.getElementById(fieldName + '-selected');
+    const state = mediaPickerState[fieldName];
+    if (!container) return;
+
+    const thumbs = container.querySelectorAll('.media-picker-thumb');
+    const newOrder = [];
+    const newItems = {};
+
+    thumbs.forEach(thumb => {
+        const btn = thumb.querySelector('.remove-media');
+        if (btn) {
+            const match = btn.getAttribute('onclick') ? btn.getAttribute('onclick').match(/'([^']+)'\)$/) : null;
+            if (match) {
+                const id = match[1];
+                newOrder.push(id);
+                if (state && state.selectedItems[id]) newItems[id] = state.selectedItems[id];
+            }
+        }
+    });
+
+    if (state) {
+        state.selected = newOrder;
+        state.selectedItems = newItems;
+    }
+
+    const input = document.getElementById(fieldName + '-input');
+    if (input) input.value = newOrder.join(',');
+
+    const wrapper = input ? input.closest('.media-picker-wrapper') : null;
+    if (wrapper) {
+        wrapper.querySelectorAll('input.dynamic-media-id').forEach(el => el.remove());
+        newOrder.forEach(id => {
+            const arrInput = document.createElement('input');
+            arrInput.type = 'hidden';
+            arrInput.name = fieldName + '[]';
+            arrInput.value = id;
+            arrInput.className = 'dynamic-media-id';
+            wrapper.appendChild(arrInput);
+        });
     }
 }
 </script>

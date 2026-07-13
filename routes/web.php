@@ -77,6 +77,17 @@ Route::prefix('admin')
         Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
 
+        // Users
+        Route::put('users/{user}/status', [App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.update-status');
+        Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+
+        // Roles
+        Route::get('roles', [App\Http\Controllers\Admin\RoleController::class, 'index'])->name('roles.index');
+
+        // Home Builder
+        Route::get('home', [App\Http\Controllers\Admin\HomeBuilderController::class, 'index'])->name('home.index');
+        Route::post('home', [App\Http\Controllers\Admin\HomeBuilderController::class, 'store'])->name('home.store');
+
         // Services
         Route::delete('services/bulk-delete', [App\Http\Controllers\Admin\ServiceController::class, 'bulkDestroy'])->name('services.bulk.destroy');
         Route::put('services/{service}/status', [App\Http\Controllers\Admin\ServiceController::class, 'updateStatus'])->name('services.status.update');

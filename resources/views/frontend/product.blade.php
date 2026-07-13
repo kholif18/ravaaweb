@@ -29,12 +29,12 @@
             </div>
         </form>
 
-        @if(count($products) > 0)
+        @if($products->count() > 0)
             <div class="product-grid">
                 @foreach($products as $product)
-                    <div class="prod-card">
+                    <div class="prod-card" onclick="if(!event.target.closest('.prod-card-actions')){ window.location='{{ url('/product/' . $product->slug) }}' }" style="cursor:pointer;">
                         <div class="prod-card-img" style="position:relative;">
-                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="prod-card-img">
+                            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="prod-card-img" loading="lazy">
                             @if(!empty($product->badge))
                                 <div class="prod-card-badge badge-{{ strtolower(explode(' ', $product->badge)[0]) }}">{{ $product->badge }}</div>
                             @endif
@@ -44,12 +44,12 @@
                             <div class="prod-card-category">{{ $product->category }}</div>
                             <h3 class="prod-card-title">{{ $product->name }}</h3>
                             <div class="prod-card-price">
-                                {{ $product->price }}
-                                @if(!empty($product->original_price))
+                                {{ $product->effective_price }}
+                                @if($product->original_price)
                                     <span class="original">{{ $product->original_price }}</span>
                                 @endif
                             </div>
-                            <p>{{ $product->description }}</p>
+                            <p class="prod-card-desc">{{ Str::limit($product->description, 100) }}</p>
                             <div class="prod-card-actions">
                                 <a href="/product/{{ $product->slug }}" class="btn btn-primary btn-sm">Detail</a>
                                 @if($settings['whatsapp'] ?? null)
@@ -60,6 +60,13 @@
                     </div>
                 @endforeach
             </div>
+
+            {{-- Pagination --}}
+            @if($products->hasPages())
+            <div class="d-flex justify-content-center mt-4">
+                {{ $products->links('frontend.partials.pagination') }}
+            </div>
+            @endif
         @else
             <div class="empty-state">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -75,3 +82,25 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Category pill click
+    document.querySelectorAll('#categoryPills .filter-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.getElementById('inputCategory').value = this.dataset.category;
+            document.getElementById('catalogForm').submit();
+        });
+    });
+
+    // Type pill click
+    document.querySelectorAll('.type-pills .filter-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.getElementById('inputType').value = this.dataset.type;
+            document.getElementById('catalogForm').submit();
+        });
+    });
+});
+</script>
+@endpush

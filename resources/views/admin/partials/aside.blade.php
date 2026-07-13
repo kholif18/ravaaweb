@@ -73,7 +73,7 @@
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->is('admin/home*') ? 'active' : '' }}" href="#">
+            <a class="nav-link {{ request()->is('admin/home*') ? 'active' : '' }}" href="{{ route('admin.home.index') }}">
                 <i class="bi bi-layout-three-columns"></i>
                 <span>Home Builder</span>
             </a>
@@ -91,15 +91,9 @@
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                 <i class="bi bi-people"></i>
                 <span>Pengguna Admin</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->is('admin/roles*') || request()->is('admin/permissions*') ? 'active' : '' }}" href="#">
-                <i class="bi bi-shield-check"></i>
-                <span>Role & Permission</span>
             </a>
         </li>
     </ul>
@@ -115,9 +109,9 @@
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->is('admin/reports*') ? 'active' : '' }}" href="#">
-                <i class="bi bi-bar-chart"></i>
-                <span>Laporan</span>
+            <a class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}" href="{{ route('admin.roles.index') }}">
+                <i class="bi bi-shield-check"></i>
+                <span>Role & Permission</span>
             </a>
         </li>
         <li>
