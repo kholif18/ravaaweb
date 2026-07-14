@@ -184,6 +184,7 @@
                         <label class="fs-7 fw-semibold mb-1">Gambar Proyek</label>
                         <x-media-picker name="edit_image_media_id" type="image" label="Pilih Gambar" />
                         <input type="hidden" name="image_media_id" id="edit_image_media_id_value">
+                        <input type="hidden" name="image" id="edit_portfolio_image">
                     </div>
                     <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-1">Tech Stack (satu per baris)</label>
@@ -340,7 +341,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Copy edit_image_media_id → image_media_id before submit
         const src = document.getElementById('edit_image_media_id-input');
         const dst = document.getElementById('edit_image_media_id_value');
-        if (src && dst) dst.value = src.value;
+        const imgCol = document.getElementById('edit_portfolio_image');
+        if (src && dst) {
+            dst.value = src.value;
+            if (src.value && imgCol) {
+                imgCol.value = '';
+            }
+        }
         this.submit();
     });
 
@@ -366,13 +373,24 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset & init media picker for edit_image_media_id (always, even when no media)
             const editPicInput = document.getElementById('edit_image_media_id-input');
             if (editPicInput) editPicInput.value = p.image_media_id || '';
+            const imgCol = document.getElementById('edit_portfolio_image');
+            if (imgCol) imgCol.value = p.image || '';
+
             const previewContainer = document.getElementById('edit_image_media_id-selected');
             if (previewContainer) {
                 if (p.image_media_id && p.media_url) {
                     previewContainer.innerHTML = `
                         <div class="media-picker-thumb">
                             <img src="${p.media_url}" alt="${p.media_name || ''}">
-                            <button type="button" class="remove-media" onclick="removePickerItem('edit_image_media_id', '${p.image_media_id}')"><i class="bi bi-x"></i></button>
+                            <button type="button" class="remove-media" onclick="removePickerItem('edit_image_media_id', '${p.image_media_id}'); document.getElementById('edit_portfolio_image').value='';"><i class="bi bi-x"></i></button>
+                        </div>
+                    `;
+                } else if (p.image) {
+                    const imgUrl = p.image.startsWith('http') ? p.image : '/storage/' + p.image;
+                    previewContainer.innerHTML = `
+                        <div class="media-picker-thumb">
+                            <img src="${imgUrl}" alt="Preview">
+                            <button type="button" class="remove-media" onclick="removePickerItem('edit_image_media_id', ''); document.getElementById('edit_portfolio_image').value='';"><i class="bi bi-x"></i></button>
                         </div>
                     `;
                 } else {

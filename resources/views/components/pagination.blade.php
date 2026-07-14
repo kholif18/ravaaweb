@@ -1,9 +1,13 @@
 @props([
     'paginator',
-    'perPage' => 10,
+    'perPage' => null,
     'label' => 'item',
     'info' => true,
 ])
+
+@php
+    $perPage = $paginator->perPage();
+@endphp
 
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2">
     <div class="d-flex align-items-center gap-2">

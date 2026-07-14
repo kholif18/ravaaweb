@@ -75,7 +75,7 @@
             <div class="glass-card h-100">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h5 class="fw-semibold mb-0">Produk Terbaru</h5>
-                    <a href="#" class="btn btn-sm btn-light-primary">Lihat Semua</a>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-light-primary">Lihat Semua</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-row-dashed align-middle mb-0">
@@ -90,28 +90,31 @@
                             </tr>
                         </thead>
                         <tbody class="fs-7">
+                            @forelse($recentProducts as $product)
                             <tr>
-                                <td>#RC-DES-015</td>
-                                <td>UI/UX Mobile App</td>
-                                <td>Design</td>
-                                <td><span class="badge badge-light-success">Aktif</span></td>
-                                <td>20 Nov 2023</td>
+                                <td>#{{ $product->sku ?? str_pad($product->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                <td>{{ $product->name }}</td>
+                                <td>{{ $product->category?->name ?? '-' }}</td>
+                                <td>
+                                    <span class="badge {{ $product->status === 'active' ? 'badge-light-success' : 'badge-light-danger' }}">
+                                        {{ $product->status === 'active' ? 'Aktif' : 'Non-aktif' }}
+                                    </span>
+                                </td>
+                                <td>{{ $product->created_at->format('d M Y') }}</td>
                                 <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-light-primary"><i class="bi bi-pencil"></i></a>
-                                    <a href="#" class="btn btn-sm btn-light-danger"><i class="bi bi-trash"></i></a>
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-light-primary"><i class="bi bi-pencil"></i></a>
+                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light-danger" style="border: none; background: transparent; padding: 0.25rem 0.5rem;"><i class="bi bi-trash"></i></button>
+                                    </form>
                                 </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td>#RC-WEB-010</td>
-                                <td>WordPress E-commerce</td>
-                                <td>Web Development</td>
-                                <td><span class="badge badge-light-success">Aktif</span></td>
-                                <td>18 Nov 2023</td>
-                                <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-light-primary"><i class="bi bi-pencil"></i></a>
-                                    <a href="#" class="btn btn-sm btn-light-danger"><i class="bi bi-trash"></i></a>
-                                </td>
+                                <td colspan="6" class="text-center py-4 text-muted">Belum ada produk terdaftar.</td>
                             </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

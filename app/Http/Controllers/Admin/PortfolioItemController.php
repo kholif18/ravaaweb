@@ -78,6 +78,11 @@ class PortfolioItemController extends Controller
             return response()->json(['success' => true, 'message' => 'Portfolio berhasil ditambahkan!']);
         }
 
+        if ($request->has('redirect_to')) {
+            return redirect($request->input('redirect_to'))
+                ->with('success', 'Portfolio berhasil ditambahkan!');
+        }
+
         return redirect()->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil ditambahkan!');
     }
@@ -129,6 +134,11 @@ class PortfolioItemController extends Controller
             return response()->json(['success' => true, 'message' => 'Portfolio berhasil diperbarui!']);
         }
 
+        if ($request->has('redirect_to')) {
+            return redirect($request->input('redirect_to'))
+                ->with('success', 'Portfolio berhasil diperbarui!');
+        }
+
         return redirect()->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil diperbarui!');
     }
@@ -136,6 +146,11 @@ class PortfolioItemController extends Controller
     public function destroy(PortfolioItem $portfolioItem)
     {
         $portfolioItem->delete();
+
+        if (request()->has('redirect_to')) {
+            return redirect(request()->input('redirect_to'))
+                ->with('success', 'Portfolio berhasil dihapus!');
+        }
 
         return redirect()->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil dihapus!');
@@ -153,6 +168,11 @@ class PortfolioItemController extends Controller
         }
 
         PortfolioItem::whereIn('id', $ids)->delete();
+
+        if ($request->has('redirect_to')) {
+            return redirect($request->input('redirect_to'))
+                ->with('success', count($ids) . ' portfolio berhasil dihapus!');
+        }
 
         return redirect()->route('admin.portfolio.index')
             ->with('success', count($ids) . ' portfolio berhasil dihapus!');

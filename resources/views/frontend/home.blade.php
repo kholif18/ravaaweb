@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="hero-visual">
-                        @if($banner->image)
+                        @if($banner->image_url)
                             <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" class="hero-visual-img">
                         @else
                             <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="{{ $settings['site_name'] ?? 'Ravaa Creative' }}" class="hero-visual-img">
@@ -41,13 +41,13 @@
             @endforeach
             @if($banners->count() > 1)
             <div class="hero-nav">
-                <button class="hero-nav-btn" onclick="changeSlide(-1)"><i class="bi bi-chevron-left"></i></button>
+                <button class="hero-nav-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
                 <div class="hero-dots">
                     @foreach($banners as $banner)
                     <button class="hero-dot {{ $loop->first ? 'active' : '' }}" onclick="goToSlide({{ $loop->index }})"></button>
                     @endforeach
                 </div>
-                <button class="hero-nav-btn" onclick="changeSlide(1)"><i class="bi bi-chevron-right"></i></button>
+                <button class="hero-nav-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
             @endif
             </div>

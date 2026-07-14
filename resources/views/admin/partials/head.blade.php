@@ -6,8 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0071e3" />
 
-    <link rel="shortcut icon" href="{{ asset('admin/images/logo.png') }}" />
-    <link rel="apple-touch-icon" href="{{ asset('admin/images/logo.png') }}" />
+    @php
+        $logoMediaId = \App\Models\Setting::get('logo_media_id');
+        $customLogoUrl = $logoMediaId ? \App\Models\Media::find($logoMediaId)?->url : null;
+    @endphp
+    <link rel="icon" href="{{ $customLogoUrl ?? asset('favicon.ico') }}" />
+    <link rel="apple-touch-icon" href="{{ $customLogoUrl ?? asset('images/logo.svg') }}" />
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">

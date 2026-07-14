@@ -1,7 +1,7 @@
 <nav class="navbar">
     <div class="navbar-inner">
-        <a href="{{ url('/') }}" class="navbar-logo">
-            <i class="fas fa-palette"></i>
+        <a href="{{ url('/') }}" class="navbar-logo" style="display: flex; align-items: center; gap: 8px;">
+            <img src="{{ !empty($settings['site_logo']) ? $settings['site_logo'] : asset('images/logo.svg') }}" alt="{{ $settings['site_name'] ?? 'Ravaa Creative' }}" style="height: 32px; width: auto; object-fit: contain;">
             {{ $settings['site_name'] ?? 'Ravaa Creative' }}
         </a>
 

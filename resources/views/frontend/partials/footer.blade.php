@@ -2,7 +2,10 @@
     <div class="container">
         <div class="footer-grid">
             <div class="footer-brand">
-                <h3><i class="fas fa-palette"></i> {{ $settings['site_name'] ?? 'Ravaa Creative' }}</h3>
+                <h3>
+                    <img src="{{ !empty($settings['site_logo']) ? $settings['site_logo'] : asset('images/logo.svg') }}" alt="{{ $settings['site_name'] ?? 'Ravaa Creative' }}" style="height: 28px; width: auto; object-fit: contain; vertical-align: middle; margin-right: 6px;">
+                    {{ $settings['site_name'] ?? 'Ravaa Creative' }}
+                </h3>
                 <p>{{ $settings['site_description'] ?? 'Solusi kreatif terpadu untuk desain grafis, percetakan, ATK, dan pengembangan software.' }}</p>
                 <div class="footer-social">
                     @if($settings['instagram'] ?? null)
@@ -22,19 +25,30 @@
             <div>
                 <h4>Layanan</h4>
                 <ul>
-                    <li><a href="{{ url('/product?category=Desain+Grafis') }}">Desain Grafis</a></li>
-                    <li><a href="{{ url('/product?category=Percetakan') }}">Percetakan</a></li>
-                    <li><a href="{{ url('/product?category=Custom+Invitations') }}">Custom Invitations</a></li>
-                    <li><a href="{{ url('/product?category=ATK') }}">ATK &amp; Stationery</a></li>
-                    <li><a href="{{ url('/product?category=Software+House') }}">Software House</a></li>
+                    @php
+                        $footerCategories = \App\Models\Category::where('status', 'active')->orderBy('order')->limit(6)->get();
+                    @endphp
+                    @forelse($footerCategories as $cat)
+                    <li><a href="{{ url('/product?category=' . urlencode($cat->name)) }}">{{ $cat->name }}</a></li>
+                    @empty
+                    <li><a href="{{ url('/product') }}">Katalog Produk</a></li>
+                    @endforelse
                 </ul>
             </div>
             <div>
                 <h4>Perusahaan</h4>
                 <ul>
+                    @php
+                        $footerLinks = \App\Models\FooterLink::active()->ordered()->get();
+                    @endphp
+                    @forelse($footerLinks as $link)
+                    <li><a href="{{ url($link->url) }}">{{ $link->label }}</a></li>
+                    @empty
                     <li><a href="{{ url('/portofolio') }}">Portfolio</a></li>
                     <li><a href="{{ url('/software-house') }}">Software House</a></li>
+                    <li><a href="{{ url('/layanan') }}">Layanan</a></li>
                     <li><a href="{{ url('/contact') }}">Kontak</a></li>
+                    @endforelse
                 </ul>
             </div>
             <div>
@@ -47,10 +61,10 @@
                     <li><a href="mailto:{{ $settings['email'] }}"><i class="fas fa-envelope"></i> {{ $settings['email'] }}</a></li>
                     @endif
                     @if($settings['address'] ?? null)
-                    <li><i class="fas fa-location-dot"></i> {{ $settings['address'] }}</li>
+                    <li><a href="https://maps.google.com/?q={{ urlencode($settings['address']) }}" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i> {{ $settings['address'] }}</a></li>
                     @endif
                     @if($settings['operating_hours'] ?? null)
-                    <li><i class="fas fa-clock"></i> {{ $settings['operating_hours'] }}</li>
+                    <li><a href="javascript:void(0)" style="cursor: default;"><i class="fas fa-clock"></i> {{ $settings['operating_hours'] }}</a></li>
                     @endif
                 </ul>
             </div>

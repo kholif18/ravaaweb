@@ -6,6 +6,10 @@
     <title>@yield('title') — {{ $settings['site_name'] ?? 'Ravaa Creative' }}</title>
     <meta name="description" content="@yield('meta_desc', $settings['meta_description'] ?? 'Solusi kreatif untuk desain, percetakan, ATK, dan software house.')">
 
+    {{-- Favicon --}}
+    <link rel="icon" href="{{ !empty($settings['site_logo']) ? $settings['site_logo'] : asset('favicon.ico') }}" />
+    <link rel="apple-touch-icon" href="{{ !empty($settings['site_logo']) ? $settings['site_logo'] : asset('images/logo.svg') }}" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +34,10 @@
     <div class="mobile-overlay" id="mobileOverlay"></div>
     <div class="mobile-drawer" id="mobileDrawer">
         <div class="mobile-drawer-header">
-            <span style="font-weight:700;font-size:1.15rem;">{{ $settings['site_name'] ?? 'Ravaa Creative' }}</span>
+            <span style="font-weight:700;font-size:1.15rem;display:flex;align-items:center;gap:8px;">
+                <img src="{{ !empty($settings['site_logo']) ? $settings['site_logo'] : asset('images/logo.svg') }}" alt="{{ $settings['site_name'] ?? 'Ravaa Creative' }}" style="height: 28px; width: auto; object-fit: contain;">
+                {{ $settings['site_name'] ?? 'Ravaa Creative' }}
+            </span>
             <button class="mobile-drawer-close" id="mobileClose" aria-label="Tutup menu">
                 <i class="fas fa-xmark"></i>
             </button>

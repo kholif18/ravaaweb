@@ -218,4 +218,22 @@ class FrontendProductTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_software_house_page_returns_success(): void
+    {
+        \App\Models\Service::create([
+            'name' => 'Software House',
+            'icon' => 'fa-solid fa-laptop-code',
+            'description' => 'Test description',
+            'features' => ['Feature 1', 'Feature 2'],
+            'status' => 'active',
+            'order' => 1,
+        ]);
+
+        $response = $this->get('/software-house');
+
+        $response->assertStatus(200);
+        $response->assertSee('Software House');
+        $response->assertSee('Feature 1');
+    }
 }

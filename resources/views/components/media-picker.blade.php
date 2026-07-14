@@ -88,18 +88,24 @@
     .media-picker-wrapper {
         display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
         gap: 10px;
+        width: 100%;
     }
 
     .media-picker-selected {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
         gap: 8px;
         min-height: 60px;
         padding: 10px;
         background: var(--bg-surface);
         border-radius: 10px;
         border: 1px dashed var(--border-color);
+        width: 100%;
     }
 
     .media-picker-empty {

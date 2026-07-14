@@ -16,6 +16,7 @@ Route::get('/product/{slug}', [FrontendController::class, 'detailProduct'])->nam
 Route::get('/portofolio', [FrontendController::class, 'portofolio'])->name('portofolio');
 Route::get('/software-house', [FrontendController::class, 'softwareHouse'])->name('software-house');
 Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
+Route::post('/contact', [FrontendController::class, 'submitContact'])->name('contact.submit');
 
 /*
 |--------------------------------------------------------------------------
@@ -37,16 +38,7 @@ Route::prefix('admin')
     ->group(function () {
 
         // Dashboard
-        Route::get('/dashboard', function () {
-            $stats = [
-                ['Produk', \App\Models\Product::count(), 'box', 'primary'],
-                ['Kategori', \App\Models\Category::count(), 'tags', 'success'],
-                ['Testimoni', \App\Models\Testimonial::count(), 'star', 'warning'],
-                ['Portfolio', \App\Models\PortfolioItem::count(), 'images', 'info'],
-            ];
-
-            return view('admin.dashboard.index', compact('stats'));
-        })->name('dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         // Categories
         Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk.destroy');
@@ -84,9 +76,25 @@ Route::prefix('admin')
         // Roles
         Route::get('roles', [App\Http\Controllers\Admin\RoleController::class, 'index'])->name('roles.index');
 
+        // Reports & Analytics
+        Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+
+        // System Logs
+        Route::delete('logs/clear', [App\Http\Controllers\Admin\LogController::class, 'clear'])->name('logs.clear');
+        Route::get('logs', [App\Http\Controllers\Admin\LogController::class, 'index'])->name('logs.index');
+
         // Home Builder
         Route::get('home', [App\Http\Controllers\Admin\HomeBuilderController::class, 'index'])->name('home.index');
         Route::post('home', [App\Http\Controllers\Admin\HomeBuilderController::class, 'store'])->name('home.store');
+
+        // Software House Builder
+        Route::get('software-house', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'index'])->name('software-house.index');
+        Route::post('software-house', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'store'])->name('software-house.store');
+        Route::put('software-house/service/{id}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'updateService'])->name('software-house.service.update');
+        Route::post('software-house/features', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'storeFeature'])->name('software-house.features.store');
+        Route::post('software-house/features/reorder', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'reorderFeatures'])->name('software-house.features.reorder');
+        Route::put('software-house/features/{index}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'updateFeature'])->name('software-house.features.update');
+        Route::delete('software-house/features/{index}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'deleteFeature'])->name('software-house.features.destroy');
 
         // Services
         Route::delete('services/bulk-delete', [App\Http\Controllers\Admin\ServiceController::class, 'bulkDestroy'])->name('services.bulk.destroy');
@@ -98,7 +106,9 @@ Route::prefix('admin')
         Route::delete('portfolio/bulk-delete', [App\Http\Controllers\Admin\PortfolioItemController::class, 'bulkDestroy'])->name('portfolio.bulk.destroy');
         Route::put('portfolio/{portfolioItem}/status', [App\Http\Controllers\Admin\PortfolioItemController::class, 'updateStatus'])->name('portfolio.status.update');
         Route::post('portfolio/reorder', [App\Http\Controllers\Admin\PortfolioItemController::class, 'reorder'])->name('portfolio.reorder');
-        Route::resource('portfolio', App\Http\Controllers\Admin\PortfolioItemController::class)->except(['show']);
+        Route::resource('portfolio', App\Http\Controllers\Admin\PortfolioItemController::class)->parameters([
+            'portfolio' => 'portfolioItem'
+        ])->except(['show']);
 
         // Testimonials
         Route::delete('testimonials/bulk-delete', [App\Http\Controllers\Admin\TestimonialController::class, 'bulkDestroy'])->name('testimonials.bulk.destroy');
@@ -111,5 +121,17 @@ Route::prefix('admin')
         Route::put('banners/{banner}/status', [App\Http\Controllers\Admin\BannerController::class, 'updateStatus'])->name('banners.status.update');
         Route::post('banners/reorder', [App\Http\Controllers\Admin\BannerController::class, 'reorder'])->name('banners.reorder');
         Route::resource('banners', App\Http\Controllers\Admin\BannerController::class)->except(['show']);
+
+        // Contact Submissions
+        Route::delete('contact-submissions/bulk-delete', [App\Http\Controllers\Admin\ContactSubmissionController::class, 'bulkDestroy'])->name('contact-submissions.bulk.destroy');
+        Route::put('contact-submissions/{contactSubmission}/mark-as-read', [App\Http\Controllers\Admin\ContactSubmissionController::class, 'markAsRead'])->name('contact-submissions.mark-as-read');
+        Route::put('contact-submissions/{contactSubmission}/mark-as-unread', [App\Http\Controllers\Admin\ContactSubmissionController::class, 'markAsUnread'])->name('contact-submissions.mark-as-unread');
+        Route::resource('contact-submissions', App\Http\Controllers\Admin\ContactSubmissionController::class)->only(['index', 'show', 'destroy']);
+
+        // Footer Links
+        Route::delete('footer-links/bulk-delete', [App\Http\Controllers\Admin\FooterLinkController::class, 'bulkDestroy'])->name('footer-links.bulk.destroy');
+        Route::put('footer-links/{footerLink}/status', [App\Http\Controllers\Admin\FooterLinkController::class, 'updateStatus'])->name('footer-links.status.update');
+        Route::post('footer-links/reorder', [App\Http\Controllers\Admin\FooterLinkController::class, 'reorder'])->name('footer-links.reorder');
+        Route::resource('footer-links', App\Http\Controllers\Admin\FooterLinkController::class);
 
     });

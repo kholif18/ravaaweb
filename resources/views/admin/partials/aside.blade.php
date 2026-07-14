@@ -4,7 +4,11 @@
 
 <div class="sidebar-header">
     <a href="{{ route('admin.dashboard') }}" class="brand">
-        <img src="{{ asset('admin/images/logo.png') }}" alt="RavaaWeb">
+        @php
+            $logoMediaId = \App\Models\Setting::get('logo_media_id');
+            $sidebarLogoUrl = $logoMediaId ? (\App\Models\Media::find($logoMediaId)?->url ?? asset('images/logo.svg')) : asset('images/logo.svg');
+        @endphp
+        <img src="{{ $sidebarLogoUrl }}" alt="RavaaWeb" style="height: 32px; width: auto; object-fit: contain;">
         <span>RavaaWeb</span>
     </a>
 </div>
@@ -73,9 +77,21 @@
             </a>
         </li>
         <li>
+            <a class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}" href="{{ route('admin.contact-submissions.index') }}">
+                <i class="bi bi-envelope"></i>
+                <span>Pesan Masuk</span>
+            </a>
+        </li>
+        <li>
             <a class="nav-link {{ request()->is('admin/home*') ? 'active' : '' }}" href="{{ route('admin.home.index') }}">
                 <i class="bi bi-layout-three-columns"></i>
                 <span>Home Builder</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link {{ request()->is('admin/software-house*') ? 'active' : '' }}" href="{{ route('admin.software-house.index') }}">
+                <i class="bi bi-laptop"></i>
+                <span>Software House</span>
             </a>
         </li>
     </ul>
@@ -91,9 +107,9 @@
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
-                <i class="bi bi-people"></i>
-                <span>Pengguna Admin</span>
+            <a class="nav-link {{ request()->routeIs('admin.footer-links.*') ? 'active' : '' }}" href="{{ route('admin.footer-links.index') }}">
+                <i class="bi bi-link-45deg"></i>
+                <span>Footer Links</span>
             </a>
         </li>
     </ul>
@@ -115,7 +131,13 @@
             </a>
         </li>
         <li>
-            <a class="nav-link {{ request()->is('admin/logs*') ? 'active' : '' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">
+                <i class="bi bi-graph-up"></i>
+                <span>Laporan & Analytics</span>
+            </a>
+        </li>
+        <li>
+            <a class="nav-link {{ request()->is('admin/logs*') ? 'active' : '' }}" href="{{ route('admin.logs.index') }}">
                 <i class="bi bi-journal-text"></i>
                 <span>System Logs</span>
             </a>

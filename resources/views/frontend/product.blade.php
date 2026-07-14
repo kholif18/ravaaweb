@@ -21,11 +21,19 @@
                 </div>
             </div>
 
-            <div class="filter-pills" id="categoryPills">
-                <button type="button" class="filter-pill {{ !request('category') ? 'active' : '' }}" data-category="">Semua</button>
-                @foreach($categories as $category)
-                    <button type="button" class="filter-pill {{ request('category') == $category->slug ? 'active' : '' }}" data-category="{{ $category->slug }}">{{ $category->name }}</button>
-                @endforeach
+            <div class="filter-pills-wrap">
+                <button type="button" class="scroll-btn scroll-left d-none" id="scrollLeftBtn" aria-label="Scroll Left">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="filter-pills" id="categoryPills">
+                    <button type="button" class="filter-pill {{ !request('category') ? 'active' : '' }}" data-category="">Semua</button>
+                    @foreach($categories as $category)
+                        <button type="button" class="filter-pill {{ request('category') == $category->slug ? 'active' : '' }}" data-category="{{ $category->slug }}">{{ $category->name }}</button>
+                    @endforeach
+                </div>
+                <button type="button" class="scroll-btn scroll-right d-none" id="scrollRightBtn" aria-label="Scroll Right">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </form>
 
@@ -101,6 +109,51 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('catalogForm').submit();
         });
     });
+
+    // Category pills horizontal scroll buttons
+    const pills = document.getElementById('categoryPills');
+    const btnLeft = document.getElementById('scrollLeftBtn');
+    const btnRight = document.getElementById('scrollRightBtn');
+
+    if (pills && btnLeft && btnRight) {
+        const updateScrollButtons = () => {
+            const scrollLeft = pills.scrollLeft;
+            const maxScroll = pills.scrollWidth - pills.clientWidth;
+            
+            if (scrollLeft <= 2) {
+                btnLeft.classList.add('d-none');
+            } else {
+                btnLeft.classList.remove('d-none');
+            }
+            
+            if (scrollLeft >= maxScroll - 2) {
+                btnRight.classList.add('d-none');
+            } else {
+                btnRight.classList.remove('d-none');
+            }
+        };
+
+        const scrollAmount = 200;
+        btnLeft.addEventListener('click', function() {
+            pills.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+
+        btnRight.addEventListener('click', function() {
+            pills.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+
+        pills.addEventListener('scroll', updateScrollButtons);
+        window.addEventListener('resize', updateScrollButtons);
+        
+        // Scroll active pill into view on load
+        const activePill = pills.querySelector('.filter-pill.active');
+        if (activePill) {
+            activePill.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+        }
+        
+        // Initial button visibility check
+        setTimeout(updateScrollButtons, 100);
+    }
 });
 </script>
 @endpush

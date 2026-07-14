@@ -10,7 +10,7 @@
                     <div class="form-check" style="margin:0;"><input class="form-check-input" type="checkbox" id="select-all"></div>
                 </th>
                 <th style="width:32px;"></th>
-                <th style="width:80px;">Gambar</th>
+                <th style="width:80px;" class="text-center">Gambar</th>
                 <th style="min-width:160px;">Judul</th>
                 <th style="min-width:140px;">Subtitle</th>
                 <th style="min-width:80px;">CTA</th>
@@ -26,11 +26,11 @@
                 <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
                     <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
                 </td>
-                <td>
-                    @if($banner->image)
-                        <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" style="width:60px;height:35px;border-radius:6px;object-fit:cover;">
+                <td class="text-center">
+                    @if($banner->image_url)
+                        <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" class="mx-auto" style="width:60px;height:35px;border-radius:6px;object-fit:cover;">
                     @else
-                        <div style="width:60px;height:35px;border-radius:6px;background:rgba(var(--accent-rgb,79,110,247),0.1);display:flex;align-items:center;justify-content:center;">
+                        <div class="mx-auto" style="width:60px;height:35px;border-radius:6px;background:rgba(var(--accent-rgb,79,110,247),0.1);display:flex;align-items:center;justify-content:center;">
                             <i class="bi bi-image" style="color:var(--accent);font-size:0.8rem;"></i>
                         </div>
                     @endif

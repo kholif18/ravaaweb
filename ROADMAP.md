@@ -109,26 +109,31 @@
    - Detail CTAs: full-width on mobile
    - Variant buttons: wrapped on small screens
 
-## Fase 8: Halaman Admin Lainnya ⏳ SEBAGIAN SELESAI
+## Fase 8: Halaman Admin Lainnya ✅ SELESAI
 
 1. **Banner / Hero** — CRUD carousel ✅ SELESAI
 2. **Home Builder** — CMS section builder ✅ SELESAI
 3. **Settings** — Umum, Kontak, Sosial, SEO, Integrasi ✅ SELESAI
 4. **Users** — CRUD admin users ✅ SELESAI (migration `is_active`, controller, views, route)
 5. **Role & Permission** — UI management ✅ SELESAI (info page + assign di form user)
-6. **Reports & Analytics** ⏳ BELUM
-7. **System Logs** ⏳ BELUM
+6. **Reports & Analytics** ✅ SELESAI (visual metrics, pricing analysis, category densities)
+7. **System Logs** ✅ SELESAI (collapsible stack traces, memory-safe log reading, filtering & search, log clearing)
+8. **Software House Builder** — CMS page builder ✅ SELESAI (custom hero, services subtitle, process steps, portfolio category filter)
 
 ## Fase 9: Pengujian ✅ SELESAI
 
 1. **Test Unit** ✅
    - `ProductTest` — 14 unit test: relasi model (category, variants), slug generation, effective_price accessor, discount_active accessor, soft deletes, active/featured scopes, factory validation
 2. **Test Feature** ✅
-   - `FrontendProductTest` — 13 test: home page, listing, category filter, search, type filter, detail page, 404 for inactive/nonexistent, variants display, related products, pagination, discount display
+   - `FrontendProductTest` — 14 test: home page, listing, category filter, search, type filter, detail page, 404 for inactive/nonexistent, variants display, related products, pagination, discount display, software house page
    - `AdminProductTest` — 12 test: admin CRUD (index, create, store, update, delete), bulk delete, restore, force delete, variant management, authentication, validation
    - `ReorderTest` — 6 test: reorder banners/services/portfolio, invalid ids, empty ids, authentication
-   - Total: **47 test, 79 assertions, all passing** ✅
-   - *Tambahan: `AdminHomeBuilderTest` — 3 test, total keseluruhan **50 test, 95 assertions** ✅*
+   - `AdminHomeBuilderTest` — 3 test
+   - `AdminLogsAndReportsTest` — 5 test
+   - `AdminSoftwareHouseBuilderTest` — 7 test
+   - `AdminSettingsTest` — 2 test
+   - `AdminDashboardTest` — 2 test
+   - Total: **68 test, 163 assertions, all passing** ✅
 3. **Test Browser** — Laravel Dusk / Cypress ⏳ BELUM
 4. **CI Pipeline** — GitHub Actions ⏳ BELUM
 
@@ -143,7 +148,7 @@
 
 ---
 
-*Terakhir diperbarui: 13 Juli 2026 — Fase 5–9 → Users & Role CRUD ✅*
+*Terakhir diperbarui: 14 Juli 2026 — Fase 8–9 → Dashboard, Settings Logo, Reports, Logs, Software House & Feature Tests ✅*
 
 ## Prioritas Selanjutnya (Ringkasan)
 
@@ -151,7 +156,7 @@
 - ~~**Gallery reorder UI**: Drag‑and‑drop atau tombol up/down untuk mengatur urutan gambar produk.~~ ✅
 - ~~**Integrasi Backend → Frontend**: Ganti data statis di `FrontendController` dengan query Eloquent, buat route `/catalog` & `/product/{slug}`, tampilkan gambar utama, varian, badge.~~ ✅
 - ~~**Responsive UI/UX**: Media query breakpoints, lazy‑load, pagination UI glass‑style, filter pill, CTA WhatsApp.~~ ✅
-- ~~**Pengujian & CI**: Unit & feature test untuk model & route (47 test passing).~~ ✅
-- **Halaman Admin Tambahan**: ~~CRUD Banner~~, ~~Home Builder~~, ~~Settings~~, ~~Users~~, ~~Role & Permission~~, Reports, System Logs.
+- ~~**Pengujian & CI**: Unit & feature test untuk model & route (68 test passing).~~ ✅
+- ~~**Halaman Admin Tambahan**: CRUD Banner, Home Builder, Settings (termasuk upload logo), Users, Role & Permission, Reports, System Logs.~~ ✅
 - **Browser Test & CI Pipeline**: Laravel Dusk/Cypress, GitHub Actions.
 - **Optimasi & Deployment**: Asset build (minify, versioning), cache header, query caching, SEO (meta tags, sitemap), Docker production (config & route cache), monitoring (logs, alerts).

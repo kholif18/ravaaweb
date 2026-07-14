@@ -55,11 +55,13 @@
           <span id="detailMainPrice" data-default="{{ $priceDisplay }}">{{ $priceDisplay }}</span>
           @if($originalPrice)
             <span id="detailOriginalPrice" class="original-price" data-default="{{ $originalPrice }}">{{ $originalPrice }}</span>
-            @if($product->discount_percent > 0)
-            <span id="detailDiscountBadge" class="discount-badge" data-default="Hemat {{ round($product->discount_percent) }}%">Hemat {{ round($product->discount_percent) }}%</span>
-            @endif
           @else
             <span id="detailOriginalPrice" class="original-price d-none" data-default=""></span>
+          @endif
+
+          @if($originalPrice && $product->discount_percent > 0)
+            <span id="detailDiscountBadge" class="discount-badge" data-default="Hemat {{ round($product->discount_percent) }}%">Hemat {{ round($product->discount_percent) }}%</span>
+          @else
             <span id="detailDiscountBadge" class="discount-badge d-none" data-default=""></span>
           @endif
         </div>
@@ -391,22 +393,30 @@ function updateSelectedVariant() {
     if (matchedVariant) {
         // Update Price
         if (matchedVariant.discount_active && matchedVariant.price_discount_formatted) {
-            mainPriceEl.textContent = matchedVariant.price_discount_formatted;
-            originalPriceEl.textContent = matchedVariant.price_formatted;
-            originalPriceEl.classList.remove('d-none');
+            if (mainPriceEl) mainPriceEl.textContent = matchedVariant.price_discount_formatted;
+            if (originalPriceEl) {
+                originalPriceEl.textContent = matchedVariant.price_formatted;
+                originalPriceEl.classList.remove('d-none');
+            }
             
-            if (matchedVariant.discount_percent) {
-                discountBadgeEl.textContent = `Hemat ${matchedVariant.discount_percent}%`;
-                discountBadgeEl.classList.remove('d-none');
-            } else {
-                discountBadgeEl.classList.add('d-none');
+            if (discountBadgeEl) {
+                if (matchedVariant.discount_percent) {
+                    discountBadgeEl.textContent = `Hemat ${matchedVariant.discount_percent}%`;
+                    discountBadgeEl.classList.remove('d-none');
+                } else {
+                    discountBadgeEl.classList.add('d-none');
+                }
             }
         } else {
-            mainPriceEl.textContent = matchedVariant.price_formatted;
-            originalPriceEl.classList.add('d-none');
-            originalPriceEl.textContent = '';
-            discountBadgeEl.classList.add('d-none');
-            discountBadgeEl.textContent = '';
+            if (mainPriceEl) mainPriceEl.textContent = matchedVariant.price_formatted;
+            if (originalPriceEl) {
+                originalPriceEl.classList.add('d-none');
+                originalPriceEl.textContent = '';
+            }
+            if (discountBadgeEl) {
+                discountBadgeEl.classList.add('d-none');
+                discountBadgeEl.textContent = '';
+            }
         }
         
         // Update Stock

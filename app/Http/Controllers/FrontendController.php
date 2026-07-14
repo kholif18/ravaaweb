@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\ContactSubmission;
 use App\Models\PortfolioItem;
 use App\Models\Product;
 use App\Models\Service;
@@ -14,7 +15,14 @@ class FrontendController extends Controller
 {
     private function getSettings(): array
     {
-        return Setting::allAsArray();
+        $settings = Setting::allAsArray();
+        if (!empty($settings['logo_media_id'])) {
+            $media = \App\Models\Media::find($settings['logo_media_id']);
+            if ($media) {
+                $settings['site_logo'] = $media->url;
+            }
+        }
+        return $settings;
     }
 
     /**
@@ -297,13 +305,62 @@ class FrontendController extends Controller
     {
         $portfolioItems = PortfolioItem::active()->ordered()->get();
         $service = Service::where('name', 'Software House')->first();
+        
+        $defaultContent = [
+            'hero' => [
+                'title' => 'Software House',
+                'description' => 'Kami mengembangkan solusi digital custom untuk bisnis Anda — dari website hingga aplikasi mobile dan IoT.',
+            ],
+            'layanan' => [
+                'title' => 'Layanan Pengembangan Software',
+                'subtitle' => 'Kami menyediakan layanan pengembangan software end-to-end yang disesuaikan dengan kebutuhan bisnis Anda.',
+            ],
+            'proses' => [
+                'title' => 'Bagaimana Kami Bekerja',
+                'subtitle' => 'Langkah-langkah sistematis untuk menghadirkan solusi software terbaik bagi bisnis Anda.',
+                'steps' => [
+                    ['title' => 'Konsultasi', 'description' => 'Diskusi kebutuhan dan tujuan bisnis Anda untuk menentukan solusi yang tepat.'],
+                    ['title' => 'Desain', 'description' => 'Perancangan arsitektur sistem dan antarmuka pengguna yang intuitif.'],
+                    ['title' => 'Development', 'description' => 'Proses pengembangan menggunakan teknologi terkini dengan standar kualitas tinggi.'],
+                    ['title' => 'Launch', 'description' => 'Deployment ke production dan pendampingan hingga sistem berjalan lancar.'],
+                ]
+            ],
+            'portfolio' => [
+                'title' => 'Proyek Software Kami',
+                'subtitle' => 'Beberapa proyek pengembangan software yang telah kami selesaikan.',
+                'categories' => ['Web App', 'Mobile App', 'IoT & Embedded'],
+            ]
+        ];
+
+        $page = \App\Models\Page::getBySlug('software-house', $defaultContent);
+        $dbContent = $page->content ?? [];
+        $content = array_replace_recursive($defaultContent, $dbContent);
+
         $settings = $this->getSettings();
-        return view('frontend.software-house', compact('portfolioItems', 'service', 'settings'));
+        return view('frontend.software-house', compact('portfolioItems', 'service', 'content', 'settings'));
     }
 
     public function contact()
     {
         $settings = $this->getSettings();
         return view('frontend.contact', compact('settings'));
+    }
+
+    public function submitContact(Request $request)
+    {
+        $validated = $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        ContactSubmission::create($validated);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Pesan berhasil dikirim!']);
+        }
+
+        return redirect()->route('contact')->with('success', 'Pesan berhasil dikirim!');
     }
 }

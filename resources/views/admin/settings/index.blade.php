@@ -47,6 +47,14 @@
                                value="{{ $settings['site_name'] ?? '' }}" placeholder="Ravaa Creative">
                     </div>
                     <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-2">Logo Bisnis</label>
+                        @php
+                            $logoMediaId = $settings['logo_media_id'] ?? null;
+                            $logoMedia = $logoMediaId ? \App\Models\Media::find($logoMediaId) : null;
+                        @endphp
+                        <x-media-picker name="logo_media_id" type="image" label="Pilih Logo" :value="$logoMediaId" :media="$logoMedia ? [$logoMedia] : null" />
+                    </div>
+                    <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-2">Tagline</label>
                         <input type="text" class="form-control form-control-sm" name="site_tagline"
                                value="{{ $settings['site_tagline'] ?? '' }}" placeholder="Solusi Kreatif untuk Bisnis Anda">
@@ -110,28 +118,60 @@
                     <div class="row g-3">
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-2"><i class="bi bi-instagram me-1"></i> Instagram</label>
-                            <input type="url" class="form-control form-control-sm" name="instagram"
-                                   value="{{ $settings['instagram'] ?? '' }}" placeholder="https://instagram.com/username">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">instagram.com/</span>
+                                <input type="text" class="form-control form-control-sm" name="instagram"
+                                       value="{{ $settings['instagram'] ?? '' }}" placeholder="ravaacreative">
+                            </div>
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-2"><i class="bi bi-facebook me-1"></i> Facebook</label>
-                            <input type="url" class="form-control form-control-sm" name="facebook"
-                                   value="{{ $settings['facebook'] ?? '' }}" placeholder="https://facebook.com/page">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">facebook.com/</span>
+                                <input type="text" class="form-control form-control-sm" name="facebook"
+                                       value="{{ $settings['facebook'] ?? '' }}" placeholder="ravaacreative">
+                            </div>
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-2"><i class="bi bi-linkedin me-1"></i> LinkedIn</label>
-                            <input type="url" class="form-control form-control-sm" name="linkedin"
-                                   value="{{ $settings['linkedin'] ?? '' }}" placeholder="https://linkedin.com/company/name">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">linkedin.com/</span>
+                                <input type="text" class="form-control form-control-sm" name="linkedin"
+                                       value="{{ $settings['linkedin'] ?? '' }}" placeholder="in/ravaacreative atau company/ravaacreative">
+                            </div>
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-2"><i class="bi bi-tiktok me-1"></i> TikTok</label>
-                            <input type="url" class="form-control form-control-sm" name="tiktok"
-                                   value="{{ $settings['tiktok'] ?? '' }}" placeholder="https://tiktok.com/@username">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">tiktok.com/@</span>
+                                <input type="text" class="form-control form-control-sm" name="tiktok"
+                                       value="{{ $settings['tiktok'] ?? '' }}" placeholder="ravaacreative">
+                            </div>
                         </div>
                         <div class="col-md-6 fv-row mb-0">
                             <label class="fs-7 fw-semibold mb-2"><i class="bi bi-youtube me-1"></i> YouTube</label>
-                            <input type="url" class="form-control form-control-sm" name="youtube"
-                                   value="{{ $settings['youtube'] ?? '' }}" placeholder="https://youtube.com/@channel">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">youtube.com/@</span>
+                                <input type="text" class="form-control form-control-sm" name="youtube"
+                                       value="{{ $settings['youtube'] ?? '' }}" placeholder="ravaacreative">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="glass-card mb-4">
+                <div class="card-header">
+                    <div class="card-title"><i class="bi bi-geo-alt me-1"></i> Peta Lokasi</div>
+                </div>
+                <div class="card-body">
+                    <div class="fv-row mb-2">
+                        <label class="fs-7 fw-semibold mb-2">Google Maps Embed</label>
+                        <textarea class="form-control form-control-sm" rows="3" name="map_embed"
+                                  placeholder="&lt;iframe src=&quot;https://www.google.com/maps/embed?pb=...&quot; width=&quot;100%&quot; height=&quot;400&quot; style=&quot;border:0;&quot; allowfullscreen=&quot;&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;">{{ $settings['map_embed'] ?? '' }}</textarea>
+                        <div class="form-text fs-8">
+                            Cara dapatkan: Buka <a href="https://maps.google.com" target="_blank">Google Maps</a> → cari lokasi → klik Bagikan → pilih "Sematkan peta" → salin kode iframe-nya.
                         </div>
                     </div>
                 </div>
@@ -181,58 +221,67 @@
             </div>
         </div>
 
-        <!-- Kanan: Hero Section + Preview -->
+        <!-- Kanan: Sticky Sidebar -->
         <div class="col-lg-4">
+            <div style="position: sticky; top: 24px;">
 
-            <!-- Hero / Banner -->
-            <div class="glass-card mb-4">
-                <div class="card-header">
-                    <div class="card-title"><i class="bi bi-image me-1"></i> Hero / Banner</div>
+                <!-- Tombol Simpan -->
+                <div class="glass-card mb-4">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle me-1"></i> Simpan Pengaturan
+                        </button>
+                        <div class="form-text fs-8 text-center mt-2">Perubahan akan langsung terlihat di website</div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-2">Judul Hero</label>
-                        <input type="text" class="form-control form-control-sm" name="hero_title"
-                               value="{{ $settings['hero_title'] ?? '' }}" placeholder="Solusi Kreatif untuk Bisnis & Kebutuhan Anda">
+
+                <!-- Info Status -->
+                <div class="glass-card mb-4">
+                    <div class="card-header">
+                        <div class="card-title"><i class="bi bi-info-circle me-1"></i> Status</div>
                     </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-2">Subtitle Hero</label>
-                        <textarea class="form-control form-control-sm" rows="2" name="hero_subtitle"
-                                  placeholder="Deskripsi singkat hero section">{{ $settings['hero_subtitle'] ?? '' }}</textarea>
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-2">Badge / Promo Text</label>
-                        <input type="text" class="form-control form-control-sm" name="hero_badge"
-                               value="{{ $settings['hero_badge'] ?? '' }}" placeholder="Paket Desain Logo mulai Rp399k">
-                    </div>
-                    <div class="fv-row mb-3">
-                        <label class="fs-7 fw-semibold mb-2">URL Gambar Hero</label>
-                        <input type="url" class="form-control form-control-sm" name="hero_image"
-                               value="{{ $settings['hero_image'] ?? '' }}" placeholder="https://...">
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-8 fv-row">
-                            <label class="fs-7 fw-semibold mb-2">CTA Text</label>
-                            <input type="text" class="form-control form-control-sm" name="hero_cta_text"
-                                   value="{{ $settings['hero_cta_text'] ?? '' }}" placeholder="Lihat Produk">
-                        </div>
-                        <div class="col-4 fv-row mb-0">
-                            <label class="fs-7 fw-semibold mb-2">CTA URL</label>
-                            <input type="text" class="form-control form-control-sm" name="hero_cta_url"
-                                   value="{{ $settings['hero_cta_url'] ?? '' }}" placeholder="/product">
+                    <div class="card-body">
+                        <div style="font-size: 0.82rem; color: var(--text-muted);">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span><i class="bi bi-building me-1"></i> Nama Bisnis</span>
+                                <span style="color: var(--text-primary); font-weight: 500;">{{ $settings['site_name'] ?? '-' }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span><i class="bi bi-whatsapp me-1"></i> WhatsApp</span>
+                                <span style="color: var(--text-primary); font-weight: 500;">{{ $settings['whatsapp'] ?? '-' }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span><i class="bi bi-envelope me-1"></i> Email</span>
+                                <span style="color: var(--text-primary); font-weight: 500; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $settings['email'] ?? '-' }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span><i class="bi bi-instagram me-1"></i> Instagram</span>
+                                <span style="color: var(--text-primary); font-weight: 500;">{{ $settings['instagram'] ? '@' . $settings['instagram'] : '-' }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Tombol Simpan -->
-            <div class="glass-card mb-4">
-                <div class="card-body">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-check-circle me-1"></i> Simpan Pengaturan
-                    </button>
-                    <div class="form-text fs-8 text-center mt-2">Perubahan akan langsung terlihat di website</div>
+                <!-- Shortcut -->
+                <div class="glass-card mb-4">
+                    <div class="card-header">
+                        <div class="card-title"><i class="bi bi-link-45deg me-1"></i> Kelola Lainnya</div>
+                    </div>
+                    <div class="card-body" style="padding: 0.75rem 1rem;">
+                        <div class="d-flex flex-column gap-1">
+                            <a href="{{ route('admin.footer-links.index') }}" class="btn btn-light btn-sm w-100 text-start" style="justify-content: flex-start;">
+                                <i class="bi bi-link-45deg me-1"></i> Footer Links
+                            </a>
+                            <a href="{{ route('admin.contact-submissions.index') }}" class="btn btn-light btn-sm w-100 text-start" style="justify-content: flex-start;">
+                                <i class="bi bi-envelope me-1"></i> Pesan Masuk
+                            </a>
+                            <a href="{{ route('admin.media.index') }}" class="btn btn-light btn-sm w-100 text-start" style="justify-content: flex-start;">
+                                <i class="bi bi-folder me-1"></i> Media Library
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
