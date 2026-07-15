@@ -85,7 +85,7 @@
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">URL CTA</label>
-                            <input type="url" class="form-control form-control-sm" name="cta_url" placeholder="/product">
+                            <input type="text" class="form-control form-control-sm" name="cta_url" placeholder="/product">
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -145,7 +145,7 @@
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-7 fw-semibold mb-1">URL CTA</label>
-                            <input type="url" class="form-control form-control-sm" name="cta_url" id="edit_banner_cta_url">
+                            <input type="text" class="form-control form-control-sm" name="cta_url" id="edit_banner_cta_url">
                         </div>
                     </div>
                     <div class="row mb-3">
