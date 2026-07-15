@@ -57,6 +57,12 @@ nano .env   # isi konfigurasi database dan lainnya
 | `DB_PASSWORD` | `rahasia123` | Password database MariaDB |
 | `APP_URL` | `http://domain-anda.com` | URL tempat aplikasi diakses |
 
+**Port (opsional):** secara default aplikasi berjalan di port **80**. Kalau ingin port lain (misal `8020` biar tidak bentrok), tambahkan di `.env`:
+```env
+APP_PORT=8020
+APP_URL=http://localhost:8020
+```
+
 ### 3. Generate APP KEY
 
 ```bash
@@ -93,9 +99,9 @@ docker compose exec app php artisan db:seed --force
 
 ### 6. Akses
 
-Buka `http://localhost:8020` (atau sesuai `APP_URL`).
+Buka `http://localhost` (atau `http://localhost:8020` jika menggunakan port 8020, sesuaikan dengan `APP_URL`).
 
-Login admin: `http://localhost:8020/admin/login`
+Login admin: `http://localhost/admin/login` (sesuaikan port bila perlu)
 
 ---
 
@@ -292,7 +298,7 @@ Data yang akan dibuat:
 
 | Field | Value |
 |---|---|
-| URL | `http://localhost:8020/admin/login` |
+| URL | `http://localhost/admin/login` (sesuaikan port bila perlu) |
 | Email | `admin@example.com` |
 | Password | `secret` |
 
