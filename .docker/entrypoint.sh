@@ -3,30 +3,33 @@ set -e
 
 # ------------------------------------------------------------
 # RavaaWeb Production Entrypoint
-# Runs Laravel optimization & migration on container start
 # ------------------------------------------------------------
 
+# --- Generate APP_KEY jika belum diset ---
+# (Hanya fallback untuk first-run — di production sebaiknya set APP_KEY
+#  di .env atau environment variable agar persist)
+if [ -z "$APP_KEY" ] || [[ "$APP_KEY" != base64:* ]]; then
+    echo "==> WARNING: APP_KEY tidak ditemukan. Mengenerate key sementara..."
+    echo "==> Set APP_KEY di .env atau environment variable agar persist."
+    php artisan key:generate --force --quiet
+    # Reload env agar key baru terbaca
+    export APP_KEY=$(php -r 'echo config("app.key");')
+fi
+
+# --- Laravel optimizations ---
 echo "==> Running Laravel optimizations..."
-
-# Cache Laravel config (must come first — all other caches depend on it)
 php artisan config:cache
-
-# Cache routes
 php artisan route:cache
-
-# Cache Blade templates
 php artisan view:cache
-
-# Cache events (if any listeners defined)
 php artisan event:cache
 
-# Run migrations (idempotent — won't re-run already-applied migrations)
+# --- Database ---
+echo "==> Running migrations..."
 php artisan migrate --force
 
-# Create storage symlink if not exists
-php artisan storage:link --force
+# --- Storage ---
+php artisan storage:link --force || true
 
+# --- Start Apache ---
 echo "==> Starting Apache..."
-
-# Start Apache in foreground
 exec apache2-foreground
