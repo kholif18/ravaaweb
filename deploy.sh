@@ -10,5 +10,8 @@ docker compose build app
 echo "==> Restarting container..."
 docker compose up -d
 
-echo "==> Done! Website running at http://localhost:$(grep APP_PORT .env | cut -d= -f2)"
+echo "==> Fixing file permissions..."
+sudo chown -R ravaa:ravaa /var/www/RavaaWeb
+
+echo "==> Done!"
 docker ps --filter "name=RavaaWeb-prod" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
