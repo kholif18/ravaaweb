@@ -49,6 +49,9 @@
             <a href="{{ url('/portofolio') }}" class="{{ request()->is('portofolio') ? 'active' : '' }}">Portfolio</a>
             <a href="{{ url('/software-house') }}" class="{{ request()->is('software-house') ? 'active' : '' }}">Software House</a>
             <a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Kontak</a>
+            <a href="{{ route('search') }}" class="{{ request()->is('search') ? 'active' : '' }}" style="margin-top: 8px; border-top: 1px solid var(--glass-border); padding-top: 12px;">
+                <i class="fas fa-search"></i> Cari
+            </a>
         </nav>
         <div style="margin-top:32px;">
             @if($settings['whatsapp'] ?? null)
@@ -65,7 +68,54 @@
 
     @include('frontend.partials.footer')
 
+    <button class="float-top" id="scrollTopBtn" aria-label="Kembali ke atas">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    {{-- Holiday Popup --}}
+    @include('frontend.partials.holiday-popup')
+
+    {{-- Cookie Consent Banner --}}
+    <div id="cookieBanner" class="cookie-banner" style="display: none;">
+        <div class="cookie-banner-inner">
+            <div class="cookie-banner-text">
+                <i class="fas fa-cookie-bite" style="color: var(--accent); font-size: 1.1rem;"></i>
+                <span>Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan melanjutkan, Anda menyetujui penggunaan cookie.</span>
+            </div>
+            <div class="cookie-banner-actions">
+                <button onclick="dismissCookie()" class="btn-cookie-accept">Setuju</button>
+                <button onclick="dismissCookie()" class="btn-cookie-dismiss">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem('cookie_consent')) {
+            document.getElementById('cookieBanner').style.display = 'block';
+        }
+    });
+    function dismissCookie() {
+        localStorage.setItem('cookie_consent', '1');
+        var el = document.getElementById('cookieBanner');
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        setTimeout(function() { el.style.display = 'none'; }, 300);
+    }
+    </script>
+
     <script src="{{ asset('frontend/js/app.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', function() {
+            btn.classList.toggle('visible', window.scrollY > 300);
+        });
+        btn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+    </script>
     @stack('scripts')
 </body>
 </html>

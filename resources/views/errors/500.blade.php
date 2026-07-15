@@ -1,0 +1,6 @@
+@extends('errors.layout')
+@section('title', 'Terjadi Kesalahan')
+@section('code', '500')
+@section('icon', '⚙️')
+@section('title', 'Terjadi Kesalahan')
+@section('message', 'Maaf, terjadi kesalahan pada server. Tim kami telah diberitahu dan akan segera memperbaikinya. Silakan coba beberapa saat lagi.')

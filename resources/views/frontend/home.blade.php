@@ -153,13 +153,18 @@
     @if($content['rich_text']['is_visible'] ?? false)
     <section class="section fade-up">
         <div class="container">
-            <div class="glass-card" style="padding:48px;">
-                @if(!empty($content['rich_text']['title']))
-                    <span class="section-label" style="margin-left: 0; margin-right: auto; text-align: left; display: block;">Informasi</span>
-                    <h2 class="section-title" style="margin-left: 0; margin-right: auto; text-align: left; max-width: 100%; margin-bottom: 24px;">{{ $content['rich_text']['title'] }}</h2>
-                @endif
-                <div class="rich-text-content" style="color: var(--text-muted); line-height: 1.8;">
-                    {!! $content['rich_text']['content'] !!}
+            <div class="promo-card">
+                <div class="promo-card-glow"></div>
+                <div class="promo-card-body">
+                    <div class="promo-card-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    @if(!empty($content['rich_text']['title']))
+                        <h2 class="promo-title">{{ $content['rich_text']['title'] }}</h2>
+                    @endif
+                    <div class="promo-content">
+                        {!! $content['rich_text']['content'] !!}
+                    </div>
                 </div>
             </div>
         </div>

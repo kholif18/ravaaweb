@@ -15,7 +15,7 @@
 @endsection
 
 @section('content')
-<form action="{{ route('admin.settings.update') }}" method="POST">
+<form id="settingsForm" action="{{ route('admin.settings.update') }}" method="POST">
     @csrf
     @method('PUT')
 
@@ -219,6 +219,82 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Maintenance Mode -->
+            <div class="glass-card mb-4">
+                <div class="card-header">
+                    <div class="card-title"><i class="bi bi-shield-exclamation me-1"></i> Maintenance Mode</div>
+                </div>
+                <div class="card-body">
+                    <div class="fv-row">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fs-7 fw-semibold mb-1">Aktifkan Maintenance Mode</div>
+                                <div class="form-text fs-8 mb-0" style="margin-top:0;">
+                                    Jika diaktifkan, pengunjung akan melihat halaman pemeliharaan. Admin tetap bisa mengakses panel.
+                                </div>
+                            </div>
+                            <div class="form-check form-switch" style="padding-left: 3.5em;">
+                                <input class="form-check-input" type="checkbox" role="switch" id="maintenanceMode"
+                                       name="maintenance_mode" value="1"
+                                       {{ ($settings['maintenance_mode'] ?? '0') === '1' ? 'checked' : '' }}
+                                       style="width: 3em; height: 1.5em; cursor: pointer;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holiday Popup -->
+            <div class="glass-card mb-4">
+                <div class="card-header">
+                    <div class="card-title"><i class="bi bi-calendar-event me-1"></i> Popup Hari Libur</div>
+                </div>
+                <div class="card-body">
+                    <div class="fv-row mb-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fs-7 fw-semibold mb-1">Aktifkan Popup Libur</div>
+                                <div class="form-text fs-8 mb-0" style="margin-top:0;">
+                                    Menampilkan pemberitahuan libur di halaman depan website.
+                                </div>
+                            </div>
+                            <div class="form-check form-switch" style="padding-left: 3.5em;">
+                                <input class="form-check-input" type="checkbox" role="switch" id="holidayPopupEnabled"
+                                       name="holiday_popup_enabled" value="1"
+                                       {{ ($settings['holiday_popup_enabled'] ?? '0') === '1' ? 'checked' : '' }}
+                                       style="width: 3em; height: 1.5em; cursor: pointer;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-7 fw-semibold mb-2">Tanggal Mulai Libur</label>
+                            <input type="date" class="form-control form-control-sm" name="holiday_start_date"
+                                   value="{{ $settings['holiday_start_date'] ?? '' }}">
+                        </div>
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-7 fw-semibold mb-2">Tanggal Akhir Libur</label>
+                            <input type="date" class="form-control form-control-sm" name="holiday_end_date"
+                                   value="{{ $settings['holiday_end_date'] ?? '' }}">
+                        </div>
+                    </div>
+
+                    <div class="fv-row mb-3 mt-3">
+                        <label class="fs-7 fw-semibold mb-2">Judul Popup</label>
+                        <input type="text" class="form-control form-control-sm" name="holiday_title"
+                               value="{{ $settings['holiday_title'] ?? '' }}" placeholder="Contoh: Libur Hari Raya Idul Fitri">
+                    </div>
+
+                    <div class="fv-row mb-0">
+                        <label class="fs-7 fw-semibold mb-2">Konten Popup</label>
+                        <div id="holiday-content-editor" style="min-height: 180px;">{!! $settings['holiday_content'] ?? '' !!}</div>
+                        <input type="hidden" name="holiday_content" id="holiday-content-input">
+                        <div class="form-text fs-8 mt-1">Teks pemberitahuan libur. Bisa diformat dengan bold, warna, dll.</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Kanan: Sticky Sidebar -->
@@ -288,7 +364,17 @@
 </form>
 @endsection
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+<style>
+/* Holiday popup editor — smaller to match settings size */
+#holiday-content-editor .ql-editor { min-height: 160px; }
+#holiday-content-editor { border-radius: 8px; overflow: hidden; }
+</style>
+@endpush
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     @if(session('success'))
@@ -297,6 +383,31 @@ document.addEventListener('DOMContentLoaded', function() {
     @if(session('error'))
         Ravaa.toast('{{ session('error') }}', 'error');
     @endif
+
+    // Quill editor for Holiday Popup content
+    var holidayToolbar = [
+        [{ 'header': [2, 3, 4, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['link', 'clean']
+    ];
+    var holidayEditor = new Quill('#holiday-content-editor', {
+        theme: 'snow',
+        modules: { toolbar: holidayToolbar },
+        placeholder: 'Tulis informasi libur di sini...'
+    });
+
+    // Sync Quill content to hidden input on every change (realtime)
+    holidayEditor.on('text-change', function() {
+        document.getElementById('holiday-content-input').value = holidayEditor.root.innerHTML;
+    });
+
+    // Also sync on form submit as fallback
+    var form = document.getElementById('settingsForm');
+    form.addEventListener('submit', function() {
+        document.getElementById('holiday-content-input').value = holidayEditor.root.innerHTML;
+    });
 });
 </script>
 @endpush

@@ -9,22 +9,35 @@ use App\Http\Controllers\FrontendController;
 | Frontend Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', [FrontendController::class, 'home'])->name('home');
-Route::get('/layanan', [FrontendController::class, 'layanan'])->name('layanan');
-Route::get('/product', [FrontendController::class, 'product'])->name('product');
-Route::get('/product/{slug}', [FrontendController::class, 'detailProduct'])->name('detail-product');
-Route::get('/portofolio', [FrontendController::class, 'portofolio'])->name('portofolio');
-Route::get('/software-house', [FrontendController::class, 'softwareHouse'])->name('software-house');
-Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
-Route::post('/contact', [FrontendController::class, 'submitContact'])->name('contact.submit');
+Route::middleware(['track.visit', 'maintenance'])->group(function () {
+    Route::get('/', [FrontendController::class, 'home'])->name('home');
+    Route::get('/layanan', [FrontendController::class, 'layanan'])->name('layanan');
+    Route::get('/product', [FrontendController::class, 'product'])->name('product');
+    Route::get('/product/{slug}', [FrontendController::class, 'detailProduct'])->name('detail-product');
+    Route::get('/portofolio', [FrontendController::class, 'portofolio'])->name('portofolio');
+    Route::get('/software-house', [FrontendController::class, 'softwareHouse'])->name('software-house');
+    Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
+    Route::post('/contact', [FrontendController::class, 'submitContact'])->name('contact.submit')->middleware('throttle:contact');
+    Route::get('/search', [FrontendController::class, 'search'])->name('search');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Sitemap
+|--------------------------------------------------------------------------
+*/
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
 | Admin Login Routes
 |--------------------------------------------------------------------------
 */
+// Redirect /login to admin login for convenience
+Route::redirect('login', 'admin/login', 301);
+
 Route::get('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.post');
+Route::post('admin/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.post')->middleware('throttle:login');
 Route::post('admin/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
 /*
@@ -39,6 +52,12 @@ Route::prefix('admin')
 
         // Dashboard
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        // Profile
+        Route::get('profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+        Route::post('profile/avatar', [App\Http\Controllers\Admin\ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+        Route::post('profile/avatar/remove', [App\Http\Controllers\Admin\ProfileController::class, 'removeAvatar'])->name('profile.avatar.remove');
 
         // Categories
         Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk.destroy');

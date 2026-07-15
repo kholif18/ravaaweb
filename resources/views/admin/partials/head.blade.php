@@ -8,7 +8,12 @@
 
     @php
         $logoMediaId = \App\Models\Setting::get('logo_media_id');
-        $customLogoUrl = $logoMediaId ? \App\Models\Media::find($logoMediaId)?->url : null;
+        $customLogoUrl = null;
+        if ($logoMediaId) {
+            $customLogoUrl = \Illuminate\Support\Facades\Cache::remember('logo_url_' . $logoMediaId, 3600, function () use ($logoMediaId) {
+                return \App\Models\Media::find($logoMediaId)?->url;
+            });
+        }
     @endphp
     <link rel="icon" href="{{ $customLogoUrl ?? asset('favicon.ico') }}" />
     <link rel="apple-touch-icon" href="{{ $customLogoUrl ?? asset('images/logo.svg') }}" />

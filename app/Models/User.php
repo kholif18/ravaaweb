@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_active',
+        'avatar_media_id',
     ];
 
     /**
@@ -47,5 +49,20 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+    // ── Avatar ──
+
+    public function avatarMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'avatar_media_id');
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if ($this->avatarMedia) {
+            return $this->avatarMedia->url;
+        }
+        return asset('images/default-image.png');
     }
 }

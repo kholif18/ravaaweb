@@ -72,8 +72,14 @@ class SettingController extends Controller
             'meta_title'         => 'nullable|string|max:255',
             'meta_description'   => 'nullable|string|max:500',
             'meta_keywords'      => 'nullable|string|max:255',
-            'footer_text'        => 'nullable|string',
-            'copyright'          => 'nullable|string|max:255',
+            'footer_text'         => 'nullable|string',
+            'copyright'           => 'nullable|string|max:255',
+            'maintenance_mode'    => 'nullable|in:0,1',
+            'holiday_popup_enabled' => 'nullable|in:0,1',
+            'holiday_start_date'  => 'nullable|date',
+            'holiday_end_date'    => 'nullable|date|after_or_equal:holiday_start_date',
+            'holiday_title'       => 'nullable|string|max:255',
+            'holiday_content'     => 'nullable|string',
         ]);
 
         // Prepend base URL for social media fields if not already a full URL
@@ -86,6 +92,10 @@ class SettingController extends Controller
                 }
             }
         }
+
+        // Handle unchecked checkboxes (browser doesn't send value when unchecked)
+        $validated['maintenance_mode'] = $validated['maintenance_mode'] ?? '0';
+        $validated['holiday_popup_enabled'] = $validated['holiday_popup_enabled'] ?? '0';
 
         Setting::setMany(array_filter($validated, fn($v) => $v !== null));
 

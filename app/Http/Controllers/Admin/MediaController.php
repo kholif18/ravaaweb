@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class MediaController extends Controller
 {
@@ -52,6 +54,31 @@ class MediaController extends Controller
         return view('admin.media.index', compact('media'));
     }
 
+    /**
+     * Create an optimized thumbnail for image uploads.
+     */
+    private function createThumbnail($file, string $path): ?string
+    {
+        $mime = $file->getMimeType();
+        if (!str_starts_with($mime, 'image/') || $mime === 'image/gif' || $mime === 'image/svg+xml') {
+            return null;
+        }
+
+        try {
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($file);
+            $image->scale(width: 300);
+
+            $thumbPath = dirname($path) . '/thumb_' . basename($path);
+            $image->save(storage_path('app/public/' . $thumbPath));
+
+            return $thumbPath;
+        } catch (\Throwable $e) {
+            report($e);
+            return null;
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -63,12 +90,15 @@ class MediaController extends Controller
         $originalName = pathinfo($fileName, PATHINFO_FILENAME);
         $path = $file->store('media', 'public');
 
+        $thumbPath = $this->createThumbnail($file, $path);
+
         $media = Media::create([
             'name' => $originalName,
             'file_name' => $fileName,
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'path' => $path,
+            'thumb_path' => $thumbPath,
             'disk' => 'public',
             'uploaded_by' => Auth::id(),
         ]);
@@ -94,12 +124,15 @@ class MediaController extends Controller
             $originalName = pathinfo($fileName, PATHINFO_FILENAME);
             $path = $file->store('media', 'public');
 
+            $thumbPath = $this->createThumbnail($file, $path);
+
             $media = Media::create([
                 'name' => $originalName,
                 'file_name' => $fileName,
                 'mime_type' => $file->getMimeType(),
                 'size' => $file->getSize(),
                 'path' => $path,
+                'thumb_path' => $thumbPath,
                 'disk' => 'public',
                 'uploaded_by' => Auth::id(),
             ]);

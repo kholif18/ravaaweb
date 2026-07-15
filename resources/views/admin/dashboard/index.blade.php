@@ -17,7 +17,7 @@
 @section('content')
 
     {{-- ===== ROW 1: QUICK STATS (4 columns) ===== --}}
-    <div class="row mb-4">
+    <div class="row g-3 mb-4">
 
         @foreach($stats as [$label, $value, $icon, $color])
             <div class="col-xl-3 col-lg-6 col-md-6">
@@ -37,25 +37,77 @@
 
     </div>
 
-    {{-- ===== ROW 2: STATISTICS / CHARTS (2 columns) ===== --}}
+    {{-- ===== ROW 2: VISITOR STATS (4 mini cards) ===== --}}
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-light-primary">
+                        <i class="bi bi-eye fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ $todayVisits }}</div>
+                        <div class="stat-label">Kunjungan Hari Ini</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-light-success">
+                        <i class="bi bi-calendar-week fs-4 text-success"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ $thisWeekVisits }}</div>
+                        <div class="stat-label">Minggu Ini</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-light-warning">
+                        <i class="bi bi-calendar-month fs-4 text-warning"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ $thisMonthVisits }}</div>
+                        <div class="stat-label">Bulan Ini</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-light-info">
+                        <i class="bi bi-people fs-4 text-info"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ $uniqueVisitors }}</div>
+                        <div class="stat-label">Pengunjung Unik (30 hr)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== ROW 3: CHARTS (2 columns) ===== --}}
     <div class="row mb-4">
 
-        {{-- AREA CHART: KUNJUNGAN HARIAN --}}
+        {{-- AREA CHART: KUNJUNGAN 7 HARI --}}
         <div class="col-xl-6 col-lg-6 mb-4 mb-xl-0">
             <div class="glass-card h-100">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="fw-semibold mb-0">Kunjungan Situs</h6>
-                    <select class="form-select form-select-sm w-auto">
-                        <option>7 Hari</option>
-                        <option>30 Hari</option>
-                        <option>3 Bulan</option>
-                    </select>
+                    <h6 class="fw-semibold mb-0">Kunjungan 7 Hari Terakhir</h6>
+                    <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-light-primary">Lihat Laporan</a>
                 </div>
                 <div id="visitor_area_chart" style="height: 260px;"></div>
             </div>
         </div>
 
-        {{-- BAR CHART: KUNJUNGAN PER HALAMAN --}}
+        {{-- BAR CHART: HALAMAN TERPOPULER --}}
         <div class="col-xl-6 col-lg-6">
             <div class="glass-card h-100">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -67,11 +119,11 @@
 
     </div>
 
-    {{-- ===== ROW 3: TABLE + ACTIVITY (2 columns) ===== --}}
-    <div class="row">
+    {{-- ===== ROW 4: TABLE + TOP PRODUK + AKTIVITAS (3 columns) ===== --}}
+    <div class="row g-3">
 
         {{-- PRODUK TERBARU --}}
-        <div class="col-xl-8">
+        <div class="col-xl-5">
             <div class="glass-card h-100">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h5 class="fw-semibold mb-0">Produk Terbaru</h5>
@@ -85,8 +137,7 @@
                                 <th>Nama</th>
                                 <th>Kategori</th>
                                 <th>Status</th>
-                                <th>Tanggal</th>
-                                <th class="text-end">Aksi</th>
+                                <th class="text-center" style="width: 100px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="fs-7">
@@ -100,19 +151,26 @@
                                         {{ $product->status === 'active' ? 'Aktif' : 'Non-aktif' }}
                                     </span>
                                 </td>
-                                <td>{{ $product->created_at->format('d M Y') }}</td>
-                                <td class="text-end">
-                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-light-primary"><i class="bi bi-pencil"></i></a>
-                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-light-danger" style="border: none; background: transparent; padding: 0.25rem 0.5rem;"><i class="bi bi-trash"></i></button>
-                                    </form>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{{ route('admin.products.edit', $product->id) }}"
+                                           class="btn btn-icon btn-sm"
+                                           title="Edit"
+                                           style="width: 28px; height: 28px; border-radius: 6px; background: rgba(79,110,247,0.1); color: #4f6ef7;">
+                                            <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-icon btn-sm"
+                                                onclick="window.Ravaa.deleteItem('{{ route('admin.products.destroy', $product->id) }}', 'Hapus Produk', 'Produk &quot;{{ $product->name }}&quot; akan dihapus permanen.')"
+                                                title="Hapus"
+                                                style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
+                                            <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">Belum ada produk terdaftar.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">Belum ada produk terdaftar.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -121,46 +179,59 @@
             </div>
         </div>
 
-        {{-- AKTIVITAS TERBARU --}}
+        {{-- PRODUK TERPOPULER --}}
         <div class="col-xl-4">
             <div class="glass-card h-100">
                 <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h5 class="fw-semibold mb-0">Aktivitas Terbaru</h5>
+                    <h5 class="fw-semibold mb-0">Produk Terpopuler</h5>
+                </div>
+                @forelse($topProducts as $i => $product)
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold"
+                         style="width: 32px; height: 32px; background: rgba(79,110,247,0.1); color: #4f6ef7; font-size: 0.8rem; flex-shrink: 0;">
+                        {{ $i + 1 }}
+                    </div>
+                    <div class="flex-grow-1 min-width-0">
+                        <div class="fw-semibold fs-7 text-truncate">{{ $product->name }}</div>
+                        <div class="text-muted fs-8">{{ $product->views_count }} dilihat</div>
+                    </div>
+                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-light-primary" style="flex-shrink: 0;">
+                        <i class="bi bi-box-arrow-up-right" style="font-size: 0.7rem;"></i>
+                    </a>
+                </div>
+                @empty
+                <div class="text-center py-4 text-muted">Belum ada data kunjungan.</div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- AKTIVITAS TERBARU --}}
+        <div class="col-xl-3">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h5 class="fw-semibold mb-0">Kunjungan Terakhir</h5>
                 </div>
                 <div class="timeline">
+                    @forelse(\App\Models\PageVisit::latest('visited_at')->limit(5)->get() as $visit)
                     <div class="timeline-item">
-                        <div class="timeline-icon symbol symbol-circle symbol-40px">
-                            <span class="symbol-label bg-light-success">
-                                <i class="bi bi-plus fs-6 text-success"></i>
+                        <div class="timeline-icon">
+                            <span class="symbol-label" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(79,110,247,0.1);">
+                                <i class="bi bi-eye fs-7 text-primary"></i>
                             </span>
                         </div>
                         <div class="timeline-content">
-                            <div class="fw-semibold">Produk Baru Ditambahkan</div>
-                            <div class="text-muted fs-7">2 jam yang lalu</div>
+                            <div class="fw-semibold fs-7 text-truncate">{{ $visit->title ?? $visit->page_type }}</div>
+                            <div class="text-muted fs-8">{{ $visit->visited_at->diffForHumans() }}</div>
                         </div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon symbol symbol-circle symbol-40px">
-                            <span class="symbol-label bg-light-warning">
-                                <i class="bi bi-pencil fs-6 text-warning"></i>
-                            </span>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="fw-semibold">Kategori Diperbarui</div>
-                            <div class="text-muted fs-7">5 jam yang lalu</div>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon symbol symbol-circle symbol-40px">
-                            <span class="symbol-label bg-light-danger">
-                                <i class="bi bi-trash fs-6 text-danger"></i>
-                            </span>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="fw-semibold">Testimoni Dihapus</div>
-                            <div class="text-muted fs-7">1 hari yang lalu</div>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted">Belum ada kunjungan.</div>
+                    @endforelse
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-light-primary w-100">
+                        <i class="bi bi-graph-up me-1"></i> Laporan Lengkap
+                    </a>
                 </div>
             </div>
         </div>
@@ -175,13 +246,13 @@
 
             if (typeof ApexCharts === 'undefined') return;
 
-            // Area Chart - Kunjungan Harian
+            // ── Area Chart: Kunjungan 7 Hari ──
             const areaEl = document.getElementById("visitor_area_chart");
             if (areaEl) {
                 new ApexCharts(areaEl, {
                     series: [{
-                        name: 'Pengunjung',
-                        data: [120, 180, 160, 210, 260, 240, 300]
+                        name: 'Kunjungan',
+                        data: @json($chartValues)
                     }],
                     chart: {
                         type: 'area',
@@ -197,29 +268,39 @@
                     },
                     colors: ['#4f6ef7'],
                     xaxis: {
-                        categories: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } }
+                        categories: @json($chartLabels),
+                        labels: {
+                            style: { colors: '#9aa0a6', fontSize: '11px' },
+                            formatter: function(val) { return val ? val.substring(5) : ''; }
+                        }
                     },
                     yaxis: {
-                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } }
+                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } },
+                        min: 0
                     },
                     grid: {
                         borderColor: 'rgba(0,0,0,0.04)',
                         strokeDashArray: 4
                     },
                     tooltip: {
-                        y: { formatter: val => val + ' pengunjung' }
+                        y: { formatter: val => val + ' kunjungan' }
                     }
                 }).render();
             }
 
-            // Bar Chart - Kunjungan per Halaman
+            // ── Bar Chart: Halaman Terpopuler ──
             const barEl = document.getElementById("visitor_page_chart");
             if (barEl) {
+                var popularPages = @json($popularPages);
+                var pageLabels = popularPages.map(function(p) {
+                    return p.title || p.page_type.replace('_', ' ') || p.url;
+                });
+                var pageValues = popularPages.map(function(p) { return p.count; });
+
                 new ApexCharts(barEl, {
                     series: [{
                         name: 'Kunjungan',
-                        data: [520, 430, 380, 310, 260]
+                        data: pageValues.length ? pageValues : [0]
                     }],
                     chart: {
                         type: 'bar',
@@ -232,13 +313,13 @@
                         bar: {
                             horizontal: true,
                             borderRadius: 6,
-                            barHeight: '60%'
+                            barHeight: '50%'
                         }
                     },
                     colors: ['#22c55e'],
                     xaxis: {
-                        categories: ['Beranda', 'Produk', 'Portfolio', 'Tentang Kami', 'Kontak'],
-                        labels: { style: { colors: '#9aa0a6', fontSize: '12px' } }
+                        categories: pageLabels.length ? pageLabels : ['Belum ada data'],
+                        labels: { style: { colors: '#9aa0a6', fontSize: '11px' } }
                     },
                     grid: {
                         borderColor: 'rgba(0,0,0,0.04)',

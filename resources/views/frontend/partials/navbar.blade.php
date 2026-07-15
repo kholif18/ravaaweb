@@ -12,10 +12,20 @@
             <li><a href="{{ url('/portofolio') }}" class="{{ request()->is('portofolio') ? 'active' : '' }}">Portfolio</a></li>
             <li><a href="{{ url('/software-house') }}" class="{{ request()->is('software-house') ? 'active' : '' }}">Software House</a></li>
             <li><a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Kontak</a></li>
+            <li class="navbar-search-li">
+                <a href="{{ route('search') }}" class="navbar-search-btn" aria-label="Cari">
+                    <i class="fas fa-search"></i>
+                </a>
+            </li>
         </ul>
 
-        <button class="navbar-toggle" id="menuToggle" aria-label="Buka menu">
-            <i class="fas fa-bars"></i>
-        </button>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <a href="{{ route('search') }}" class="navbar-search-icon-mobile" aria-label="Cari">
+                <i class="fas fa-search"></i>
+            </a>
+            <button class="navbar-toggle" id="menuToggle" aria-label="Buka menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
     </div>
 </nav>

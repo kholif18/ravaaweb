@@ -133,9 +133,10 @@
    - `AdminSoftwareHouseBuilderTest` — 7 test
    - `AdminSettingsTest` — 2 test
    - `AdminDashboardTest` — 2 test
-   - Total: **68 test, 163 assertions, all passing** ✅
-3. **Test Browser** — Laravel Dusk / Cypress ⏳ BELUM
-4. **CI Pipeline** — GitHub Actions ⏳ BELUM
+    - Total feature/unit: **68 test, 163 assertions, all passing** ✅
+    - Total browser: **8 test** ✅
+3. **Test Browser** — Laravel Dusk ✅ (8 browser test: home, catalog, product detail, search, admin login, admin pages)
+4. **CI Pipeline** — GitHub Actions ✅ (3 jobs: static analysis, unit/feature tests, browser tests)
 
 ## Fase 10: Optimasi & Deployment ⏳ BELUM
 
@@ -148,7 +149,7 @@
 
 ---
 
-*Terakhir diperbarui: 14 Juli 2026 — Fase 8–9 → Dashboard, Settings Logo, Reports, Logs, Software House & Feature Tests ✅*
+*Terakhir diperbarui: 15 Juli 2026 — Fase 9 → Browser Test (Dusk) ✅ & CI Pipeline ✅*
 
 ## Prioritas Selanjutnya (Ringkasan)
 
@@ -158,5 +159,5 @@
 - ~~**Responsive UI/UX**: Media query breakpoints, lazy‑load, pagination UI glass‑style, filter pill, CTA WhatsApp.~~ ✅
 - ~~**Pengujian & CI**: Unit & feature test untuk model & route (68 test passing).~~ ✅
 - ~~**Halaman Admin Tambahan**: CRUD Banner, Home Builder, Settings (termasuk upload logo), Users, Role & Permission, Reports, System Logs.~~ ✅
-- **Browser Test & CI Pipeline**: Laravel Dusk/Cypress, GitHub Actions.
+- ~~**Browser Test & CI Pipeline**: Laravel Dusk, GitHub Actions.~~ ✅
 - **Optimasi & Deployment**: Asset build (minify, versioning), cache header, query caching, SEO (meta tags, sitemap), Docker production (config & route cache), monitoring (logs, alerts).

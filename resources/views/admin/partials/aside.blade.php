@@ -1,12 +1,75 @@
 @php
     $routeName = Route::currentRouteName();
+
+    // Helper: check if current route matches any in the group
+    if (!function_exists('isGroupActive')) {
+        function isGroupActive($patterns) {
+            foreach ($patterns as $p) {
+                if (request()->routeIs($p) || request()->is($p)) return true;
+            }
+            return false;
+        }
+    }
+
+    $groups = [
+        'katalog' => [
+            'icon' => 'bi-box-seam',
+            'label' => 'Katalog',
+            'routes' => ['admin.categories.*', 'admin.tags.*', 'admin.products.*'],
+            'children' => [
+                ['icon' => 'bi-folder2-open', 'label' => 'Kategori Produk', 'route' => 'admin.categories.index'],
+                ['icon' => 'bi-tags', 'label' => 'Tag Produk', 'route' => 'admin.tags.index'],
+                ['icon' => 'bi-box', 'label' => 'Produk', 'route' => 'admin.products.index'],
+            ],
+        ],
+        'konten' => [
+            'icon' => 'bi-layout-text-window',
+            'label' => 'Konten Website',
+            'routes' => ['admin.services.*', 'admin.portfolio.*', 'admin.testimonials.*', 'admin.banners.*', 'admin.contact-submissions.*', 'admin/home*', 'admin/software-house*'],
+            'children' => [
+                ['icon' => 'bi-headset', 'label' => 'Layanan', 'route' => 'admin.services.index'],
+                ['icon' => 'bi-briefcase', 'label' => 'Portfolio', 'route' => 'admin.portfolio.index'],
+                ['icon' => 'bi-chat-quote', 'label' => 'Testimoni', 'route' => 'admin.testimonials.index'],
+                ['icon' => 'bi-images', 'label' => 'Banner / Hero', 'route' => 'admin.banners.index'],
+                ['icon' => 'bi-envelope', 'label' => 'Pesan Masuk', 'route' => 'admin.contact-submissions.index'],
+                ['icon' => 'bi-layout-three-columns', 'label' => 'Home Builder', 'route' => 'admin.home.index'],
+                ['icon' => 'bi-laptop', 'label' => 'Software House', 'route' => 'admin.software-house.index'],
+            ],
+        ],
+        'pengaturan' => [
+            'icon' => 'bi-gear-wide-connected',
+            'label' => 'Pengaturan',
+            'routes' => ['admin.settings.*', 'admin.footer-links.*', 'admin.users.*', 'admin.roles.*'],
+            'children' => [
+                ['icon' => 'bi-gear', 'label' => 'Pengaturan Umum', 'route' => 'admin.settings.index'],
+                ['icon' => 'bi-link-45deg', 'label' => 'Footer Links', 'route' => 'admin.footer-links.index'],
+                ['icon' => 'bi-people', 'label' => 'Users', 'route' => 'admin.users.index'],
+                ['icon' => 'bi-shield-check', 'label' => 'Role & Permission', 'route' => 'admin.roles.index'],
+            ],
+        ],
+        'tools' => [
+            'icon' => 'bi-tools',
+            'label' => 'Tools',
+            'routes' => ['admin.media.*', 'admin.reports.*', 'admin/logs*'],
+            'children' => [
+                ['icon' => 'bi-folder', 'label' => 'Media Library', 'route' => 'admin.media.index'],
+                ['icon' => 'bi-graph-up', 'label' => 'Laporan & Analytics', 'route' => 'admin.reports.index'],
+                ['icon' => 'bi-journal-text', 'label' => 'System Logs', 'route' => 'admin.logs.index'],
+            ],
+        ],
+    ];
 @endphp
 
 <div class="sidebar-header">
     <a href="{{ route('admin.dashboard') }}" class="brand">
         @php
             $logoMediaId = \App\Models\Setting::get('logo_media_id');
-            $sidebarLogoUrl = $logoMediaId ? (\App\Models\Media::find($logoMediaId)?->url ?? asset('images/logo.svg')) : asset('images/logo.svg');
+            $sidebarLogoUrl = asset('images/logo.svg');
+            if ($logoMediaId) {
+                $sidebarLogoUrl = \Illuminate\Support\Facades\Cache::remember('logo_url_' . $logoMediaId, 3600, function () use ($logoMediaId) {
+                    return \App\Models\Media::find($logoMediaId)?->url ?? asset('images/logo.svg');
+                });
+            }
         @endphp
         <img src="{{ $sidebarLogoUrl }}" alt="RavaaWeb" style="height: 32px; width: auto; object-fit: contain;">
         <span>RavaaWeb</span>
@@ -24,124 +87,36 @@
         </li>
     </ul>
 
-    {{-- ===== Katalog Produk ===== --}}
-    <div class="nav-section">Katalog Produk</div>
-
-    <ul class="nav-item">
+    {{-- Menu Groups --}}
+    @foreach($groups as $key => $group)
+    @php
+        $isActive = isGroupActive($group['routes']);
+        $hasChildActive = false;
+        foreach ($group['children'] as $child) {
+            if (request()->routeIs($child['route'])) { $hasChildActive = true; break; }
+        }
+    @endphp
+    <ul class="nav-item nav-group">
         <li>
-            <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
-                <i class="bi bi-folder2-open"></i>
-                <span>Kategori Produk</span>
+            <a class="nav-link nav-group-toggle {{ $isActive ? 'active' : '' }} {{ $isActive && !$hasChildActive ? 'expanded-open' : '' }}" href="#" data-group="{{ $key }}">
+                <i class="{{ $group['icon'] }}"></i>
+                <span>{{ $group['label'] }}</span>
+                <i class="bi bi-chevron-down nav-group-arrow {{ $isActive ? 'rotated' : '' }}"></i>
             </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}" href="{{ route('admin.tags.index') }}">
-                <i class="bi bi-tags"></i>
-                <span>Tag Produk</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">
-                <i class="bi bi-box"></i>
-                <span>Produk</span>
-            </a>
-        </li>
-    </ul>
-
-    {{-- ===== Konten Website ===== --}}
-    <div class="nav-section">Konten Website</div>
-
-    <ul class="nav-item">
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.services.*') ? 'active' : '' }}" href="{{ route('admin.services.index') }}">
-                <i class="bi bi-headset"></i>
-                <span>Layanan</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.portfolio.*') ? 'active' : '' }}" href="{{ route('admin.portfolio.index') }}">
-                <i class="bi bi-briefcase"></i>
-                <span>Portfolio</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}" href="{{ route('admin.testimonials.index') }}">
-                <i class="bi bi-chat-quote"></i>
-                <span>Testimoni</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
-                <i class="bi bi-images"></i>
-                <span>Banner / Hero</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}" href="{{ route('admin.contact-submissions.index') }}">
-                <i class="bi bi-envelope"></i>
-                <span>Pesan Masuk</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->is('admin/home*') ? 'active' : '' }}" href="{{ route('admin.home.index') }}">
-                <i class="bi bi-layout-three-columns"></i>
-                <span>Home Builder</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->is('admin/software-house*') ? 'active' : '' }}" href="{{ route('admin.software-house.index') }}">
-                <i class="bi bi-laptop"></i>
-                <span>Software House</span>
-            </a>
+            <div class="nav-group-children {{ $isActive ? 'expanded' : '' }}" id="group-{{ $key }}">
+                @foreach($group['children'] as $child)
+                <a class="nav-link nav-child-link {{ request()->routeIs($child['route']) ? 'active' : '' }}" href="{{ route($child['route']) }}">
+                    <i class="{{ $child['icon'] }}"></i>
+                    <span>{{ $child['label'] }}</span>
+                </a>
+                @endforeach
+            </div>
         </li>
     </ul>
+    @endforeach
 
-    {{-- ===== Pengaturan ===== --}}
-    <div class="nav-section">Pengaturan</div>
-
-    <ul class="nav-item">
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
-                <i class="bi bi-gear"></i>
-                <span>Pengaturan Umum</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.footer-links.*') ? 'active' : '' }}" href="{{ route('admin.footer-links.index') }}">
-                <i class="bi bi-link-45deg"></i>
-                <span>Footer Links</span>
-            </a>
-        </li>
-    </ul>
-
-    {{-- ===== Lainnya ===== --}}
-    <div class="nav-section">Lainnya</div>
-
-    <ul class="nav-item">
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}" href="{{ route('admin.media.index') }}">
-                <i class="bi bi-folder"></i>
-                <span>Media Library</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}" href="{{ route('admin.roles.index') }}">
-                <i class="bi bi-shield-check"></i>
-                <span>Role & Permission</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">
-                <i class="bi bi-graph-up"></i>
-                <span>Laporan & Analytics</span>
-            </a>
-        </li>
-        <li>
-            <a class="nav-link {{ request()->is('admin/logs*') ? 'active' : '' }}" href="{{ route('admin.logs.index') }}">
-                <i class="bi bi-journal-text"></i>
-                <span>System Logs</span>
-            </a>
-        </li>
+    {{-- Lihat Website --}}
+    <ul class="nav-item" style="margin-top:4px;">
         <li>
             <a class="nav-link" href="{{ url('/') }}" target="_blank">
                 <i class="bi bi-box-arrow-up-right"></i>
@@ -151,16 +126,4 @@
     </ul>
 </nav>
 
-<div class="sidebar-footer">
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <i class="bi bi-person-fill" style="color: var(--accent); font-size: 0.9rem;"></i>
-        </div>
-        <div style="flex: 1; min-width: 0;">
-            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                {{ auth()->guard('admin')->user()->name ?? 'Admin' }}
-            </div>
-            <div style="font-size: 0.68rem; color: var(--text-muted);">admin@ravaa.com</div>
-        </div>
-    </div>
-</div>
+

@@ -1,0 +1,112 @@
+# ============================================================
+# RavaaWeb — Production Stack
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # Main application (PHP 8.4 + Apache)
+  # ----------------------------------------------------------
+  app:
+    container_name: RavaaWeb-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ravaaweb-app:8.4-prod
+    ports:
+      - "${APP_PORT:-80}:80"
+    restart: unless-stopped
+    environment:
+      # — Application
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_URL: "${APP_URL:-http://localhost}"
+      APP_KEY: "${APP_KEY}"
+
+      # — Database (MariaDB)
+      DB_CONNECTION: mariadb
+      DB_HOST: "${DB_HOST:-mariadb}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_DATABASE: "${DB_DATABASE:-web}"
+      DB_USERNAME: "${DB_USERNAME:-root}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+
+      # — Redis (cache & session)
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-}"
+      CACHE_STORE: redis
+      SESSION_DRIVER: redis
+
+      # — Mail
+      MAIL_MAILER: "${MAIL_MAILER:-log}"
+
+      # — Queue
+      QUEUE_CONNECTION: database
+
+      # — Filesystem
+      FILESYSTEM_DISK: local
+    volumes:
+      # Persistent storage (user uploads, logs, session files if needed)
+      - storage_data:/var/www/html/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/up"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    networks:
+      - ravaaweb
+
+  # ----------------------------------------------------------
+  # Redis (cache, session, queue)
+  # ----------------------------------------------------------
+  redis:
+    container_name: RavaaWeb-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --lfu-decay-time 1
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - ravaaweb
+
+  # ----------------------------------------------------------
+  # MariaDB (database)
+  # ----------------------------------------------------------
+  mariadb:
+    container_name: RavaaWeb-db
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE:-web}"
+      MYSQL_USER: "${DB_USERNAME:-root}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ravaaweb
+
+volumes:
+  storage_data:
+  redis_data:
+  mariadb_data:
+
+networks:
+  ravaaweb:
+    driver: bridge

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PageVisit;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\PortfolioItem;
@@ -15,12 +16,9 @@ use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-    /**
-     * Display a summary report of products, services, portfolio, and website statistics.
-     */
     public function index()
     {
-        // 1. General summary metrics
+        // ── 1. Content Metrics (existing) ──
         $totalProducts = Product::count();
         $totalCategories = Category::count();
         $totalPortfolio = PortfolioItem::count();
@@ -30,58 +28,76 @@ class ReportController extends Controller
         $totalUsers = User::count();
         $totalMedia = Media::count();
 
-        // 2. Product status breakdown
         $productStatus = Product::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
+            ->groupBy('status')->get()->pluck('count', 'status')->toArray();
 
-        // 3. Products per category distribution
         $productsPerCategory = Category::withCount('products')
-            ->orderBy('products_count', 'desc')
-            ->get();
+            ->orderBy('products_count', 'desc')->get();
 
-        // 4. Featured products count
         $featuredProductsCount = Product::where('is_featured', true)->count();
 
-        // 5. Service status breakdown
         $serviceStatus = Service::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
+            ->groupBy('status')->get()->pluck('count', 'status')->toArray();
 
-        // 6. Portfolio item status breakdown
         $portfolioStatus = PortfolioItem::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
+            ->groupBy('status')->get()->pluck('count', 'status')->toArray();
 
-        // 7. Testimonial status breakdown
         $testimonialStatus = Testimonial::select('status', DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
+            ->groupBy('status')->get()->pluck('count', 'status')->toArray();
 
-        // 8. Product pricing stats
         $avgPrice = Product::avg('price') ?? 0;
         $maxPrice = Product::max('price') ?? 0;
         $minPrice = Product::min('price') ?? 0;
-        
+
         $discountedCount = Product::where(function($query) {
-            $query->whereNotNull('price_discount')
-                  ->where('price_discount', '>', 0);
+            $query->whereNotNull('price_discount')->where('price_discount', '>', 0);
         })->count();
 
+        // ── 2. Analytics ──
+        $totalVisits    = PageVisit::count();
+        $todayVisits    = PageVisit::today()->count();
+        $thisWeekVisits = PageVisit::thisWeek()->count();
+        $thisMonthVisits = PageVisit::thisMonth()->count();
+        $uniqueVisitors = PageVisit::uniqueVisitors(now()->subDays(30)->toDateTimeString());
+
+        // Daily chart data — last 14 days
+        $dailyVisits = PageVisit::dailyVisits(14);
+        $chartLabels14 = array_keys($dailyVisits);
+        $chartValues14 = array_values($dailyVisits);
+
+        // Hourly chart — today
+        $hourlyData = PageVisit::hourlyVisitsToday();
+
+        // Most visited pages — this month
+        $popularPages = PageVisit::mostVisitedPages(10, now()->startOfMonth()->toDateTimeString());
+
+        // Visits by type — this month
+        $visitsByType = PageVisit::visitsByType(now()->startOfMonth()->toDateTimeString());
+
+        // Top products by views
+        $topProducts = Product::where('status', 'active')
+            ->orderBy('views_count', 'desc')
+            ->limit(10)
+            ->get(['id', 'name', 'slug', 'views_count']);
+
+        // Top portfolio by views
+        $topPortfolio = PortfolioItem::where('status', 'active')
+            ->orderBy('views_count', 'desc')
+            ->limit(5)
+            ->get(['id', 'title', 'slug', 'views_count']);
+
         return view('admin.reports.index', compact(
+            // Existing content metrics
             'totalProducts', 'totalCategories', 'totalPortfolio', 'totalServices',
             'totalTestimonials', 'totalBanners', 'totalUsers', 'totalMedia',
             'productStatus', 'productsPerCategory', 'featuredProductsCount',
             'serviceStatus', 'portfolioStatus', 'testimonialStatus',
-            'avgPrice', 'maxPrice', 'minPrice', 'discountedCount'
+            'avgPrice', 'maxPrice', 'minPrice', 'discountedCount',
+            // Analytics
+            'totalVisits', 'todayVisits', 'thisWeekVisits', 'thisMonthVisits', 'uniqueVisitors',
+            'chartLabels14', 'chartValues14', 'hourlyData',
+            'popularPages', 'visitsByType',
+            'topProducts', 'topPortfolio'
         ));
     }
 }

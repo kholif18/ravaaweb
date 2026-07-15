@@ -29,15 +29,6 @@ class DatabaseSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'admin']);
         $adminUser->assignRole($adminRole);
 
-        // Seed kategori produk
-        $this->call(CategorySeeder::class);
-
-        // Seed tag produk
-        $this->call(TagSeeder::class);
-
-        // Seed produk
-        $this->call(ProductSeeder::class);
-
         // Seed pengaturan umum
         $this->call(SettingSeeder::class);
 

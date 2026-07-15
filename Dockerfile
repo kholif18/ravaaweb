@@ -1,0 +1,84 @@
+# ============================================================
+# RavaaWeb — Production Docker Image
+# Base: PHP 8.4 + Apache
+# ============================================================
+
+FROM php:8.4-apache
+
+# -----------------------------------------------------------
+# 1. System dependencies
+# -----------------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libicu-dev \
+    unzip \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# -----------------------------------------------------------
+# 2. PHP extensions
+# -----------------------------------------------------------
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    zip \
+    gd \
+    bcmath \
+    intl \
+    opcache
+
+# Redis extension (required for cache & session)
+RUN pecl install redis && docker-php-ext-enable redis
+
+# -----------------------------------------------------------
+# 3. Apache modules
+# -----------------------------------------------------------
+RUN a2enmod rewrite headers expires deflate
+
+# -----------------------------------------------------------
+# 4. Composer
+# -----------------------------------------------------------
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# -----------------------------------------------------------
+# 5. PHP configuration
+# -----------------------------------------------------------
+COPY .docker/php.ini /usr/local/etc/php/conf.d/production.ini
+COPY .docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# -----------------------------------------------------------
+# 6. Apache virtual host
+# -----------------------------------------------------------
+COPY .docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+
+# -----------------------------------------------------------
+# 7. Application source code
+# -----------------------------------------------------------
+WORKDIR /var/www/html
+
+COPY . .
+
+# -----------------------------------------------------------
+# 8. Composer install (production, no dev deps)
+# -----------------------------------------------------------
+RUN composer install --optimize-autoloader --no-dev --no-interaction --no-progress
+
+# -----------------------------------------------------------
+# 9. Permissions
+# -----------------------------------------------------------
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# -----------------------------------------------------------
+# 10. Entrypoint
+# -----------------------------------------------------------
+COPY .docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/entrypoint.sh"]

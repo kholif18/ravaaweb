@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\ContactSubmission;
+use App\Models\PageVisit;
 use App\Models\PortfolioItem;
 use App\Models\Product;
 use App\Models\Service;
@@ -217,6 +218,11 @@ class FrontendController extends Controller
             ->with(['category', 'media', 'variants.media', 'tags', 'thumbnail'])
             ->firstOrFail();
 
+        // Increment view counter (1x per IP per hari)
+        if (!PageVisit::hasVisitedToday('product', $product->id, request()->ip())) {
+            $product->increment('views_count');
+        }
+
         // Gallery images
         $galleryImages = $product->media->map(fn($m) => [
             'id' => $m->id,
@@ -296,14 +302,14 @@ class FrontendController extends Controller
 
     public function portofolio()
     {
-        $portfolioItems = PortfolioItem::active()->ordered()->get();
+        $portfolioItems = PortfolioItem::active()->ordered()->with('imageMedia')->get();
         $settings = $this->getSettings();
         return view('frontend.portofolio', compact('portfolioItems', 'settings'));
     }
 
     public function softwareHouse()
     {
-        $portfolioItems = PortfolioItem::active()->ordered()->get();
+        $portfolioItems = PortfolioItem::active()->ordered()->with('imageMedia')->get();
         $service = Service::where('name', 'Software House')->first();
         
         $defaultContent = [
@@ -344,6 +350,48 @@ class FrontendController extends Controller
     {
         $settings = $this->getSettings();
         return view('frontend.contact', compact('settings'));
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        $products = collect();
+        $services = collect();
+        $portfolios = collect();
+
+        if ($query && strlen(trim($query)) >= 2) {
+            $q = trim($query);
+
+            $products = Product::where('status', 'active')
+                ->where(function ($b) use ($q) {
+                    $b->where('name', 'like', "%{$q}%")
+                      ->orWhere('short_description', 'like', "%{$q}%")
+                      ->orWhere('description', 'like', "%{$q}%");
+                })
+                ->with('category')
+                ->latest()
+                ->paginate(10);
+
+            $services = Service::active()
+                ->where(function ($b) use ($q) {
+                    $b->where('name', 'like', "%{$q}%")
+                      ->orWhere('description', 'like', "%{$q}%");
+                })
+                ->get();
+
+            $portfolios = PortfolioItem::active()
+                ->with('imageMedia')
+                ->where(function ($b) use ($q) {
+                    $b->where('title', 'like', "%{$q}%")
+                      ->orWhere('description', 'like', "%{$q}%")
+                      ->orWhere('category', 'like', "%{$q}%");
+                })
+                ->get();
+        }
+
+        $settings = $this->getSettings();
+        return view('frontend.search', compact('query', 'products', 'services', 'portfolios', 'settings'));
     }
 
     public function submitContact(Request $request)

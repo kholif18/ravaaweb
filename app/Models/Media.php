@@ -19,11 +19,12 @@ class Media extends Model
         'mime_type',
         'size',
         'path',
+        'thumb_path',
         'disk',
         'uploaded_by',
     ];
 
-    protected $appends = ['url', 'human_size', 'extension'];
+    protected $appends = ['url', 'thumbnail_url', 'human_size', 'extension'];
 
     public function uploader(): BelongsTo
     {
@@ -43,6 +44,17 @@ class Media extends Model
             return Storage::disk('s3')->url($this->path);
         }
         return Storage::disk('public')->url($this->path);
+    }
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumb_path) {
+            return $this->url; // fallback ke original
+        }
+        if ($this->disk === 's3') {
+            return Storage::disk('s3')->url($this->thumb_path);
+        }
+        return Storage::disk('public')->url($this->thumb_path);
     }
 
     public function getHumanSizeAttribute(): string
@@ -94,10 +106,15 @@ class Media extends Model
             return;
         }
 
+        $files = [$this->path];
+        if ($this->thumb_path) {
+            $files[] = $this->thumb_path;
+        }
+
         if ($this->disk === 's3') {
-            Storage::disk('s3')->delete($this->path);
+            Storage::disk('s3')->delete($files);
         } else {
-            Storage::disk('public')->delete($this->path);
+            Storage::disk('public')->delete($files);
         }
     }
 }

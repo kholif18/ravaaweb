@@ -1,0 +1,45 @@
+# Dependencies
+/vendor
+/node_modules
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Cache
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Storage
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+storage/debugbar/*
+storage/app/public/*
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+tests/
+phpunit.xml
+phpunit.xml.dist
+
+# Node
+node_modules/
+package-lock.json
+yarn.lock
