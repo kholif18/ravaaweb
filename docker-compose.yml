@@ -29,13 +29,9 @@ services:
       DB_USERNAME: "${DB_USERNAME:-root}"
       DB_PASSWORD: "${DB_PASSWORD}"
 
-      # — Redis (cache & session)
-      REDIS_CLIENT: phpredis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: "${REDIS_PASSWORD:-}"
-      CACHE_STORE: redis
-      SESSION_DRIVER: redis
+      # — Cache & Session (database)
+      CACHE_STORE: database
+      SESSION_DRIVER: database
 
       # — Mail
       MAIL_MAILER: "${MAIL_MAILER:-log}"
@@ -48,33 +44,12 @@ services:
     volumes:
       # Persistent storage (user uploads, logs, session files if needed)
       - storage_data:/var/www/html/storage
-    depends_on:
-      redis:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/up"]
       interval: 30s
       timeout: 5s
       start_period: 10s
       retries: 3
-    networks:
-      - ravaaweb
-
-  # ----------------------------------------------------------
-  # Redis (cache, session, queue)
-  # ----------------------------------------------------------
-  redis:
-    container_name: RavaaWeb-redis
-    image: redis:7-alpine
-    restart: unless-stopped
-    command: redis-server --appendonly yes --lfu-decay-time 1
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
     networks:
       - ravaaweb
 
@@ -103,7 +78,6 @@ services:
 
 volumes:
   storage_data:
-  redis_data:
   mariadb_data:
 
 networks:
