@@ -84,8 +84,10 @@
                         @endif
                     </td>
                     <td>
-                        @if($product->stock > 0)
-                            <span class="badge" style="background: rgba(34,197,94,0.1); color: #15803d; font-size: 0.7rem;">{{ $product->stock }}</span>
+                        @if($product->is_service)
+                            <span class="badge" style="background: rgba(79,110,247,0.1); color: var(--accent); font-size: 0.7rem;">Layanan</span>
+                        @elseif($product->stock > 0)
+                            <span class="badge" style="background: rgba(34,197,94,0.1); color: #15803d; font-size: 0.7rem;">Tersedia</span>
                         @else
                             <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Habis</span>
                         @endif

@@ -181,11 +181,13 @@
                                value="{{ old('height', $product->height) }}">
                     </div>
                     <div class="col-md-3 fv-row">
-                        <label class="fs-7 fw-semibold mb-2">Stok (Ready)</label>
-                        <input type="number" class="form-control form-control-sm"
-                               name="stock" min="0"
-                               placeholder="0" id="no-stock"
-                               value="{{ old('stock', $product->stock) }}">
+                        <label class="fs-7 fw-semibold mb-2">Stok</label>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" name="stock" value="1"
+                                   id="no-stock"
+                                   {{ old('stock', $product->stock) ? 'checked' : '' }}>
+                            <label class="form-check-label fs-8" for="no-stock">Tersedia</label>
+                        </div>
                     </div>
                 </div>
 
@@ -309,9 +311,13 @@
                                         </div>
                                         <div class="col-md-3 fv-row">
                                             <label class="fs-8 fw-semibold mb-1">Stok</label>
-                                            <input type="number" class="form-control form-control-sm"
-                                                   name="variants[{{ $vIndex }}][stock]" min="0" placeholder="0"
-                                                   value="{{ old('variants.'.$vIndex.'.stock', $variant->stock) }}">
+                                            <div class="form-check form-switch mt-2">
+                                                <input class="form-check-input" type="checkbox"
+                                                       name="variants[{{ $vIndex }}][stock]" value="1"
+                                                       id="variant-stock-{{ $vIndex }}"
+                                                       {{ old('variants.'.$vIndex.'.stock', $variant->stock) ? 'checked' : '' }}>
+                                                <label class="form-check-label fs-8" for="variant-stock-{{ $vIndex }}">Tersedia</label>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1039,8 +1045,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="col-md-3 fv-row">
                             <label class="fs-8 fw-semibold mb-1">Stok</label>
-                            <input type="number" class="form-control form-control-sm"
-                                   name="variants[${index}][stock]" min="0" placeholder="0">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox"
+                                       name="variants[${index}][stock]" value="1"
+                                       id="variant-stock-${index}">
+                                <label class="form-check-label fs-8" for="variant-stock-${index}">Tersedia</label>
+                            </div>
                         </div>
                     </div>
 
@@ -1161,12 +1171,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================
     window.toggleVariantService = function(index, checkbox) {
         const card = checkbox.closest('.variant-card');
-        const stockInput = card.querySelector('input[name="variants[' + index + '][stock]"]');
+        const stockCheckbox = card.querySelector('input[name="variants[' + index + '][stock]"]');
         if (checkbox.checked) {
-            stockInput.disabled = true;
-            stockInput.value = '0';
+            stockCheckbox.checked = false;
+            stockCheckbox.disabled = true;
         } else {
-            stockInput.disabled = false;
+            stockCheckbox.disabled = false;
         }
     };
 
@@ -1194,14 +1204,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // NO-VARIANT SERVICE TOGGLE
     // ==========================================
     window.toggleNoVariantService = function(checkbox) {
-        const stockInput = document.getElementById('no-stock');
+        const stockCheckbox = document.getElementById('no-stock');
         const hint = document.getElementById('no-service-hint');
         if (checkbox.checked) {
-            stockInput.disabled = true;
-            stockInput.value = '0';
+            stockCheckbox.checked = false;
+            stockCheckbox.disabled = true;
             hint.style.display = 'block';
         } else {
-            stockInput.disabled = false;
+            stockCheckbox.disabled = false;
             hint.style.display = 'none';
         }
     };

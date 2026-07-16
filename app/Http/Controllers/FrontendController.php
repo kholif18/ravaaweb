@@ -288,7 +288,7 @@ class FrontendController extends Controller
         $totalStock = $variants->count() > 0
             ? $variants->sum('stock')
             : $product->stock;
-        $inStock = $totalStock > 0;
+        $inStock = $product->is_service || $totalStock > 0;
 
         $settings = $this->getSettings();
 

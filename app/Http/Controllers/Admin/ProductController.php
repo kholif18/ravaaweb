@@ -79,6 +79,17 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'stock' => $request->has('stock') ? 1 : 0,
+        ]);
+        if ($request->has('variants')) {
+            $variants = $request->input('variants');
+            foreach ($variants as $key => $variant) {
+                $variants[$key]['stock'] = isset($variant['stock']) ? 1 : 0;
+            }
+            $request->merge(['variants' => $variants]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'short_description' => 'nullable|string',
@@ -91,7 +102,7 @@ class ProductController extends Controller
             'discount_percent' => 'nullable|numeric|min:0|max:100',
             'discount_start' => 'nullable|date',
             'discount_end' => 'nullable|date|after_or_equal:discount_start',
-            'stock' => 'required_without:variant_types|integer|min:0',
+            'stock' => 'exclude_if:is_service,1|integer|min:0',
             'is_service' => 'boolean',
             'variant_types' => 'nullable|array',
             'variant_types.*.name' => 'required_with:variant_types|string|max:100',
@@ -216,6 +227,17 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        $request->merge([
+            'stock' => $request->has('stock') ? 1 : 0,
+        ]);
+        if ($request->has('variants')) {
+            $variants = $request->input('variants');
+            foreach ($variants as $key => $variant) {
+                $variants[$key]['stock'] = isset($variant['stock']) ? 1 : 0;
+            }
+            $request->merge(['variants' => $variants]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'short_description' => 'nullable|string',
@@ -228,7 +250,7 @@ class ProductController extends Controller
             'discount_percent' => 'nullable|numeric|min:0|max:100',
             'discount_start' => 'nullable|date',
             'discount_end' => 'nullable|date|after_or_equal:discount_start',
-            'stock' => 'required_without:variant_types|integer|min:0',
+            'stock' => 'exclude_if:is_service,1|integer|min:0',
             'is_service' => 'boolean',
             'variant_types' => 'nullable|array',
             'variant_types.*.name' => 'required_with:variant_types|string|max:100',
