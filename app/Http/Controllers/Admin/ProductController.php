@@ -143,11 +143,11 @@ class ProductController extends Controller
             'variant_images.*' => 'nullable|integer|exists:media,id',
         ]);
 
-        $baseSlug = Str::slug($validated['name']);
-        $slug = $baseSlug;
-        $counter = 1;
-        while (Product::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $counter++;
+        $slug = Str::slug($validated['name']);
+        if (Product::where('slug', $slug)->exists()) {
+            return back()->withErrors([
+                'name' => 'Nama produk "' . $validated['name'] . '" sudah digunakan.',
+            ])->withInput()->with('error', 'Nama produk "' . $validated['name'] . '" sudah digunakan.');
         }
         $validated['slug'] = $slug;
 

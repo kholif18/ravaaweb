@@ -59,25 +59,13 @@ class Product extends Model
     {
         static::creating(function (Product $product) {
             if (empty($product->slug)) {
-                $baseSlug = Str::slug($product->name);
-                $slug = $baseSlug;
-                $counter = 1;
-                while (static::where('slug', $slug)->exists()) {
-                    $slug = $baseSlug . '-' . $counter++;
-                }
-                $product->slug = $slug;
+                $product->slug = Str::slug($product->name);
             }
         });
 
         static::updating(function (Product $product) {
             if ($product->wasChanged('name') && empty($product->getOriginal('slug'))) {
-                $baseSlug = Str::slug($product->name);
-                $slug = $baseSlug;
-                $counter = 1;
-                while (static::where('slug', $slug)->where('id', '!=', $product->id)->exists()) {
-                    $slug = $baseSlug . '-' . $counter++;
-                }
-                $product->slug = $slug;
+                $product->slug = Str::slug($product->name);
             }
         });
     }

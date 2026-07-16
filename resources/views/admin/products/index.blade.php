@@ -239,6 +239,12 @@ document.addEventListener('DOMContentLoaded', function() {
     @if(session('success'))
         Ravaa.toast('{{ session('success') }}', 'success');
     @endif
+    @if(session('error'))
+        Ravaa.toast('{{ session('error') }}', 'error');
+    @endif
+    @if($errors->any())
+        Ravaa.toast('{{ $errors->first() }}', 'error');
+    @endif
 
     // ===== SELECT ALL / BULK SELECT =====
     function updateBulkUI() {
