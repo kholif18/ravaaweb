@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Service;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ServiceSeeder extends Seeder
 {
@@ -59,6 +60,7 @@ class ServiceSeeder extends Seeder
             Service::updateOrCreate(
                 ['name' => $data['name']],
                 array_merge($data, [
+                    'slug' => Str::slug($data['name']),
                     'status' => 'active',
                     'is_featured' => $data['is_featured'] ?? false,
                 ])

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\PortfolioItem;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class PortfolioSeeder extends Seeder
 {
@@ -70,6 +71,7 @@ class PortfolioSeeder extends Seeder
             PortfolioItem::updateOrCreate(
                 ['title' => $data['title']],
                 array_merge($data, [
+                    'slug' => Str::slug($data['title']),
                     'status' => 'active',
                     'is_featured' => $data['is_featured'] ?? false,
                 ])
