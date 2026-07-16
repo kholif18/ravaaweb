@@ -24,11 +24,15 @@ php artisan view:cache
 php artisan event:cache
 
 # --- Database ---
-echo "==> Running migrations..."
-php artisan migrate --force
+if [ "$APP_SKIP_DB" != "true" ]; then
+    echo "==> Running migrations..."
+    php artisan migrate --force
 
-echo "==> Running seeders..."
-php artisan db:seed --force
+    echo "==> Running seeders..."
+    php artisan db:seed --force
+else
+    echo "==> APP_SKIP_DB=true — skipping migrations & seeders..."
+fi
 
 # --- Storage ---
 php artisan storage:link --force || true
