@@ -977,6 +977,14 @@ ul { list-style: none; }
 .detail-gallery {
   position: sticky;
   top: 96px;
+  max-width: 520px;
+}
+
+.detail-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .detail-main-img {
@@ -992,13 +1000,6 @@ ul { list-style: none; }
   width: 100%;
   height: auto;
   display: block;
-}
-
-.detail-thumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
 }
 
 .detail-thumb {
