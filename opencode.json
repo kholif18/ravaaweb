@@ -3,19 +3,19 @@
   "skills": {
     "review-code": {
       "description": "Gunakan untuk melakukan code review: analisis keamanan, performa, best practice, clean code di project RavaaWeb. PHP, Blade, JS, CSS.",
-      "location": ".opencode/skills/review-code.md"
+      "location": ".agents/skills/code-review/SKILL.md"
     },
     "bugfix": {
       "description": "Gunakan untuk mendiagnosis dan memperbaiki bug/error/exception di project RavaaWeb. Alur repro, analisis root cause, fix, validasi.",
-      "location": ".opencode/skills/bugfix.md"
+      "location": ".agents/skills/debugging-protocol/SKILL.md"
     },
     "frontend-design": {
       "description": "Gunakan untuk mendesain tampilan UI/UX: Blade templates, custom CSS Glassmorphism (admin-glass.css & app.css), layout, komponen responsive. Tanpa Bootstrap/Tailwind CSS.",
-      "location": ".opencode/skills/frontend-design.md"
+      "location": ".agents/skills/frontend-design/SKILL.md"
     },
     "backend-craft": {
       "description": "Gunakan untuk membuat fitur backend: Controller, Model, Migration, Eloquent, Route, Form Request, Seeder di RavaaWeb. Laravel 13 + MariaDB + Docker.",
-      "location": ".opencode/skills/backend-craft.md"
+      "location": ".agents/skills/laravel-idioms/SKILL.md"
     }
   }
 }

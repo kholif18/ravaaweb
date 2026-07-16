@@ -135,6 +135,10 @@
                         </div>
                     </div>
                     <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-1">Deskripsi</label>
+                        <textarea class="form-control form-control-sm" rows="3" name="description" placeholder="Deskripsi layanan"></textarea>
+                    </div>
+                    <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-1">Fitur (satu per baris)</label>
                         <textarea class="form-control form-control-sm" rows="4" name="features_text" placeholder="Logo & Brand Identity&#10;Brosur & Flyer&#10;Banner & Billboard"></textarea>
                         <div class="form-text fs-8">Setiap baris = satu fitur</div>
@@ -253,6 +257,10 @@
                                 Preview: <i class="fas fa-paint-brush" id="edit_icon_preview"></i>
                             </div>
                         </div>
+                    </div>
+                    <div class="fv-row mb-3">
+                        <label class="fs-7 fw-semibold mb-1">Deskripsi</label>
+                        <textarea class="form-control form-control-sm" rows="3" name="description" id="edit_service_description" placeholder="Deskripsi layanan"></textarea>
                     </div>
                     <div class="fv-row mb-3">
                         <label class="fs-7 fw-semibold mb-1">Fitur (satu per baris)</label>
@@ -439,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_service_id').value = s.id;
             document.getElementById('edit_service_name').value = s.name;
             document.getElementById('edit_service_icon').value = s.icon || '';
+            document.getElementById('edit_service_description').value = s.description || '';
             document.getElementById('edit_service_features').value = featuresToText(s.features);
             document.getElementById('edit_service_status').value = s.status;
             document.getElementById('edit_service_featured').checked = s.is_featured;
