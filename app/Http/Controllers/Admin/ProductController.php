@@ -143,7 +143,13 @@ class ProductController extends Controller
             'variant_images.*' => 'nullable|integer|exists:media,id',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        $baseSlug = Str::slug($validated['name']);
+        $slug = $baseSlug;
+        $counter = 1;
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
+        $validated['slug'] = $slug;
 
         $product = DB::transaction(function () use ($validated, $request) {
             $product = Product::create(collect($validated)->only([
