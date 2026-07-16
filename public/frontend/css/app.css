@@ -985,6 +985,7 @@ ul { list-style: none; }
   overflow: hidden;
   box-shadow: var(--glass-shadow-lg);
   background: var(--glass-bg);
+  max-width: 520px;
 }
 
 .detail-main-img img {
