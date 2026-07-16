@@ -84,9 +84,17 @@
                         @endif
                     </td>
                     <td>
-                        @if($product->is_service)
+                        @php
+                            $isServiceProduct = $product->is_service;
+                            $hasStock = $product->stock > 0;
+                            if ($product->variants_count > 0 && $product->variants->count() > 0) {
+                                $isServiceProduct = $product->variants->every(fn($v) => $v->is_service);
+                                $hasStock = $product->variants->contains(fn($v) => !$v->is_service && $v->stock > 0);
+                            }
+                        @endphp
+                        @if($isServiceProduct)
                             <span class="badge" style="background: rgba(79,110,247,0.1); color: var(--accent); font-size: 0.7rem;">Layanan</span>
-                        @elseif($product->stock > 0)
+                        @elseif($hasStock)
                             <span class="badge" style="background: rgba(34,197,94,0.1); color: #15803d; font-size: 0.7rem;">Tersedia</span>
                         @else
                             <span class="badge" style="background: rgba(239,68,68,0.1); color: #b91c1c; font-size: 0.7rem;">Habis</span>
