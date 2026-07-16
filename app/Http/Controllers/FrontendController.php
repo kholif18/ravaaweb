@@ -223,12 +223,25 @@ class FrontendController extends Controller
             $product->increment('views_count');
         }
 
-        // Gallery images
+        // Gallery images (from product media)
         $galleryImages = $product->media->map(fn($m) => [
             'id' => $m->id,
             'url' => $m->url,
             'name' => $m->name,
         ])->toArray();
+
+        // Merge variant images into gallery (avoid duplicates)
+        $existingUrls = collect($galleryImages)->pluck('url')->toArray();
+        foreach ($product->variants->filter(fn($v) => $v->is_active) as $variant) {
+            if ($variant->image_url && !in_array($variant->image_url, $existingUrls)) {
+                $galleryImages[] = [
+                    'id' => null,
+                    'url' => $variant->image_url,
+                    'name' => 'Varian: ' . ($variant->sku ?: $variant->id),
+                ];
+                $existingUrls[] = $variant->image_url;
+            }
+        }
 
         // Main image
         $mainImage = $product->thumbnail?->url ?? ($product->media->first()?->url ?? asset('images/default-image.png'));
