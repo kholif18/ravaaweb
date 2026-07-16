@@ -978,6 +978,7 @@ ul { list-style: none; }
   position: sticky;
   top: 96px;
   max-width: 520px;
+  min-width: 0;
 }
 
 .detail-thumbs {
@@ -986,6 +987,8 @@ ul { list-style: none; }
   gap: 10px;
   margin-top: 14px;
   width: 100%;
+  max-width: 520px;
+  align-items: flex-start;
 }
 
 .detail-main-img {
