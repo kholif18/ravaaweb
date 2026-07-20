@@ -8,6 +8,7 @@ use App\Models\PortfolioItem;
 use App\Models\SoftwareHouseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SoftwareHouseBuilderController extends Controller
 {
@@ -70,7 +71,10 @@ class SoftwareHouseBuilderController extends Controller
         $availableCategories = array_unique(array_merge($availableCategories, ['Web App', 'Mobile App', 'IoT & Embedded']));
 
         // Get Software House Services (independent from general services)
-        $softwareServices = SoftwareHouseService::ordered()->get();
+        // Defensive check: ensure table exists before querying
+        $softwareServices = Schema::hasTable('software_house_services')
+            ? SoftwareHouseService::ordered()->get()
+            : collect();
 
         // Get filtered portfolio items belonging to the software categories
         $softwareCategories = $content['portfolio']['categories'] ?? ['Web App', 'Mobile App', 'IoT & Embedded'];
