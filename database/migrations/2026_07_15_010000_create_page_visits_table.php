@@ -20,6 +20,7 @@ return new class extends Migration
             $table->index('page_type');
             $table->index('visited_at');
             $table->index(['page_type', 'page_id']);
+            $table->index('ip_address');
         });
     }
 

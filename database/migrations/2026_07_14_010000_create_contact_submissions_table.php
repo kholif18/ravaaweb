@@ -16,6 +16,8 @@ return new class extends Migration
             $table->text('message');
             $table->enum('status', ['read', 'unread'])->default('unread');
             $table->timestamps();
+
+            $table->index('status');
         });
     }
 

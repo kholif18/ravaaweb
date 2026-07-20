@@ -8,20 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('footer_links', function (Blueprint $table) {
+        Schema::create('software_house_services', function (Blueprint $table) {
             $table->id();
-            $table->string('label');
-            $table->string('url');
-            $table->integer('sort_order')->default(0);
+            $table->string('title');
+            $table->string('icon')->nullable();
+            $table->json('steps')->nullable();
+            $table->integer('order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-
-            $table->index('is_active');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('footer_links');
+        Schema::dropIfExists('software_house_services');
     }
 };

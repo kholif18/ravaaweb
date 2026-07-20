@@ -46,17 +46,9 @@ class ServiceSeeder extends Seeder
                 'features' => ['Sablon Kaos & Polo', 'Sablon Mug & Tumbler', 'Topi & Tas Custom', 'Gantungan Kunci', 'PIN & Lanyard', 'Goodie Bag'],
                 'order' => 5,
             ],
-            [
-                'name' => 'Software House',
-                'icon' => 'fa-solid fa-laptop-code',
-                'description' => 'Jasa pengembangan software custom untuk solusi digital bisnis Anda.',
-                'features' => ['Website Company Profile', 'Aplikasi Web Custom', 'Mobile App (Android/iOS)', 'Sistem Informasi', 'API Integration', 'Maintenance & Support'],
-                'order' => 6,
-                'is_featured' => true,
-            ],
         ];
 
-        foreach ($services as $index => $data) {
+        foreach ($services as $data) {
             Service::updateOrCreate(
                 ['name' => $data['name']],
                 array_merge($data, [

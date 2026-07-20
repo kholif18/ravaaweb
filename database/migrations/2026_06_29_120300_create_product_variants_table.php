@@ -29,6 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('product_id');
+            $table->index('is_active');
         });
     }
 

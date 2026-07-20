@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('mime_type');
             $table->unsignedBigInteger('size');
             $table->string('path');
+            $table->string('thumb_path', 255)->nullable()->after('path');
             $table->string('disk')->default('public');
             $table->unsignedBigInteger('uploaded_by')->nullable();
             $table->timestamps();

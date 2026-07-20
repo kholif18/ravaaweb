@@ -51,7 +51,11 @@
                 @endif
             </td>
             <td>
-                @if($user->is_active)
+                @if($user->locked_until && $user->locked_until->isFuture())
+                <span class="td-badge badge" style="background: rgba(239,68,68,0.1); color: #b91c1c;" title="Terkunci hingga {{ $user->locked_until->format('d M H:i') }}">
+                    <i class="bi bi-lock-fill" style="font-size: 0.7rem;"></i> Terkunci
+                </span>
+                @elseif($user->is_active)
                 <span class="td-badge badge badge-success" style="background: rgba(34,197,94,0.1); color: #15803d;">Aktif</span>
                 @else
                 <span class="td-badge badge badge-danger" style="background: rgba(239,68,68,0.1); color: #b91c1c;">Nonaktif</span>
@@ -68,6 +72,15 @@
                             title="Edit">
                         <i class="bi bi-pencil"></i>
                     </button>
+                    @if($user->locked_until && $user->locked_until->isFuture())
+                    <form method="POST" action="{{ route('admin.users.unlock', $user) }}" class="d-inline">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-sm btn-light-success" title="Buka Kunci">
+                            <i class="bi bi-unlock-fill"></i>
+                        </button>
+                    </form>
+                    @endif
                     @if((int) auth()->guard('admin')->id() !== (int) $user->id)
                     <form method="POST" action="{{ route('admin.users.update-status', $user) }}" class="d-inline">
                         @csrf

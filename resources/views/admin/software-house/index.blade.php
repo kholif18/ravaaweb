@@ -58,7 +58,7 @@
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="layanan-tab" data-bs-toggle="tab" data-bs-target="#layanan-pane" type="button" role="tab" aria-controls="layanan-pane" aria-selected="false">
-            <i class="bi bi-gear-wide-connected me-1"></i> 2. Layanan & Sub-Fitur ({{ $service && is_array($service->features) ? count($service->features) : 0 }})
+            <i class="bi bi-gear-wide-connected me-1"></i> 2. Layanan & Sub-Fitur ({{ $softwareServices->count() }})
         </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -116,36 +116,16 @@
                         </div>
                     </div>
 
-                    <!-- Section: Detail Utama Layanan Software House (Pusat) -->
+                    <!-- Section: Info Database -->
                     <div class="glass-card mb-4">
                         <div class="card-header">
-                            <div class="card-title"><i class="bi bi-gear-wide me-1"></i> Detail Utama Layanan Software House (Pusat)</div>
+                            <div class="card-title"><i class="bi bi-database me-1"></i> Database Layanan Software</div>
                         </div>
                         <div class="card-body">
-                            <p class="fs-8 text-muted mb-3">Konfigurasi data utama dari layanan Software House pada database pusat RavaaWeb.</p>
-                            @if($service)
-                            <div class="row g-3">
-                                <div class="col-md-6 fv-row">
-                                    <label class="fs-7 fw-semibold mb-2">Icon FontAwesome Utama</label>
-                                    <input type="text" class="form-control form-control-sm" name="service[icon]" value="{{ $service->icon ?? 'fa-solid fa-laptop-code' }}" required>
-                                </div>
-                                <div class="col-md-6 fv-row">
-                                    <label class="fs-7 fw-semibold mb-2">Status Layanan</label>
-                                    <select class="form-select form-select-sm" name="service[status]">
-                                        <option value="active" {{ $service->status == 'active' ? 'selected' : '' }}>Aktif</option>
-                                        <option value="inactive" {{ $service->status == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 fv-row">
-                                    <label class="fs-7 fw-semibold mb-2">Deskripsi Layanan</label>
-                                    <textarea class="form-control form-control-sm" name="service[description]" rows="3" required>{{ $service->description }}</textarea>
-                                </div>
-                            </div>
-                            @else
-                            <div class="alert alert-warning mb-0 fs-8">
-                                Layanan "Software House" belum terdaftar di database. Silakan jalankan seeder terlebih dahulu.
-                            </div>
-                            @endif
+                            <p class="fs-8 text-muted mb-0">
+                                Data layanan & sub-fitur Software House kini dikelola secara mandiri di tabel <strong>software_house_services</strong>, 
+                                terpisah dari layanan umum. Kelola daftar layanan software di tab <strong>"2. Layanan & Sub-Fitur"</strong>.
+                            </p>
                         </div>
                     </div>
 
@@ -266,13 +246,12 @@
 
     <!-- TAB 2: DETAIL LAYANAN & SUB-FITUR (REFAC TO TABLE & MODALS) -->
     <div class="tab-pane fade" id="layanan-pane" role="tabpanel" aria-labelledby="layanan-tab">
-        @if($service)
         <div class="row g-4">
             <div class="col-lg-8">
-                <!-- Card 2: Sub-Features Table (Like Portfolio) -->
+                <!-- Card 2: Software House Services Table -->
                 <div class="glass-card">
                     <div class="card-header">
-                        <div class="card-title">Daftar Sub-Fitur Layanan Software</div>
+                        <div class="card-title">Daftar Layanan Software</div>
                         <div class="card-header-btns">
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_service_feature">
                                 <i class="bi bi-plus-circle"></i> Tambah Layanan
@@ -281,7 +260,7 @@
                     </div>
 
                     <div class="card-body">
-                        <p class="fs-8 text-muted mb-3">Menampilkan sub-fitur/keahlian software house. Setiap item dapat memiliki ikon sendiri serta daftar tahapan detail khusus yang tampil di dalam box halaman depan.</p>
+                        <p class="fs-8 text-muted mb-3">Menampilkan layanan/keahlian software house. Setiap item dapat memiliki ikon sendiri serta daftar tahapan detail khusus yang tampil di dalam box halaman depan.</p>
 
                         <div class="table-responsive">
                             <table class="table table-hover align-middle table-row-dashed fs-7 gy-3">
@@ -295,28 +274,23 @@
                                     </tr>
                                 </thead>
                                 <tbody id="sortable-features">
-                                    @forelse($service->features ?? [] as $index => $feature)
-                                    @php
-                                        $title = is_array($feature) ? ($feature['title'] ?? '') : $feature;
-                                        $icon = is_array($feature) ? ($feature['icon'] ?? '') : '';
-                                        $steps = is_array($feature) ? ($feature['steps'] ?? []) : [];
-                                    @endphp
-                                    <tr data-index="{{ $index }}">
+                                    @forelse($softwareServices as $shService)
+                                    <tr data-id="{{ $shService->id }}">
                                         <td>
                                             <span class="drag-handle cursor-move text-muted"><i class="bi bi-grip-vertical fs-5"></i></span>
                                         </td>
                                         <td>
                                             <div class="rounded border bg-light d-flex align-items-center justify-content-center text-primary" style="height: 36px; width: 36px;">
-                                                <i class="{{ $icon ?: ($service->icon ?? 'fas fa-code') }} fs-6"></i>
+                                                <i class="{{ $shService->icon ?: 'fas fa-code' }} fs-6"></i>
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="fw-bold">{{ $title }}</div>
+                                            <div class="fw-bold">{{ $shService->title }}</div>
                                         </td>
                                         <td>
-                                            @if(!empty($steps))
+                                            @if(!empty($shService->steps) && is_array($shService->steps))
                                                 <div class="d-flex flex-wrap gap-1">
-                                                    @foreach($steps as $step)
+                                                    @foreach($shService->steps as $step)
                                                         <span class="badge bg-light text-dark fs-9">{{ $step }}</span>
                                                     @endforeach
                                                 </div>
@@ -327,12 +301,12 @@
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-1">
                                                 <button type="button" class="btn btn-icon btn-sm" 
-                                                        data-feature="{{ json_encode($feature) }}"
-                                                        onclick="editServiceFeature({{ $index }}, this)" title="Edit"
+                                                        data-sh-service="{{ json_encode($shService->toArray()) }}"
+                                                        onclick="editSHService({{ $shService->id }}, this)" title="Edit"
                                                         style="width: 28px; height: 28px; border-radius: 6px; background: rgba(var(--accent-rgb, 79,110,247), 0.1); color: var(--accent);">
                                                     <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-icon btn-sm" onclick="deleteServiceFeature({{ $index }}, '{{ addslashes($title) }}')" title="Hapus"
+                                                <button type="button" class="btn btn-icon btn-sm" onclick="deleteSHService({{ $shService->id }}, '{{ addslashes($shService->title) }}')" title="Hapus"
                                                         style="width: 28px; height: 28px; border-radius: 6px; background: rgba(239,68,68,0.1); color: #ef4444;">
                                                     <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
                                                 </button>
@@ -343,7 +317,7 @@
                                     <tr>
                                         <td colspan="5" class="text-center py-5 text-muted">
                                             <i class="bi bi-gear-wide fs-1 d-block mb-2"></i>
-                                            Belum ada sub-fitur layanan software terdaftar. Klik <strong>Tambah Layanan</strong> untuk menambahkan.
+                                            Belum ada layanan software terdaftar. Klik <strong>Tambah Layanan</strong> untuk menambahkan.
                                         </td>
                                     </tr>
                                     @endforelse
@@ -362,7 +336,7 @@
                     <div class="card-body fs-8 text-muted">
                         <p class="mb-3">Kombinasi data di Tab ini dan Tab 1 dirancang untuk mempermudah operasional:</p>
                         <ul class="ps-3 mb-0">
-                            <li class="mb-2"><strong>Daftar Sub-Fitur:</strong> Muncul sebagai judul-judul box keahlian di halaman depan.</li>
+                            <li class="mb-2"><strong>Daftar Layanan:</strong> Muncul sebagai judul-judul box keahlian di halaman depan.</li>
                             <li class="mb-2"><strong>Fitur Detil (Steps):</strong> Memungkinkan setiap keahlian mempunyai tahapan pengerjaan tersendiri (misal: "Desain UI/UX" beda tahapannya dengan "API Integration").</li>
                             <li><strong>Drag-and-Drop:</strong> Geser baris di tabel untuk merubah urutan tampil di frontend secara instant.</li>
                         </ul>
@@ -370,11 +344,6 @@
                 </div>
             </div>
         </div>
-        @else
-        <div class="alert alert-warning">
-            Layanan bernama "Software House" tidak ditemukan di database. Silakan jalankan seeder atau buat layanan baru bernama "Software House".
-        </div>
-        @endif
     </div>
 
     <!-- TAB 3: PORTFOLIO PROYEK -->
@@ -481,8 +450,8 @@
     <input type="hidden" name="redirect_to" value="{{ route('admin.software-house.index', ['tab' => 'portfolio']) }}">
 </form>
 
-<!-- HIDDEN DELETE FORM FOR SERVICE FEATURES -->
-<form id="delete-feature-form" method="POST" data-delete-url="{{ route('admin.software-house.features.destroy', ':index') }}" style="display:none;">
+<!-- HIDDEN DELETE FORM FOR SOFTWARE HOUSE SERVICES -->
+<form id="delete-sh-service-form" method="POST" data-delete-url="{{ route('admin.software-house.services.destroy', ':id') }}" style="display:none;">
     @csrf
     @method('DELETE')
 </form>
@@ -495,7 +464,7 @@
                 <h5 class="modal-title fw-bold">Tambah Layanan Software Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="kt_modal_add_service_feature_form" action="{{ route('admin.software-house.features.store') }}" method="POST">
+            <form id="kt_modal_add_service_feature_form" action="{{ route('admin.software-house.services.store') }}" method="POST">
                 @csrf
                 <div class="modal-body py-3 px-4">
                     <div class="row mb-3">
@@ -531,7 +500,7 @@
                 <h5 class="modal-title fw-bold">Edit Layanan Software</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="kt_modal_edit_service_feature_form" method="POST" data-update-url="{{ route('admin.software-house.features.update', ':index') }}">
+            <form id="kt_modal_edit_service_feature_form" method="POST" data-update-url="{{ route('admin.software-house.services.update', ':id') }}">
                 @csrf
                 @method('PUT')
                 <div class="modal-body py-3 px-4">
@@ -787,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== SORTABLE DRAG-AND-DROP FOR SERVICE FEATURES (TAB 2) =====
+    // ===== SORTABLE DRAG-AND-DROP FOR SOFTWARE HOUSE SERVICES (TAB 2) =====
     function initSortableFeatures() {
         var featTbody = document.getElementById('sortable-features');
         if (!featTbody || featTbody.children.length === 0) return;
@@ -797,9 +766,9 @@ document.addEventListener('DOMContentLoaded', function() {
             animation: 200,
             ghostClass: 'sortable-ghost',
             onEnd: function() {
-                var indexes = Array.from(featTbody.querySelectorAll('tr[data-index]'))
-                    .map(function(tr) { return parseInt(tr.dataset.index); });
-                fetch('{{ route("admin.software-house.features.reorder") }}', {
+                var ids = Array.from(featTbody.querySelectorAll('tr[data-id]'))
+                    .map(function(tr) { return parseInt(tr.dataset.id); });
+                fetch('{{ route("admin.software-house.services.reorder") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -807,7 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ indexes: indexes })
+                    body: JSON.stringify({ ids: ids })
                 })
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
@@ -870,40 +839,32 @@ document.addEventListener('DOMContentLoaded', function() {
         return text.split('\n').map(s => s.trim()).filter(Boolean);
     }
 
-    // ===== SERVICE FEATURE CRUD HANDLERS (TAB 2) =====
-    window.editServiceFeature = function(index, btnElement) {
-        let rawData = btnElement.dataset.feature;
-        let f;
+    // ===== SOFTWARE HOUSE SERVICE CRUD HANDLERS (TAB 2) =====
+    window.editSHService = function(id, btnElement) {
+        let rawData = btnElement.dataset.shService;
+        let svc;
         try {
-            f = JSON.parse(rawData);
+            svc = JSON.parse(rawData);
         } catch (e) {
-            f = rawData;
+            return;
         }
 
-        if (typeof f === 'string') {
-            f = {
-                title: f,
-                icon: 'fa-solid fa-code',
-                steps: []
-            };
-        }
-
-        document.getElementById('edit_feature_title').value = f.title || '';
-        document.getElementById('edit_feature_icon').value = f.icon || 'fa-solid fa-code';
-        document.getElementById('edit_feature_steps_text').value = listToText(f.steps);
+        document.getElementById('edit_feature_title').value = svc.title || '';
+        document.getElementById('edit_feature_icon').value = svc.icon || 'fa-solid fa-code';
+        document.getElementById('edit_feature_steps_text').value = listToText(svc.steps);
 
         const form = document.getElementById('kt_modal_edit_service_feature_form');
-        form.action = form.dataset.updateUrl.replace(':index', index);
+        form.action = form.dataset.updateUrl.replace(':id', id);
 
         const modal = new bootstrap.Modal(document.getElementById('kt_modal_edit_service_feature'));
         modal.show();
     };
 
-    window.deleteServiceFeature = function(index, title) {
-        Ravaa.confirm('Hapus Sub-Layanan?', `Sub-layanan "${title}" akan dihapus permanen!`).then(result => {
+    window.deleteSHService = function(id, title) {
+        Ravaa.confirm('Hapus Layanan?', `Layanan "${title}" akan dihapus permanen!`).then(result => {
             if (result.isConfirmed) {
-                const form = document.getElementById('delete-feature-form');
-                form.action = form.dataset.deleteUrl.replace(':index', index);
+                const form = document.getElementById('delete-sh-service-form');
+                form.action = form.dataset.deleteUrl.replace(':id', id);
                 form.submit();
             }
         });

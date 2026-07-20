@@ -10,6 +10,7 @@ use App\Models\PortfolioItem;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\Setting;
+use App\Models\SoftwareHouseService;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -170,7 +171,7 @@ class FrontendController extends Controller
 
     public function layanan()
     {
-        $services = Service::active()->ordered()->get();
+        $services = Service::active()->ordered()->where('name', '!=', 'Software House')->get();
         $settings = $this->getSettings();
         return view('frontend.layanan', compact('services', 'settings'));
     }
@@ -323,7 +324,7 @@ class FrontendController extends Controller
     public function softwareHouse()
     {
         $portfolioItems = PortfolioItem::active()->ordered()->with('imageMedia')->get();
-        $service = Service::where('name', 'Software House')->first();
+        $softwareServices = SoftwareHouseService::active()->ordered()->get();
         
         $defaultContent = [
             'hero' => [
@@ -356,7 +357,7 @@ class FrontendController extends Controller
         $content = array_replace_recursive($defaultContent, $dbContent);
 
         $settings = $this->getSettings();
-        return view('frontend.software-house', compact('portfolioItems', 'service', 'content', 'settings'));
+        return view('frontend.software-house', compact('portfolioItems', 'softwareServices', 'content', 'settings'));
     }
 
     public function contact()
@@ -387,6 +388,7 @@ class FrontendController extends Controller
                 ->paginate(10);
 
             $services = Service::active()
+                ->where('name', '!=', 'Software House')
                 ->where(function ($b) use ($q) {
                     $b->where('name', 'like', "%{$q}%")
                       ->orWhere('description', 'like', "%{$q}%");
@@ -401,10 +403,16 @@ class FrontendController extends Controller
                       ->orWhere('category', 'like', "%{$q}%");
                 })
                 ->get();
+
+            $softwareServices = SoftwareHouseService::active()
+                ->where(function ($b) use ($q) {
+                    $b->where('title', 'like', "%{$q}%");
+                })
+                ->get();
         }
 
         $settings = $this->getSettings();
-        return view('frontend.search', compact('query', 'products', 'services', 'portfolios', 'settings'));
+        return view('frontend.search', compact('query', 'products', 'services', 'portfolios', 'softwareServices', 'settings'));
     }
 
     public function submitContact(Request $request)

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->text('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
             $table->unsignedBigInteger('thumbnail_id')->nullable();
+            $table->integer('views_count')->default(0)->after('thumbnail_id');
             $table->timestamps();
             $table->softDeletes();
 

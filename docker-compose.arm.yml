@@ -1,0 +1,107 @@
+# ============================================================
+# RavaaWeb — ARM64 Stack for Odroid N2 (Armbian 26.5.1)
+# Use: docker compose -f docker-compose.arm.yml up -d
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # Main application (PHP 8.4 + Apache, ARM64)
+  # ----------------------------------------------------------
+  app:
+    container_name: RavaaWeb
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: Dockerfile.arm
+    ports:
+      - "192.168.40.10:8020:80"    # LAN only — akses via http://192.168.40.10:8020
+    restart: unless-stopped
+    environment:
+      # — Application
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_URL: "http://192.168.40.10:8020"
+      APP_KEY: "${APP_KEY}"
+
+      # — Database (MariaDB ARM64)
+      DB_CONNECTION: mariadb
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: "${DB_DATABASE:-ravaaweb}"
+      DB_USERNAME: "${DB_USERNAME:-ravaa}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+
+      # — Cache & Session
+      CACHE_STORE: database
+      SESSION_DRIVER: database
+
+      # — Mail
+      MAIL_MAILER: "${MAIL_MAILER:-log}"
+
+      # — Queue
+      QUEUE_CONNECTION: database
+
+      # — Filesystem
+      FILESYSTEM_DISK: local
+    volumes:
+      - storage_data:/var/www/html/storage
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '2'
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/up"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s   # ARM build needs more startup time
+      retries: 3
+    networks:
+      - ravaaweb
+
+  # ----------------------------------------------------------
+  # MariaDB (ARM64-compatible via multi-arch image)
+  # ----------------------------------------------------------
+  mariadb:
+    container_name: RavaaWeb-db
+    platform: linux/arm64
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE:-ravaaweb}"
+      MYSQL_USER: "${DB_USERNAME:-ravaa}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '1'
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ravaaweb
+
+volumes:
+  storage_data:
+    # name: ravaaweb_storage   # uncomment untuk nama volume eksplisit
+  mariadb_data:
+    # name: ravaaweb_mariadb
+
+networks:
+  ravaaweb:
+    name: ravaaweb
+    driver: bridge
+    # ipam:                    # uncomment untuk IP tetap
+    #   config:
+    #     - subnet: 172.20.0.0/16

@@ -90,6 +90,7 @@ Route::prefix('admin')
 
         // Users
         Route::put('users/{user}/status', [App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.update-status');
+        Route::put('users/{user}/unlock', [App\Http\Controllers\Admin\UserController::class, 'unlock'])->name('users.unlock');
         Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 
         // Roles
@@ -109,11 +110,10 @@ Route::prefix('admin')
         // Software House Builder
         Route::get('software-house', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'index'])->name('software-house.index');
         Route::post('software-house', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'store'])->name('software-house.store');
-        Route::put('software-house/service/{id}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'updateService'])->name('software-house.service.update');
-        Route::post('software-house/features', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'storeFeature'])->name('software-house.features.store');
-        Route::post('software-house/features/reorder', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'reorderFeatures'])->name('software-house.features.reorder');
-        Route::put('software-house/features/{index}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'updateFeature'])->name('software-house.features.update');
-        Route::delete('software-house/features/{index}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'deleteFeature'])->name('software-house.features.destroy');
+        Route::post('software-house/services', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'storeService'])->name('software-house.services.store');
+        Route::post('software-house/services/reorder', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'reorderServices'])->name('software-house.services.reorder');
+        Route::put('software-house/services/{id}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'updateService'])->name('software-house.services.update');
+        Route::delete('software-house/services/{id}', [App\Http\Controllers\Admin\SoftwareHouseBuilderController::class, 'deleteService'])->name('software-house.services.destroy');
 
         // Services
         Route::delete('services/bulk-delete', [App\Http\Controllers\Admin\ServiceController::class, 'bulkDestroy'])->name('services.bulk.destroy');

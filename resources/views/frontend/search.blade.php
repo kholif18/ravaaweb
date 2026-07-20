@@ -38,7 +38,7 @@
         {{-- Results --}}
         @if($query)
 
-            @if($products->isEmpty() && $services->isEmpty() && $portfolios->isEmpty())
+            @if($products->isEmpty() && $services->isEmpty() && $portfolios->isEmpty() && (!isset($softwareServices) || $softwareServices->isEmpty()))
                 <div class="text-center py-5">
                     <i class="fas fa-search-minus" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
                     <h4 style="font-weight: 600; color: var(--text-primary);">Tidak Ditemukan</h4>
@@ -47,7 +47,7 @@
             @else
                 {{-- Total count --}}
                 <p class="text-muted mb-4" style="font-size: 0.85rem;">
-                    {{ $products->total() + $services->count() + $portfolios->count() }} hasil ditemukan
+                    {{ $products->total() + $services->count() + ($softwareServices->count() ?? 0) + $portfolios->count() }} hasil ditemukan
                 </p>
 
                 {{-- Products --}}
@@ -95,6 +95,30 @@
                             <div class="search-result-content">
                                 <div class="search-result-title">{{ $s->name }}</div>
                                 <div class="search-result-desc">{{ Str::limit(strip_tags($s->description ?? ''), 80) }}</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                {{-- Software House Services --}}
+                @if(isset($softwareServices) && $softwareServices->isNotEmpty())
+                <div class="mb-5">
+                    <h5 style="font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-laptop-code" style="color: var(--accent); font-size: 0.9rem;"></i> Software House
+                        <span class="badge" style="background: var(--accent); color: #fff; font-size: 0.7rem; padding: 2px 10px; border-radius: 20px;">{{ $softwareServices->count() }}</span>
+                    </h5>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        @foreach($softwareServices as $shs)
+                        <a href="{{ url('/software-house') }}" class="search-result-item">
+                            <div class="search-result-icon" style="background: rgba(79,110,247,0.1); color: #4f6ef7;">
+                                <i class="fas {{ $shs->icon ?? 'fa-laptop-code' }}"></i>
+                            </div>
+                            <div class="search-result-content">
+                                <div class="search-result-title">{{ $shs->title }}</div>
+                                <div class="search-result-desc">Layanan Software House</div>
                             </div>
                             <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
                         </a>

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
-use App\Models\Service;
 use App\Models\PortfolioItem;
+use App\Models\SoftwareHouseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -69,8 +69,8 @@ class SoftwareHouseBuilderController extends Controller
         // Ensure defaults are present in available categories list
         $availableCategories = array_unique(array_merge($availableCategories, ['Web App', 'Mobile App', 'IoT & Embedded']));
 
-        // Get Software House Service
-        $service = Service::where('name', 'Software House')->first();
+        // Get Software House Services (independent from general services)
+        $softwareServices = SoftwareHouseService::ordered()->get();
 
         // Get filtered portfolio items belonging to the software categories
         $softwareCategories = $content['portfolio']['categories'] ?? ['Web App', 'Mobile App', 'IoT & Embedded'];
@@ -79,7 +79,7 @@ class SoftwareHouseBuilderController extends Controller
             ->orderBy('title')
             ->get();
 
-        return view('admin.software-house.index', compact('page', 'content', 'availableCategories', 'service', 'portfolioItems'));
+        return view('admin.software-house.index', compact('page', 'content', 'availableCategories', 'softwareServices', 'portfolioItems'));
     }
 
     /**
@@ -104,52 +104,46 @@ class SoftwareHouseBuilderController extends Controller
             'portfolio.subtitle' => 'required|string',
             'portfolio.categories' => 'required|array',
             'portfolio.categories.*' => 'string|max:255',
-            
-            // Service model parameters (configured in Tab 1 now)
-            'service.icon' => 'nullable|string|max:100',
-            'service.description' => 'nullable|string',
-            'service.status' => 'required|in:active,inactive',
         ]);
-
-        // Update Software House main service model
-        $service = Service::where('name', 'Software House')->first();
-        if ($service) {
-            $service->update([
-                'icon' => $validated['service']['icon'] ?? 'fa-solid fa-laptop-code',
-                'description' => $validated['service']['description'] ?? '',
-                'status' => $validated['service']['status'] ?? 'active',
-            ]);
-        }
-
-        // Remove service payload from page configuration JSON
-        $pageContent = $validated;
-        unset($pageContent['service']);
 
         $page = Page::getBySlug('software-house');
         $page->update([
-            'content' => $pageContent
+            'content' => $validated
         ]);
 
         return redirect()->route('admin.software-house.index', ['tab' => 'settings'])
-            ->with('success', 'Konfigurasi Halaman & Detail Layanan berhasil diperbarui!');
+            ->with('success', 'Konfigurasi Halaman Software House berhasil diperbarui!');
     }
 
     /**
-     * No longer needed as updateService is integrated into store().
-     * We keep it to prevent routing exceptions or define it as empty.
+     * Store a new software house service (independent from general services).
+     */
+    public function storeService(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'icon' => 'required|string|max:100',
+            'steps_text' => 'nullable|string',
+        ]);
+
+        $steps = array_values(array_filter(array_map('trim', explode("\n", $validated['steps_text'] ?? '')), fn($s) => !empty($s)));
+
+        SoftwareHouseService::create([
+            'title' => $validated['title'],
+            'icon' => $validated['icon'],
+            'steps' => $steps,
+        ]);
+
+        return redirect()->route('admin.software-house.index', ['tab' => 'layanan'])
+            ->with('success', 'Layanan software baru berhasil ditambahkan!');
+    }
+
+    /**
+     * Update a software house service.
      */
     public function updateService(Request $request, $id)
     {
-        return redirect()->route('admin.software-house.index', ['tab' => 'settings']);
-    }
-
-    /**
-     * Store a sub-feature in the Software House service features JSON array.
-     */
-    public function storeFeature(Request $request)
-    {
-        $service = Service::where('name', 'Software House')->firstOrFail();
-        $features = $service->features ?? [];
+        $shService = SoftwareHouseService::findOrFail($id);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -159,90 +153,43 @@ class SoftwareHouseBuilderController extends Controller
 
         $steps = array_values(array_filter(array_map('trim', explode("\n", $validated['steps_text'] ?? '')), fn($s) => !empty($s)));
 
-        $features[] = [
+        $shService->update([
             'title' => $validated['title'],
             'icon' => $validated['icon'],
             'steps' => $steps,
-        ];
-
-        $service->update(['features' => $features]);
-
-        return redirect()->route('admin.software-house.index', ['tab' => 'layanan'])
-            ->with('success', 'Sub-fitur layanan baru berhasil ditambahkan!');
-    }
-
-    /**
-     * Update a sub-feature in the Software House service features JSON array.
-     */
-    public function updateFeature(Request $request, $index)
-    {
-        $service = Service::where('name', 'Software House')->firstOrFail();
-        $features = $service->features ?? [];
-
-        if (!isset($features[$index])) {
-            return redirect()->route('admin.software-house.index', ['tab' => 'layanan'])
-                ->with('error', 'Sub-fitur tidak ditemukan.');
-        }
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'icon' => 'required|string|max:100',
-            'steps_text' => 'nullable|string',
         ]);
 
-        $steps = array_values(array_filter(array_map('trim', explode("\n", $validated['steps_text'] ?? '')), fn($s) => !empty($s)));
-
-        $features[$index] = [
-            'title' => $validated['title'],
-            'icon' => $validated['icon'],
-            'steps' => $steps,
-        ];
-
-        $service->update(['features' => $features]);
-
         return redirect()->route('admin.software-house.index', ['tab' => 'layanan'])
-            ->with('success', 'Sub-fitur layanan berhasil diperbarui!');
+            ->with('success', 'Layanan software berhasil diperbarui!');
     }
 
     /**
-     * Delete a sub-feature from the Software House service features JSON array.
+     * Delete a software house service.
      */
-    public function deleteFeature($index)
+    public function deleteService($id)
     {
-        $service = Service::where('name', 'Software House')->firstOrFail();
-        $features = $service->features ?? [];
-
-        if (isset($features[$index])) {
-            unset($features[$index]);
-            $features = array_values($features); // Re-index keys
-            $service->update(['features' => $features]);
-        }
+        $shService = SoftwareHouseService::findOrFail($id);
+        $shService->delete();
 
         return redirect()->route('admin.software-house.index', ['tab' => 'layanan'])
-            ->with('success', 'Sub-fitur layanan berhasil dihapus!');
+            ->with('success', 'Layanan software berhasil dihapus!');
     }
 
     /**
-     * Reorder the sub-features of Software House service.
+     * Reorder software house services.
      */
-    public function reorderFeatures(Request $request)
+    public function reorderServices(Request $request)
     {
-        $service = Service::where('name', 'Software House')->firstOrFail();
-        $features = $service->features ?? [];
-
         $validated = $request->validate([
-            'indexes' => 'required|array',
-            'indexes.*' => 'required|integer',
+            'ids' => 'required|array',
+            'ids.*' => 'required|integer|exists:software_house_services,id',
         ]);
 
-        $reordered = [];
-        foreach ($validated['indexes'] as $idx) {
-            if (isset($features[$idx])) {
-                $reordered[] = $features[$idx];
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['ids'] as $index => $id) {
+                SoftwareHouseService::where('id', $id)->update(['order' => $index]);
             }
-        }
-
-        $service->update(['features' => $reordered]);
+        });
 
         return response()->json(['success' => true, 'message' => 'Urutan layanan berhasil diperbarui!']);
     }

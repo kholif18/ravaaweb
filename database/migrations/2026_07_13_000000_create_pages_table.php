@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('slug')->unique();
             $table->json('content');
+            $table->integer('views_count')->default(0);
             $table->timestamps();
         });
     }

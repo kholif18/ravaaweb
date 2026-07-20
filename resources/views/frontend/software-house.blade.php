@@ -17,19 +17,14 @@
             <p class="section-subtitle">{{ $content['layanan']['subtitle'] ?? 'Kami menyediakan layanan pengembangan software end-to-end yang disesuaikan dengan kebutuhan bisnis Anda.' }}</p>
 
             <div class="service-grid">
-                @foreach($service->features ?? [] as $feature)
-                @php
-                    $featTitle = is_array($feature) ? ($feature['title'] ?? '') : $feature;
-                    $featIcon = is_array($feature) ? ($feature['icon'] ?? ($service->icon ?? 'fas fa-code')) : ($service->icon ?? 'fas fa-code');
-                    $featSteps = is_array($feature) ? ($feature['steps'] ?? []) : [];
-                @endphp
+                @forelse($softwareServices as $shService)
                 <div class="sh-card">
                     <div class="svc-card-icon">
-                        <i class="{{ $featIcon }}"></i>
+                        <i class="{{ $shService->icon ?: 'fas fa-code' }}"></i>
                     </div>
-                    <h3>{{ $featTitle }}</h3>
+                    <h3>{{ $shService->title }}</h3>
                     <ul class="svc-features">
-                        @forelse($featSteps as $step)
+                        @forelse($shService->steps ?? [] as $step)
                             <li>{{ $step }}</li>
                         @empty
                             <li>Analisis Kebutuhan</li>
@@ -40,9 +35,11 @@
                             <li>Maintenance</li>
                         @endforelse
                     </ul>
-                    <a href="https://wa.me/{{ $settings['whatsapp'] ?? '' }}?text={{ urlencode('Halo, saya tertarik dengan layanan ' . $featTitle) }}" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
+                    <a href="https://wa.me/{{ $settings['whatsapp'] ?? '' }}?text={{ urlencode('Halo, saya tertarik dengan layanan ' . $shService->title) }}" class="btn btn-whatsapp btn-sm">Hubungi Kami</a>
                 </div>
-                @endforeach
+                @empty
+                <p class="text-center text-muted">Belum ada layanan software tersedia.</p>
+                @endforelse
             </div>
         </div>
     </section>

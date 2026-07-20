@@ -32,8 +32,11 @@ class DatabaseSeeder extends Seeder
         // Seed pengaturan umum
         $this->call(SettingSeeder::class);
 
-        // Seed layanan
+        // Seed layanan (general, excludes Software House)
         $this->call(ServiceSeeder::class);
+
+        // Seed Software House services (independent from general services)
+        $this->call(SoftwareHouseServiceSeeder::class);
 
         // Seed portfolio
         $this->call(PortfolioSeeder::class);

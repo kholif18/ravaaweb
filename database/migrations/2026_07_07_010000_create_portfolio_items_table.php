@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('client')->nullable();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
+            $table->foreignId('image_media_id')->nullable()->after('image')->constrained('media')->nullOnDelete();
             $table->json('tech')->nullable();
             $table->string('project_url')->nullable();
             $table->boolean('is_featured')->default(false);
@@ -24,7 +25,12 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
+            $table->integer('views_count')->default(0);
             $table->timestamps();
+
+            $table->index('order');
+            $table->index('status');
+            $table->index('slug');
         });
     }
 

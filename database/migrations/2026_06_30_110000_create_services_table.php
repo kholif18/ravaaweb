@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('icon')->nullable(); // e.g. fa-solid fa-paint-brush
+            $table->foreignId('image_media_id')->nullable()->after('icon')->constrained('media')->nullOnDelete();
             $table->text('description')->nullable();
             $table->json('features')->nullable(); // array of feature strings
             $table->integer('order')->default(0);
@@ -21,7 +22,10 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
+            $table->integer('views_count')->default(0);
             $table->timestamps();
+
+            $table->index('order');
         });
     }
 

@@ -127,6 +127,20 @@ class UserController extends Controller
     }
 
     /**
+     * Unlock a locked user account.
+     */
+    public function unlock(User $user): RedirectResponse
+    {
+        $user->forceFill([
+            'login_attempts' => 0,
+            'locked_until' => null,
+        ])->save();
+
+        return redirect()->back()
+            ->with('success', 'Akun pengguna berhasil dibuka kembali!');
+    }
+
+    /**
      * Remove the specified user.
      */
     public function destroy(User $user): RedirectResponse
