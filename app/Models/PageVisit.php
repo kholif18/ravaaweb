@@ -143,8 +143,8 @@ class PageVisit extends Model
     }
 
     /**
-     * Check if the same IP has visited this page type+id today.
-     * Used to avoid inflating views_count on refresh/navigation.
+     * Check if the same IP has visited this page today.
+     * pageId is nullable — for list pages (home, layanan, etc.) we deduplicate by page_type only.
      */
     public static function hasVisitedToday(string $pageType, $pageId, string $ip): bool
     {
@@ -152,10 +152,14 @@ class PageVisit extends Model
             return false; // Don't deduplicate local requests
         }
 
-        return self::where('page_type', $pageType)
-            ->where('page_id', $pageId)
+        $query = self::where('page_type', $pageType)
             ->where('ip_address', $ip)
-            ->whereDate('visited_at', today())
-            ->exists();
+            ->whereDate('visited_at', today());
+
+        if ($pageId) {
+            $query->where('page_id', $pageId);
+        }
+
+        return $query->exists();
     }
 }

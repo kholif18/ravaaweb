@@ -30,22 +30,29 @@ class TrackVisit
         }
 
         try {
-            [$pageType, $title] = match ($routeName) {
-                'home'             => ['home', 'Beranda'],
-                'layanan'          => ['service_list', 'Layanan'],
-                'product'          => ['product_list', 'Produk'],
-                'portofolio'       => ['portfolio_list', 'Portfolio'],
-                'software-house'   => ['software_house', 'Software House'],
-                'contact'          => ['contact', 'Kontak'],
-                'detail-product'   => ['product', $route->parameter('slug')],
-                default            => ['page', null],
+            [$pageType, $pageId, $title] = match ($routeName) {
+                'home'             => ['home', null, 'Beranda'],
+                'layanan'          => ['service_list', null, 'Layanan'],
+                'product'          => ['product_list', null, 'Produk'],
+                'portofolio'       => ['portfolio_list', null, 'Portfolio'],
+                'software-house'   => ['software_house', null, 'Software House'],
+                'contact'          => ['contact', null, 'Kontak'],
+                'detail-product'   => ['product', $route->parameter('slug'), $route->parameter('slug')],
+                default            => ['page', null, null],
             };
+
+            // Deduplicate: same IP + same page = 1 visit per day
+            $ip = $request->ip();
+            if (PageVisit::hasVisitedToday($pageType, $pageId, $ip)) {
+                return $response;
+            }
 
             PageVisit::create([
                 'page_type'  => $pageType,
+                'page_id'    => $pageId,
                 'url'        => $request->fullUrl(),
                 'title'      => $title,
-                'ip_address' => $request->ip(),
+                'ip_address' => $ip,
                 'user_agent' => $request->userAgent(),
                 'visited_at' => now(),
             ]);
