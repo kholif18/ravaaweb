@@ -1,0 +1,270 @@
+/* ============================================================
+   Media Picker — Component + Modal styles
+   Used by <x-media-picker> in admin forms.
+   ============================================================ */
+
+/* ---- Wrapper & selected preview ---- */
+.media-picker-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.media-picker-selected {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 60px;
+    padding: 10px;
+    background: var(--bg-surface);
+    border-radius: 10px;
+    border: 1px dashed var(--border-color);
+    width: 100%;
+}
+
+.media-picker-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: var(--text-muted);
+    font-size: 13px;
+    gap: 8px;
+}
+
+.media-picker-empty i {
+    font-size: 24px;
+}
+
+/* ---- Thumbnail (selected preview item) ---- */
+.media-picker-thumb {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+    margin: 4px;
+    transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+}
+
+.media-picker-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-picker-thumb .media-thumb-icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface-alt);
+    font-size: 28px;
+    color: var(--text-muted);
+}
+
+.media-picker-thumb .remove-media {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.media-picker-thumb:hover .remove-media {
+    opacity: 1;
+}
+
+/* ---- Gallery reorder (drag-and-drop) ---- */
+.media-picker-thumb[draggable="true"] { cursor: grab; }
+.media-picker-thumb[draggable="true"]:active { cursor: grabbing; }
+.media-picker-thumb.drag-over {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px var(--accent-light);
+    transform: scale(1.05);
+}
+.media-picker-thumb.dragging { opacity: 0.3; transform: scale(0.95); }
+.gallery-reorder-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.gallery-reorder-hint i { font-size: 0.75rem; }
+
+/* ============================================================
+   Picker Modal — higher specificity to override admin-glass.css
+   ============================================================ */
+.media-picker-modal .modal-dialog.media-picker-dialog {
+    max-width: 95vw;
+    width: 1200px;
+}
+
+.media-picker-modal .media-picker-content {
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.media-picker-modal .media-picker-body {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.media-picker-search {
+    max-width: 320px;
+}
+
+.media-picker-type-filter {
+    width: 150px;
+}
+
+/* ---- Grid ---- */
+.media-picker-modal .media-grid-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    padding: 4px;
+    align-content: start;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* ---- Loading spinner (infinite scroll) ---- */
+.picker-loading-more {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+}
+.picker-loading-more .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 0.15em;
+}
+
+/* ---- Grid item ---- */
+.media-picker-modal .media-picker-item {
+    position: relative;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--bg-surface-alt);
+}
+
+.media-picker-modal .media-picker-item .picker-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface-alt);
+}
+
+.media-picker-modal .media-picker-item:hover {
+    border-color: var(--accent);
+}
+
+.media-picker-modal .media-picker-item.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.media-picker-modal .media-picker-item .picker-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.media-picker-modal .media-picker-item .picker-thumb .file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-surface-alt);
+    font-size: 32px;
+    color: var(--text-muted);
+}
+
+.media-picker-modal .media-picker-item .pick-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 14px;
+    z-index: 2;
+}
+
+.media-picker-modal .media-picker-item:hover .pick-icon,
+.media-picker-modal .media-picker-item.selected .pick-icon {
+    opacity: 1;
+}
+
+.media-picker-modal .media-picker-item.selected .pick-icon {
+    background: var(--accent);
+}
+
+/* ---- Upload zone ---- */
+.media-picker-modal .upload-zone {
+    border: 2px dashed var(--accent);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: var(--accent-light);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.media-picker-modal .upload-zone:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.media-picker-modal .upload-zone i {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 4px;
+}
