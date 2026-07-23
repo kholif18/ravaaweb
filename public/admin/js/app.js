@@ -59,56 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ===== SIDEBAR COLLAPSIBLE GROUPS (Accordion) =====
-    document.addEventListener('click', function (e) {
-        var toggle = e.target.closest('.nav-group-toggle');
-        if (!toggle) return;
-        e.preventDefault();
-
-        var groupKey = toggle.getAttribute('data-group');
-        if (!groupKey) return;
-
-        var children = document.getElementById('group-' + groupKey);
-        var arrow = toggle.querySelector('.nav-group-arrow');
-        if (!children) return;
-
-        var isOpen = children.classList.contains('expanded');
-
-        if (isOpen) {
-            // ── Close this group ──
-            children.classList.remove('expanded');
-            if (arrow) arrow.classList.remove('rotated');
-            toggle.classList.remove('active', 'expanded-open');
-            return;
-        }
-
-        // ── Accordion: close any already-open group first ──
-        var openToggle = document.querySelector('.nav-group-toggle.expanded-open');
-        if (openToggle && openToggle !== toggle) {
-            var openGroupKey = openToggle.getAttribute('data-group');
-            var openChildren = document.getElementById('group-' + openGroupKey);
-            var openArrow = openToggle.querySelector('.nav-group-arrow');
-
-            if (openChildren) {
-                openChildren.classList.remove('expanded');
-                if (openArrow) openArrow.classList.remove('rotated');
-                openToggle.classList.remove('active', 'expanded-open');
-            }
-        }
-
-        // ── Then open this group (delay so collapse animation plays first) ──
-        setTimeout(function () {
-            children.classList.add('expanded');
-            if (arrow) arrow.classList.add('rotated');
-
-            var hasActive = children.querySelector('.nav-child-link.active');
-            if (!hasActive) {
-                toggle.classList.add('active');
-            }
-            toggle.classList.add('expanded-open');
-        }, 320);
-    });
-
     // Helper: safely get Element target from event
     function _target(el) {
         return el && el.nodeType === 1 ? el : null;
@@ -719,8 +669,6 @@ if (typeof window.bootstrap.Modal !== 'function') {
     document.addEventListener('click', function (e) {
         var link = e.target.closest('.sidebar-nav .nav-link');
         if (!link) return;
-        // Skip group toggles (they have href="#")
-        if (link.classList.contains('nav-group-toggle')) return;
         // Skip external links & target="_blank"
         if (link.getAttribute('target') === '_blank') return;
         var href = link.getAttribute('href');

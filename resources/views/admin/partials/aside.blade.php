@@ -1,62 +1,32 @@
 @php
-    $routeName = Route::currentRouteName();
+    // All menu items — flat, no groups
+    $menus = [
+        ['icon' => 'bi-grid-1x2', 'label' => 'Dashboard', 'route' => 'admin.dashboard', 'section' => ''],
 
-    // Helper: check if current route matches any in the group
-    if (!function_exists('isGroupActive')) {
-        function isGroupActive($patterns) {
-            foreach ($patterns as $p) {
-                if (request()->routeIs($p) || request()->is($p)) return true;
-            }
-            return false;
-        }
-    }
+        // Katalog
+        ['icon' => 'bi-folder2-open', 'label' => 'Kategori Produk', 'route' => 'admin.categories.index', 'section' => 'Katalog'],
+        ['icon' => 'bi-tags', 'label' => 'Tag Produk', 'route' => 'admin.tags.index', 'section' => ''],
+        ['icon' => 'bi-box', 'label' => 'Produk', 'route' => 'admin.products.index', 'section' => ''],
 
-    $groups = [
-        'katalog' => [
-            'icon' => 'bi-box-seam',
-            'label' => 'Katalog',
-            'routes' => ['admin.categories.*', 'admin.tags.*', 'admin.products.*'],
-            'children' => [
-                ['icon' => 'bi-folder2-open', 'label' => 'Kategori Produk', 'route' => 'admin.categories.index'],
-                ['icon' => 'bi-tags', 'label' => 'Tag Produk', 'route' => 'admin.tags.index'],
-                ['icon' => 'bi-box', 'label' => 'Produk', 'route' => 'admin.products.index'],
-            ],
-        ],
-        'konten' => [
-            'icon' => 'bi-layout-text-window',
-            'label' => 'Konten Website',
-            'routes' => ['admin.services.*', 'admin.portfolio.*', 'admin.testimonials.*', 'admin.banners.*', 'admin.contact-submissions.*', 'admin/home*', 'admin/software-house*'],
-            'children' => [
-                ['icon' => 'bi-headset', 'label' => 'Layanan', 'route' => 'admin.services.index'],
-                ['icon' => 'bi-briefcase', 'label' => 'Portfolio', 'route' => 'admin.portfolio.index'],
-                ['icon' => 'bi-chat-quote', 'label' => 'Testimoni', 'route' => 'admin.testimonials.index'],
-                ['icon' => 'bi-images', 'label' => 'Banner / Hero', 'route' => 'admin.banners.index'],
-                ['icon' => 'bi-envelope', 'label' => 'Pesan Masuk', 'route' => 'admin.contact-submissions.index'],
-                ['icon' => 'bi-layout-three-columns', 'label' => 'Home Builder', 'route' => 'admin.home.index'],
-                ['icon' => 'bi-laptop', 'label' => 'Software House', 'route' => 'admin.software-house.index'],
-            ],
-        ],
-        'pengaturan' => [
-            'icon' => 'bi-gear-wide-connected',
-            'label' => 'Pengaturan',
-            'routes' => ['admin.settings.*', 'admin.footer-links.*', 'admin.users.*', 'admin.roles.*'],
-            'children' => [
-                ['icon' => 'bi-gear', 'label' => 'Pengaturan Umum', 'route' => 'admin.settings.index'],
-                ['icon' => 'bi-link-45deg', 'label' => 'Footer Links', 'route' => 'admin.footer-links.index'],
-                ['icon' => 'bi-people', 'label' => 'Users', 'route' => 'admin.users.index'],
-                ['icon' => 'bi-shield-check', 'label' => 'Role & Permission', 'route' => 'admin.roles.index'],
-            ],
-        ],
-        'tools' => [
-            'icon' => 'bi-tools',
-            'label' => 'Tools',
-            'routes' => ['admin.media.*', 'admin.reports.*', 'admin/logs*'],
-            'children' => [
-                ['icon' => 'bi-folder', 'label' => 'Media Library', 'route' => 'admin.media.index'],
-                ['icon' => 'bi-graph-up', 'label' => 'Laporan & Analytics', 'route' => 'admin.reports.index'],
-                ['icon' => 'bi-journal-text', 'label' => 'System Logs', 'route' => 'admin.logs.index'],
-            ],
-        ],
+        // Konten Website
+        ['icon' => 'bi-headset', 'label' => 'Layanan', 'route' => 'admin.services.index', 'section' => 'Konten Website'],
+        ['icon' => 'bi-briefcase', 'label' => 'Portfolio', 'route' => 'admin.portfolio.index', 'section' => ''],
+        ['icon' => 'bi-chat-quote', 'label' => 'Testimoni', 'route' => 'admin.testimonials.index', 'section' => ''],
+        ['icon' => 'bi-images', 'label' => 'Banner / Hero', 'route' => 'admin.banners.index', 'section' => ''],
+        ['icon' => 'bi-envelope', 'label' => 'Pesan Masuk', 'route' => 'admin.contact-submissions.index', 'section' => ''],
+        ['icon' => 'bi-layout-three-columns', 'label' => 'Home Builder', 'route' => 'admin.home.index', 'section' => ''],
+        ['icon' => 'bi-laptop', 'label' => 'Software House', 'route' => 'admin.software-house.index', 'section' => ''],
+
+        // Pengaturan
+        ['icon' => 'bi-gear', 'label' => 'Pengaturan Umum', 'route' => 'admin.settings.index', 'section' => 'Pengaturan'],
+        ['icon' => 'bi-link-45deg', 'label' => 'Footer Links', 'route' => 'admin.footer-links.index', 'section' => ''],
+        ['icon' => 'bi-people', 'label' => 'Users', 'route' => 'admin.users.index', 'section' => ''],
+        ['icon' => 'bi-shield-check', 'label' => 'Role & Permission', 'route' => 'admin.roles.index', 'section' => ''],
+
+        // Tools
+        ['icon' => 'bi-folder', 'label' => 'Media Library', 'route' => 'admin.media.index', 'section' => 'Tools'],
+        ['icon' => 'bi-graph-up', 'label' => 'Laporan & Analytics', 'route' => 'admin.reports.index', 'section' => ''],
+        ['icon' => 'bi-journal-text', 'label' => 'System Logs', 'route' => 'admin.logs.index', 'section' => ''],
     ];
 @endphp
 
@@ -77,47 +47,20 @@
 </div>
 
 <nav class="sidebar-nav">
-    {{-- Dashboard --}}
     <ul class="nav-item">
-        <li>
-            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-grid-1x2"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-    </ul>
-
-    {{-- Menu Groups --}}
-    @foreach($groups as $key => $group)
-    @php
-        $isActive = isGroupActive($group['routes']);
-        $hasChildActive = false;
-        foreach ($group['children'] as $child) {
-            if (request()->routeIs($child['route'])) { $hasChildActive = true; break; }
-        }
-    @endphp
-    <ul class="nav-item nav-group">
-        <li>
-            <a class="nav-link nav-group-toggle {{ $isActive ? 'active' : '' }} {{ $isActive && !$hasChildActive ? 'expanded-open' : '' }}" href="#" data-group="{{ $key }}">
-                <i class="{{ $group['icon'] }}"></i>
-                <span>{{ $group['label'] }}</span>
-                <i class="bi bi-chevron-down nav-group-arrow {{ $isActive ? 'rotated' : '' }}"></i>
-            </a>
-            <div class="nav-group-children {{ $isActive ? 'expanded' : '' }}" id="group-{{ $key }}">
-                @foreach($group['children'] as $child)
-                <a class="nav-link nav-child-link {{ request()->routeIs($child['route']) ? 'active' : '' }}" href="{{ route($child['route']) }}">
-                    <i class="{{ $child['icon'] }}"></i>
-                    <span>{{ $child['label'] }}</span>
+        @foreach($menus as $item)
+            @if($item['section'])
+                <li class="nav-section">{{ $item['section'] }}</li>
+            @endif
+            <li>
+                <a class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}" href="{{ route($item['route']) }}">
+                    <i class="{{ $item['icon'] }}"></i>
+                    <span>{{ $item['label'] }}</span>
                 </a>
-                @endforeach
-            </div>
-        </li>
-    </ul>
-    @endforeach
+            </li>
+        @endforeach
 
-    {{-- Lihat Website --}}
-    <ul class="nav-item" style="margin-top:4px;">
-        <li>
+        <li style="margin-top: 4px;">
             <a class="nav-link" href="{{ url('/') }}" target="_blank">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Lihat Website</span>
@@ -125,5 +68,3 @@
         </li>
     </ul>
 </nav>
-
-
