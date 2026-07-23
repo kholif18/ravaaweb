@@ -1914,7 +1914,6 @@ ul { list-style: none; }
   box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
   transition: all 0.3s var(--ease-spring);
   text-decoration: none;
-  position: relative;
   overflow: hidden;
 }
 
