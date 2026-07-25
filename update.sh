@@ -3,6 +3,17 @@ set -e
 
 BRANCH="main"
 
+# Deteksi versi Docker Compose — support V1 (docker-compose) dan V2 (docker compose)
+if docker compose version &>/dev/null 2>&1; then
+    DC="docker compose"
+elif command -v docker-compose &>/dev/null; then
+    DC="docker-compose"
+else
+    echo "[ERROR] Docker Compose tidak ditemukan. Install dulu: https://docs.docker.com/compose/install/"
+    exit 1
+fi
+echo "    Menggunakan: $DC"
+
 echo "========================================="
 echo "  RavaaWeb — Update & Redeploy"
 echo "========================================="
@@ -11,7 +22,7 @@ echo "========================================="
 echo ""
 echo "==> [1/5] Backing up database..."
 BACKUP_FILE="/tmp/ravaaweb_backup_$(date +%Y%m%d_%H%M%S).sql"
-docker compose exec -T mariadb mysqldump \
+$DC exec -T mariadb mysqldump \
     -u"${DB_USERNAME:-root}" -p"${DB_PASSWORD}" "${DB_DATABASE:-web}" \
     > "$BACKUP_FILE" 2>/dev/null && \
     echo "    Database backed up: $BACKUP_FILE ($(du -sh "$BACKUP_FILE" | cut -f1))" || \
@@ -30,12 +41,12 @@ echo "    HEAD: $(git log -1 --oneline)"
 # ── 3. Build image baru ───────────────────────
 echo ""
 echo "==> [3/5] Building container..."
-docker compose build app
+$DC build app
 
 # ── 4. Restart container ──────────────────────
 echo ""
 echo "==> [4/5] Restarting container (skip DB migrate/seed)..."
-APP_SKIP_DB=true docker compose up -d
+APP_SKIP_DB=true $DC up -d
 
 # Tunggu sebentar agar container fully up
 sleep 3
@@ -47,7 +58,7 @@ echo "==> [5/5] Fixing file permissions..."
 sudo chown -R ravaa:ravaa /var/www/RavaaWeb
 # storage/framework harus dimiliki www-data agar Laravel bisa write cache view
 # Tanpa ini: touch(): Utime failed: Operation not permitted (500 error)
-docker compose exec -T app chown -R www-data:www-data /var/www/html/storage/framework
+$DC exec -T app chown -R www-data:www-data /var/www/html/storage/framework
 
 # ── Done ──────────────────────────────────────
 echo ""
