@@ -1,0 +1,47 @@
+/* =============================================
+   Custom Dialogs (Ravaa.confirm / Ravaa.alert)
+   ============================================= */
+
+.ravaa-dialog {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem;
+  min-width: 320px;
+  max-width: 420px;
+  box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.25),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: dialog-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ravaa-dialog-icon {
+  width: 48px; height: 48px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 0.85rem; flex-shrink: 0;
+}
+.ravaa-dialog-icon i { font-size: 1.35rem; }
+.ravaa-dialog-title {
+  margin: 0 0 0.2rem;
+  font-weight: 600; font-size: 1.05rem;
+  color: var(--text-primary, #1d1d1f);
+  line-height: 1.3;
+}
+.ravaa-dialog-text {
+  margin: 0 0 1.5rem;
+  color: var(--text-muted, #6e6e73);
+  font-size: 0.85rem; line-height: 1.5;
+}
+.ravaa-dialog-actions {
+  display: flex; justify-content: flex-end;
+  gap: 0.75rem;
+}
+/* Icon colours — modern macOS palette */
+.ravaa-dialog-icon.warning { background: rgba(255, 149, 0, 0.15); }
+.ravaa-dialog-icon.warning i { color: #f59e0b; }
+.ravaa-dialog-icon.success { background: rgba(40, 205, 65, 0.15); }
+.ravaa-dialog-icon.success i { color: #16a34a; }
+.ravaa-dialog-icon.error { background: rgba(220, 38, 38, 0.15); }
+.ravaa-dialog-icon.error i { color: #dc2626; }
+.ravaa-dialog-icon.question { background: rgba(0, 113, 227, 0.15); }
+.ravaa-dialog-icon.question i { color: #0071e3; }
+.ravaa-dialog-icon.info { background: rgba(8, 145, 178, 0.15); }
+.ravaa-dialog-icon.info i { color: #0891b2; }

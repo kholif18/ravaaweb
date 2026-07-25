@@ -1,0 +1,21 @@
+/* =============================================
+   Pagination Component
+   ============================================= */
+
+.pagination {
+  display: flex; flex-wrap: wrap; gap: 0.25rem;
+  list-style: none; padding: 0; margin: 1rem 0;
+}
+.page-item .page-link {
+  display: flex; align-items: center; justify-content: center;
+  min-width: 2rem; height: 2rem; padding: 0 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1); border-radius: var(--r-md);
+  background: var(--bg-surface); color: var(--text-secondary);
+  text-decoration: none; font-size: 0.82rem; transition: all 0.2s;
+}
+.page-item.active .page-link,
+.page-item .page-link:hover {
+  background: var(--accent); color: #ffffff;
+  border-color: var(--accent);
+}
+.page-item.disabled .page-link { opacity: 0.4; pointer-events: none; }

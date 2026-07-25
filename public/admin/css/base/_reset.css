@@ -1,0 +1,27 @@
+/* =============================================
+   Reset & Base Typography / Body Styles
+   ============================================= */
+
+body { font-size: 14px; }
+
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===== BODY ===== */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-body);
+  background-image:
+    radial-gradient(at 20% 20%, rgba(0, 113, 227, 0.04) 0px, transparent 60%),
+    radial-gradient(at 80% 80%, rgba(34, 197, 94, 0.03) 0px, transparent 60%);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }

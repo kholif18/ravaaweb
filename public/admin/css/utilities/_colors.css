@@ -1,0 +1,27 @@
+/* =============================================
+   Color & Background Utility Classes
+   ============================================= */
+
+.bg-light-primary { background: var(--accent-light) !important; }
+.bg-light-success { background: var(--success-light) !important; }
+.bg-light-warning { background: var(--warning-light) !important; }
+.bg-light-info { background: var(--info-light) !important; }
+.bg-light-danger { background: var(--danger-light) !important; }
+.bg-white { background: #ffffff !important; }
+.bg-transparent { background: transparent !important; }
+.bg-dark { background: #1a1d21 !important; }
+.bg-gray-300 { background: rgba(0, 0, 0, 0.06) !important; }
+
+.text-primary { color: var(--accent) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-info { color: var(--info) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-white { color: #ffffff !important; }
+.text-dark { color: var(--text-primary) !important; }
+.text-gray-400 { color: var(--text-muted) !important; }
+.text-gray-600 { color: var(--text-secondary) !important; }
+.text-gray-800 { color: var(--text-primary) !important; }
+.text-hover-primary { transition: color 0.2s; }
+.text-hover-primary:hover { color: var(--accent) !important; }

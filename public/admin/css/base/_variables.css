@@ -1,0 +1,63 @@
+/* =============================================
+   Design Tokens & CSS Variables
+   ============================================= */
+
+:root {
+  /* macOS Glassmorphism Core */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-solid: #ffffff;
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-blur: 20px;
+  --glass-radius: 12px;
+  --glass-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  --glass-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* macOS Border Radius Scale (matching frontend) */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-full: 9999px; /* macOS pill shape */
+
+  /* Layout */
+  --sidebar-width: 220px;
+  --sidebar-collapsed: 62px;
+  --header-height: 52px;
+
+  /* Surface */
+  --bg-body: #f0f2f5;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f5f6f8;
+
+  /* Text (matching frontend) */
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --text-muted: #9aa0a6;
+  --text-inverse: #ffffff;
+
+  /* Accent – macOS blue (matching frontend: #0071E3) */
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-pressed: #006edb;
+  --accent-light: rgba(0, 113, 227, 0.08);
+  --accent-light-hover: rgba(0, 113, 227, 0.14);
+
+  /* Semantic – modern soft palette */
+  --success: #28cd41;
+  --success-light: rgba(40, 205, 65, 0.08);
+  --warning: #ff9500;
+  --warning-light: rgba(255, 149, 0, 0.08);
+  --danger: #ff3b30;
+  --danger-light: rgba(255, 59, 48, 0.08);
+  --info: #5ac8fa;
+  --info-light: rgba(90, 200, 250, 0.08);
+
+  /* Transition (matching frontend) */
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Sidebar */
+  --sidebar-bg: rgba(255, 255, 255, 0.85);
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+}
