@@ -16,12 +16,12 @@ class SettingSeeder extends Seeder
             'site_description' => 'Desain grafis modern, cetak berkualitas, dan perlengkapan ATK lengkap untuk kebutuhan bisnis Anda.',
 
             // Kontak
-            'whatsapp'         => '6282233377661',
+            'whatsapp'         => '082233377661',
             'whatsapp_message' => 'Halo, saya tertarik dengan produk/layanan Anda.',
-            'email'            => 'info@ravaacreative.com',
-            'phone'            => '(022) 3456-789',
-            'address'          => 'Jl. Kreatif No. 123, Bandung',
-            'operating_hours'  => 'Senin-Jumat 08:00-17:00, Sabtu 08:00-14:00',
+            'email'            => 'ravaacreative@gmail.com',
+            'phone'            => '082233377661',
+            'address'          => 'Gedong, Ds. Ngluyu Kec. Ngluyu, Kab. Nganjuk, Jawa Timur 64452',
+            'operating_hours'  => 'Senin-Jumat 15:00-21:00, Sabtu-Minggu 07:00-21:00',
 
             // Social Media
             'instagram'        => '',
