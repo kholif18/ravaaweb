@@ -8,44 +8,50 @@
          ═══════════════════════════════════════════════ --}}
     <section class="home-banner">
         @if($banners->count() > 0)
-        <div class="banner-carousel" id="bannerCarousel">
-            <div class="banner-track" id="bannerTrack">
-                @foreach($banners as $banner)
-                <div class="banner-slide {{ $loop->first ? 'active' : '' }}" data-index="{{ $loop->index }}">
-                    <div class="banner-slide-img">
-                        @if($banner->image_url)
-                            <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200&h=500&fit=crop" alt="{{ $banner->title }}" loading="lazy">
-                        @endif
-                        <div class="banner-overlay"></div>
+        <div class="container">
+            <div class="banner-carousel" id="bannerCarousel">
+                <div class="banner-track" id="bannerTrack">
+                    @foreach($banners as $banner)
+                    <div class="banner-slide {{ $loop->first ? 'active' : '' }}" data-index="{{ $loop->index }}">
+                        <div class="banner-slide-img">
+                            @if($banner->image_url)
+                                <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200&h=500&fit=crop" alt="{{ $banner->title }}" loading="lazy">
+                            @endif
+                            <div class="banner-overlay"></div>
+                        </div>
+                        <div class="banner-slide-content">
+                            @if($banner->badge || $banner->title || $banner->subtitle)
+                            <div class="banner-slide-text">
+                                @if($banner->badge)
+                                <span class="banner-badge"><i class="fas fa-tag"></i> {{ $banner->badge }}</span>
+                                @endif
+                                @if($banner->title)
+                                <h2 class="banner-title">{!! $banner->title !!}</h2>
+                                @endif
+                                @if($banner->subtitle)
+                                <p class="banner-subtitle">{{ $banner->subtitle }}</p>
+                                @endif
+                            </div>
+                            @endif
+                            @if($banner->cta_text && $banner->cta_url)
+                            <a href="{{ $banner->cta_url }}" class="btn btn-primary btn-sm banner-cta-btn">{{ $banner->cta_text }}</a>
+                            @endif
+                        </div>
                     </div>
-                    <div class="banner-slide-content container">
-                        @if($banner->badge)
-                        <span class="banner-badge"><i class="fas fa-tag"></i> {{ $banner->badge }}</span>
-                        @endif
-                        <h2 class="banner-title">{!! $banner->title !!}</h2>
-                        @if($banner->subtitle)
-                        <p class="banner-subtitle">{{ $banner->subtitle }}</p>
-                        @endif
-                        @if($banner->cta_text && $banner->cta_url)
-                        <a href="{{ $banner->cta_url }}" class="btn btn-primary btn-lg">{{ $banner->cta_text }}</a>
-                        @endif
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-            @if($banners->count() > 1)
-            <div class="banner-nav">
+                @if($banners->count() > 1)
                 <button class="banner-nav-btn banner-prev" aria-label="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                <button class="banner-nav-btn banner-next" aria-label="Selanjutnya"><i class="fas fa-chevron-right"></i></button>
                 <div class="banner-dots" id="bannerDots">
                     @foreach($banners as $banner)
                     <button class="banner-dot {{ $loop->first ? 'active' : '' }}" data-index="{{ $loop->index }}" aria-label="Slide {{ $loop->iteration }}"></button>
                     @endforeach
                 </div>
-                <button class="banner-nav-btn banner-next" aria-label="Selanjutnya"><i class="fas fa-chevron-right"></i></button>
+                @endif
             </div>
-            @endif
         </div>
         @else
         <div class="banner-static">
