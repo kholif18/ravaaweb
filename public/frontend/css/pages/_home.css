@@ -252,10 +252,10 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
   }
-  .home-prod-img-wrap { aspect-ratio: 4 / 3; }
-  .home-prod-body { padding: 20px; }
-  .home-prod-name { font-size: 1.05rem; }
-  .home-prod-price { font-size: 1.2rem; }
+  .home-prod-img-wrap { aspect-ratio: 1 / 1; }
+  .home-prod-body { padding: 12px 14px; }
+  .home-prod-name { font-size: 0.86rem; }
+  .home-prod-price { font-size: 0.98rem; }
   .home-services { padding: 64px 0; }
   .home-service-card { min-width: 280px; max-width: 320px; padding: 28px 24px; }
   .home-cta-card { padding: 64px 48px; }
