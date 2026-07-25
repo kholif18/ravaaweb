@@ -1,0 +1,59 @@
+/* ------------------------------------------------
+   VARIABLES – central colour, spacing, radius, fonts
+   ------------------------------------------------ */
+:root {
+  /* Background – vibrant macOS wallpaper mesh */
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 50%, #e8d5b7 100%);
+  --bg-gradient-dark: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+
+  /* Frosted Glass */
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-dark: rgba(30, 30, 40, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-dark: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --glass-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --glass-shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.16), 0 12px 32px rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(20px);
+
+  /* Colors */
+  --text: #1D1D1F;
+  --text-secondary: #6E6E73;
+  --text-tertiary: #86868B;
+  --accent: #0071E3;
+  --accent-hover: #0077ED;
+  --accent-pressed: #006EDB;
+  --white: #FFFFFF;
+  --bg-alt: rgba(0, 0, 0, 0.03);
+
+  /* Geometry */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font: -apple-system, 'Inter', system-ui, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  --font-display: -apple-system, 'Inter', system-ui, 'SF Pro Display', 'Segoe UI', sans-serif;
+
+  /* Spacing */
+  --spacing-sm: .5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+
+  /* Z-index scale */
+  --z-navbar: 1000;
+  --z-overlay: 1001;
+  --z-drawer: 1002;
+
+  /* Banner heights */
+  --banner-height-sm: 280px;
+  --banner-height-md: 360px;
+  --banner-height-lg: 480px;
+  --banner-height-xl: 520px;
+
+  /* Transitions */
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

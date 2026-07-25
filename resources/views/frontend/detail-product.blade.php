@@ -6,7 +6,7 @@
 
 @section('content')
 
-<section class="section" style="padding-top:30px;">
+<section class="section catalog-section">
   <div class="container">
 
     {{-- Breadcrumb --}}

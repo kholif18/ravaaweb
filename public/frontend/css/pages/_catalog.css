@@ -1,0 +1,7 @@
+/* ------------------------------------------------
+   CATALOG PAGE – spacing adjustments to avoid navbar overlap
+   ------------------------------------------------ */
+.catalog-section {
+  padding-top: 120px;   /* space for fixed navbar */
+  padding-bottom: 80px;
+}

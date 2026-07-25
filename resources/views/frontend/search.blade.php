@@ -6,7 +6,7 @@
 
 @section('content')
 
-<section class="section" style="padding-top: 60px; padding-bottom: 80px;">
+<section class="section">
     <div class="container" style="max-width: 800px;">
 
         {{-- Header --}}

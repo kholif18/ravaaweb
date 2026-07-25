@@ -1,0 +1,82 @@
+/* ------------------------------------------------
+   CATALOG TOOLBAR – search, type pills & category scroll
+   ------------------------------------------------ */
+.catalog-header { margin-bottom: 28px; }
+
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 8px 14px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--glass-shadow);
+  transition: all .2s var(--ease);
+}
+.search-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,.12); }
+.search-wrap i { color: var(--text-tertiary); font-size: .85rem; }
+.search-wrap input { border: none; background: transparent; font-family: var(--font); font-size: .88rem; color: var(--text); width: 100%; outline: none; }
+.search-wrap input::placeholder { color: var(--text-tertiary); }
+
+.type-pills {
+  display: flex;
+  gap: 4px;
+  background: rgba(0,0,0,.03);
+  padding: 3px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.filter-pills-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  width: 100%;
+}
+.filter-pills::-webkit-scrollbar { display: none; }
+
+.filter-pills-wrap .scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all .2s var(--ease);
+}
+.filter-pills-wrap .scroll-btn:hover { background: rgba(255,255,255,.75); color: var(--text); box-shadow: var(--glass-shadow-lg); }
+.filter-pills-wrap .scroll-btn.scroll-left { left: -8px; }
+.filter-pills-wrap .scroll-btn.scroll-right { right: -8px; }

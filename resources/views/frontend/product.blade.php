@@ -3,7 +3,7 @@
 @section('title', 'Katalog')
 
 @section('content')
-<section class="section" style="padding-top:30px;">
+<section class="section catalog-section">
     <div class="container">
         <form class="catalog-header" method="GET" action="{{ url()->current() }}" id="catalogForm">
             <input type="hidden" name="category" id="inputCategory" value="{{ request('category') }}">

@@ -376,9 +376,10 @@ class FrontendController extends Controller
     {
         $query = $request->input('q');
 
-        $products = collect();
+        $products = Product::whereRaw('1 = 0')->paginate(10);
         $services = collect();
         $portfolios = collect();
+        $softwareServices = collect();
 
         if ($query && strlen(trim($query)) >= 2) {
             $q = trim($query);
