@@ -52,6 +52,8 @@ else
 fi
 
 # --- Storage ---
+chmod -R 777 storage bootstrap/cache || true
+chown -R www-data:www-data storage/framework || true
 php artisan storage:link --force || true
 
 # --- Start Apache ---
