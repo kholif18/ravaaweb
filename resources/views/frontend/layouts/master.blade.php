@@ -104,7 +104,8 @@
     }
     </script>
 
-    <script src="{{ asset('frontend/js/app.js') }}"></script>
+    {{-- data-cfasync="false" mencegah Cloudflare Rocket Loader menunda eksekusi script ini --}}
+    <script data-cfasync="false" src="{{ asset('frontend/js/app.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var btn = document.getElementById('scrollTopBtn');
