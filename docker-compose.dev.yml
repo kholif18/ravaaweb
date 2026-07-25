@@ -1,0 +1,22 @@
+# ============================================================
+# RavaaWeb — Development Override
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Prerequisites:
+#   composer install   (run on host first)
+#   php artisan key:generate
+# ============================================================
+
+services:
+  app:
+    container_name: RavaaWeb-dev
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+    volumes:
+      # Live-reload: semua source code dari host langsung masuk container
+      - .:/var/www/html
+      # Storage tetap pakai named volume supaya uploads persist
+      - storage_data:/var/www/html/storage
+    networks:
+      - ravaaweb

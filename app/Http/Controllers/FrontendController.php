@@ -164,9 +164,15 @@ class FrontendController extends Controller
 
         $products = $productQuery->limit($limit)->get()->map(fn($p) => $this->productDisplayData($p));
 
+        // 4. Query Services (for homepage section)
+        $services = Service::active()->ordered()
+            ->where('name', '!=', 'Software House')
+            ->limit(6)
+            ->get();
+
         $settings = $this->getSettings();
 
-        return view('frontend.home', compact('categories', 'products', 'banners', 'settings', 'content'));
+        return view('frontend.home', compact('categories', 'products', 'banners', 'services', 'settings', 'content'));
     }
 
     public function layanan()

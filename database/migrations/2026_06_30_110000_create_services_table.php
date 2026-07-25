@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('icon')->nullable(); // e.g. fa-solid fa-paint-brush
-            $table->foreignId('image_media_id')->nullable()->after('icon')->constrained('media')->nullOnDelete();
+            $table->foreignId('image_media_id')->nullable();
             $table->text('description')->nullable();
             $table->json('features')->nullable(); // array of feature strings
             $table->integer('order')->default(0);

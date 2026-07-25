@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ---- Hero Slider ---- */
+    /* ---- Hero Slider (legacy) ---- */
     const slides = document.querySelectorAll('.hero-slide');
     const dots = document.querySelectorAll('.hero-dot');
     if (slides.length > 0) {
@@ -160,5 +160,94 @@ document.addEventListener('DOMContentLoaded', () => {
         if (slides.length > 1) {
             resetInterval();
         }
+    }
+
+    /* ---- Banner Carousel (redesign) ---- */
+    const bannerCarousel = document.getElementById('bannerCarousel');
+    const bannerTrack = document.getElementById('bannerTrack');
+    if (bannerCarousel && bannerTrack) {
+        const bannerSlides = bannerTrack.querySelectorAll('.banner-slide');
+        const bannerDots = bannerCarousel.querySelectorAll('.banner-dot');
+        const prevBtn = bannerCarousel.querySelector('.banner-prev');
+        const nextBtn = bannerCarousel.querySelector('.banner-next');
+        const totalSlides = bannerSlides.length;
+        let currentBanner = 0;
+        let bannerInterval;
+        let touchStartX = 0;
+        let touchDeltaX = 0;
+        let isSwiping = false;
+
+        function goToBanner(index) {
+            if (index < 0 || index >= totalSlides) return;
+            bannerSlides[currentBanner].classList.remove('active');
+            if (bannerDots[currentBanner]) bannerDots[currentBanner].classList.remove('active');
+            currentBanner = index;
+            bannerTrack.style.transform = `translateX(-${currentBanner * 100}%)`;
+            bannerSlides[currentBanner].classList.add('active');
+            if (bannerDots[currentBanner]) bannerDots[currentBanner].classList.add('active');
+        }
+
+        function changeBanner(dir) {
+            let next = currentBanner + dir;
+            if (next >= totalSlides) next = 0;
+            if (next < 0) next = totalSlides - 1;
+            goToBanner(next);
+        }
+
+        function resetBannerInterval() {
+            clearInterval(bannerInterval);
+            if (totalSlides > 1) {
+                bannerInterval = setInterval(() => changeBanner(1), 5000);
+            }
+        }
+
+        // Navigation buttons
+        if (prevBtn) prevBtn.addEventListener('click', () => { changeBanner(-1); resetBannerInterval(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { changeBanner(1); resetBannerInterval(); });
+
+        // Dot clicks
+        bannerDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToBanner(parseInt(dot.dataset.index));
+                resetBannerInterval();
+            });
+        });
+
+        // Touch swipe
+        bannerTrack.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            isSwiping = true;
+            bannerTrack.style.transition = 'none';
+        }, { passive: true });
+
+        bannerTrack.addEventListener('touchmove', (e) => {
+            if (!isSwiping) return;
+            touchDeltaX = e.touches[0].clientX - touchStartX;
+            const offset = -(currentBanner * 100) + (touchDeltaX / bannerTrack.offsetWidth * 100);
+            bannerTrack.style.transform = `translateX(${offset}%)`;
+        }, { passive: true });
+
+        bannerTrack.addEventListener('touchend', () => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            bannerTrack.style.transition = '';
+            const threshold = bannerTrack.offsetWidth * 0.2;
+            if (touchDeltaX < -threshold) {
+                changeBanner(1);
+            } else if (touchDeltaX > threshold) {
+                changeBanner(-1);
+            } else {
+                goToBanner(currentBanner);
+            }
+            touchDeltaX = 0;
+            resetBannerInterval();
+        });
+
+        // Pause on hover (desktop)
+        bannerCarousel.addEventListener('mouseenter', () => clearInterval(bannerInterval));
+        bannerCarousel.addEventListener('mouseleave', resetBannerInterval);
+
+        // Start
+        resetBannerInterval();
     }
 });

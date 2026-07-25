@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('client')->nullable();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('image_media_id')->nullable()->after('image')->constrained('media')->nullOnDelete();
+            $table->foreignId('image_media_id')->nullable();
             $table->json('tech')->nullable();
             $table->string('project_url')->nullable();
             $table->boolean('is_featured')->default(false);

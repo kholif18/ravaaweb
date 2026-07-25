@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('is_active')->default(true);
-            $table->foreignId('avatar_media_id')->nullable()->after('is_active')->constrained('media')->nullOnDelete();
+            $table->foreignId('avatar_media_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

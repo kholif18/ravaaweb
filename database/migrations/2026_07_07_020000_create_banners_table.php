@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('image_media_id')->nullable()->after('image')->constrained('media')->nullOnDelete();
+            $table->foreignId('image_media_id')->nullable();
             $table->string('cta_text')->nullable();
             $table->string('cta_url')->nullable();
             $table->string('badge')->nullable();
