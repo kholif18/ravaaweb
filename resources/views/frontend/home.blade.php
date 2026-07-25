@@ -15,9 +15,9 @@
                     <div class="banner-slide {{ $loop->first ? 'active' : '' }}" data-index="{{ $loop->index }}">
                         <div class="banner-slide-img">
                             @if($banner->image_url)
-                                <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}">
+                                <img src="{{ $banner->image_url }}" alt="{{ strip_tags($banner->title ?? 'Banner') }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}" fetchpriority="{{ $loop->first ? 'high' : 'auto' }}" width="1200" height="450">
                             @else
-                                <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200&h=500&fit=crop" alt="{{ $banner->title }}" loading="lazy">
+                                <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200&h=450&fit=crop" alt="{{ strip_tags($banner->title ?? 'Banner') }}" loading="{{ $loop->first ? 'eager' : 'lazy' }}" fetchpriority="{{ $loop->first ? 'high' : 'auto' }}" width="1200" height="450">
                             @endif
                             <div class="banner-overlay"></div>
                         </div>
@@ -36,7 +36,7 @@
                             </div>
                             @endif
                             @if($banner->cta_text && $banner->cta_url)
-                            <a href="{{ $banner->cta_url }}" class="btn btn-primary btn-sm banner-cta-btn">{{ $banner->cta_text }}</a>
+                            <a href="{{ $banner->cta_url }}" class="btn btn-primary banner-cta-btn">{{ $banner->cta_text }}</a>
                             @endif
                         </div>
                     </div>

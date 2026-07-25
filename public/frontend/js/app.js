@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /* ---- Banner Carousel (redesign) ---- */
+    /* ---- Banner Carousel (Refactored & Performance Optimized) ---- */
     const bannerCarousel = document.getElementById('bannerCarousel');
     const bannerTrack = document.getElementById('bannerTrack');
     if (bannerCarousel && bannerTrack) {
@@ -172,17 +172,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextBtn = bannerCarousel.querySelector('.banner-next');
         const totalSlides = bannerSlides.length;
         let currentBanner = 0;
-        let bannerInterval;
+        let bannerInterval = null;
         let touchStartX = 0;
         let touchDeltaX = 0;
         let isSwiping = false;
+
+        function setTrackTransform(percent) {
+            requestAnimationFrame(() => {
+                bannerTrack.style.transform = `translateX(${percent}%)`;
+            });
+        }
 
         function goToBanner(index) {
             if (index < 0 || index >= totalSlides) return;
             bannerSlides[currentBanner].classList.remove('active');
             if (bannerDots[currentBanner]) bannerDots[currentBanner].classList.remove('active');
+
             currentBanner = index;
-            bannerTrack.style.transform = `translateX(-${currentBanner * 100}%)`;
+            setTrackTransform(-currentBanner * 100);
+
             bannerSlides[currentBanner].classList.add('active');
             if (bannerDots[currentBanner]) bannerDots[currentBanner].classList.add('active');
         }
@@ -202,36 +210,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Navigation buttons
-        if (prevBtn) prevBtn.addEventListener('click', () => { changeBanner(-1); resetBannerInterval(); });
-        if (nextBtn) nextBtn.addEventListener('click', () => { changeBanner(1); resetBannerInterval(); });
+        if (prevBtn) prevBtn.addEventListener('click', (e) => { e.preventDefault(); changeBanner(-1); resetBannerInterval(); });
+        if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); changeBanner(1); resetBannerInterval(); });
 
         // Dot clicks
         bannerDots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                goToBanner(parseInt(dot.dataset.index));
+            dot.addEventListener('click', (e) => {
+                e.preventDefault();
+                goToBanner(parseInt(dot.dataset.index, 10));
                 resetBannerInterval();
             });
         });
 
-        // Touch swipe
+        // Touch swipe handling
         bannerTrack.addEventListener('touchstart', (e) => {
+            if (totalSlides <= 1) return;
             touchStartX = e.touches[0].clientX;
             isSwiping = true;
             bannerTrack.style.transition = 'none';
         }, { passive: true });
 
         bannerTrack.addEventListener('touchmove', (e) => {
-            if (!isSwiping) return;
+            if (!isSwiping || totalSlides <= 1) return;
             touchDeltaX = e.touches[0].clientX - touchStartX;
-            const offset = -(currentBanner * 100) + (touchDeltaX / bannerTrack.offsetWidth * 100);
-            bannerTrack.style.transform = `translateX(${offset}%)`;
+            const trackWidth = bannerTrack.offsetWidth || 1;
+            const offset = -(currentBanner * 100) + (touchDeltaX / trackWidth * 100);
+            setTrackTransform(offset);
         }, { passive: true });
 
         bannerTrack.addEventListener('touchend', () => {
-            if (!isSwiping) return;
+            if (!isSwiping || totalSlides <= 1) return;
             isSwiping = false;
-            bannerTrack.style.transition = '';
-            const threshold = bannerTrack.offsetWidth * 0.2;
+            bannerTrack.style.transition = 'transform .55s cubic-bezier(0.25, 1, 0.5, 1)';
+            const trackWidth = bannerTrack.offsetWidth || 1;
+            const threshold = trackWidth * 0.15;
             if (touchDeltaX < -threshold) {
                 changeBanner(1);
             } else if (touchDeltaX > threshold) {
@@ -247,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bannerCarousel.addEventListener('mouseenter', () => clearInterval(bannerInterval));
         bannerCarousel.addEventListener('mouseleave', resetBannerInterval);
 
-        // Start
+        // Initial setup
         resetBannerInterval();
     }
 });
