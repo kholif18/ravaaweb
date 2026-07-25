@@ -7,6 +7,12 @@
   padding: 16px 0 8px;
 }
 
+@media (min-width: 1024px) {
+  .home-banner {
+    margin-top: 70px;
+  }
+}
+
 /* 1. Carousel Container (Only element with overflow: hidden) */
 .banner-carousel {
   position: relative;

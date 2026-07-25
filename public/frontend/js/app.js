@@ -162,104 +162,172 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /* ---- Banner Carousel (Refactored & Performance Optimized) ---- */
+    /* ---- Banner Carousel (Seamless Infinite Clone Loop) ---- */
     const bannerCarousel = document.getElementById('bannerCarousel');
     const bannerTrack = document.getElementById('bannerTrack');
     if (bannerCarousel && bannerTrack) {
-        const bannerSlides = bannerTrack.querySelectorAll('.banner-slide');
-        const bannerDots = bannerCarousel.querySelectorAll('.banner-dot');
+        const originalSlides = Array.from(bannerTrack.querySelectorAll('.banner-slide'));
+        const bannerDots = Array.from(bannerCarousel.querySelectorAll('.banner-dot'));
         const prevBtn = bannerCarousel.querySelector('.banner-prev');
         const nextBtn = bannerCarousel.querySelector('.banner-next');
-        const totalSlides = bannerSlides.length;
-        let currentBanner = 0;
-        let bannerInterval = null;
-        let touchStartX = 0;
-        let touchDeltaX = 0;
-        let isSwiping = false;
+        const count = originalSlides.length;
 
-        function setTrackTransform(percent) {
-            requestAnimationFrame(() => {
-                bannerTrack.style.transform = `translateX(${percent}%)`;
-            });
-        }
+        if (count > 1) {
+            // Clone first and last slide for infinite seamless loop
+            const firstClone = originalSlides[0].cloneNode(true);
+            const lastClone = originalSlides[count - 1].cloneNode(true);
+            firstClone.classList.remove('active');
+            lastClone.classList.remove('active');
 
-        function goToBanner(index) {
-            if (index < 0 || index >= totalSlides) return;
-            bannerSlides[currentBanner].classList.remove('active');
-            if (bannerDots[currentBanner]) bannerDots[currentBanner].classList.remove('active');
+            bannerTrack.appendChild(firstClone);
+            bannerTrack.insertBefore(lastClone, originalSlides[0]);
 
-            currentBanner = index;
-            setTrackTransform(-currentBanner * 100);
+            let domIndex = 1; // Start at first real slide (index 1 in track)
+            let isTransitioning = false;
+            let bannerInterval = null;
+            let touchStartX = 0;
+            let touchDeltaX = 0;
+            let isSwiping = false;
 
-            bannerSlides[currentBanner].classList.add('active');
-            if (bannerDots[currentBanner]) bannerDots[currentBanner].classList.add('active');
-        }
+            const transitionStyle = 'transform .55s cubic-bezier(0.25, 1, 0.5, 1)';
 
-        function changeBanner(dir) {
-            let next = currentBanner + dir;
-            if (next >= totalSlides) next = 0;
-            if (next < 0) next = totalSlides - 1;
-            goToBanner(next);
-        }
-
-        function resetBannerInterval() {
-            clearInterval(bannerInterval);
-            if (totalSlides > 1) {
-                bannerInterval = setInterval(() => changeBanner(1), 5000);
-            }
-        }
-
-        // Navigation buttons
-        if (prevBtn) prevBtn.addEventListener('click', (e) => { e.preventDefault(); changeBanner(-1); resetBannerInterval(); });
-        if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); changeBanner(1); resetBannerInterval(); });
-
-        // Dot clicks
-        bannerDots.forEach(dot => {
-            dot.addEventListener('click', (e) => {
-                e.preventDefault();
-                goToBanner(parseInt(dot.dataset.index, 10));
-                resetBannerInterval();
-            });
-        });
-
-        // Touch swipe handling
-        bannerTrack.addEventListener('touchstart', (e) => {
-            if (totalSlides <= 1) return;
-            touchStartX = e.touches[0].clientX;
-            isSwiping = true;
+            // Set initial track position to real slide 1
             bannerTrack.style.transition = 'none';
-        }, { passive: true });
+            bannerTrack.style.transform = 'translateX(-100%)';
+            bannerTrack.offsetHeight; // Force reflow
+            bannerTrack.style.transition = transitionStyle;
 
-        bannerTrack.addEventListener('touchmove', (e) => {
-            if (!isSwiping || totalSlides <= 1) return;
-            touchDeltaX = e.touches[0].clientX - touchStartX;
-            const trackWidth = bannerTrack.offsetWidth || 1;
-            const offset = -(currentBanner * 100) + (touchDeltaX / trackWidth * 100);
-            setTrackTransform(offset);
-        }, { passive: true });
-
-        bannerTrack.addEventListener('touchend', () => {
-            if (!isSwiping || totalSlides <= 1) return;
-            isSwiping = false;
-            bannerTrack.style.transition = 'transform .55s cubic-bezier(0.25, 1, 0.5, 1)';
-            const trackWidth = bannerTrack.offsetWidth || 1;
-            const threshold = trackWidth * 0.15;
-            if (touchDeltaX < -threshold) {
-                changeBanner(1);
-            } else if (touchDeltaX > threshold) {
-                changeBanner(-1);
-            } else {
-                goToBanner(currentBanner);
+            function updateDots(realIndex) {
+                bannerDots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === realIndex);
+                });
             }
-            touchDeltaX = 0;
-            resetBannerInterval();
-        });
 
-        // Pause on hover (desktop)
-        bannerCarousel.addEventListener('mouseenter', () => clearInterval(bannerInterval));
-        bannerCarousel.addEventListener('mouseleave', resetBannerInterval);
+            function getRealIndex(dIndex) {
+                if (dIndex === 0) return count - 1;
+                if (dIndex === count + 1) return 0;
+                return dIndex - 1;
+            }
 
-        // Initial setup
-        resetBannerInterval();
+            function setTrackTransform(percent) {
+                requestAnimationFrame(() => {
+                    bannerTrack.style.transform = `translateX(${percent}%)`;
+                });
+            }
+
+            function goToDomIndex(targetIndex) {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                domIndex = targetIndex;
+                bannerTrack.style.transition = transitionStyle;
+                setTrackTransform(-domIndex * 100);
+                updateDots(getRealIndex(domIndex));
+            }
+
+            function nextSlide() {
+                goToDomIndex(domIndex + 1);
+            }
+
+            function prevSlide() {
+                goToDomIndex(domIndex - 1);
+            }
+
+            // Handle seamless jump after clone transition ends
+            bannerTrack.addEventListener('transitionend', (e) => {
+                if (e.target !== bannerTrack) return;
+                isTransitioning = false;
+
+                if (domIndex === count + 1) {
+                    // Reached end clone -> jump to real first slide instantly
+                    bannerTrack.style.transition = 'none';
+                    domIndex = 1;
+                    bannerTrack.style.transform = 'translateX(-100%)';
+                    bannerTrack.offsetHeight; // Force reflow
+                } else if (domIndex === 0) {
+                    // Reached start clone -> jump to real last slide instantly
+                    bannerTrack.style.transition = 'none';
+                    domIndex = count;
+                    bannerTrack.style.transform = `translateX(-${count * 100}%)`;
+                    bannerTrack.offsetHeight; // Force reflow
+                }
+            });
+
+            function startAutoPlay() {
+                stopAutoPlay();
+                bannerInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopAutoPlay() {
+                if (bannerInterval) clearInterval(bannerInterval);
+            }
+
+            // Controls
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    prevSlide();
+                    startAutoPlay();
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    nextSlide();
+                    startAutoPlay();
+                });
+            }
+
+            bannerDots.forEach((dot) => {
+                dot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetReal = parseInt(dot.dataset.index, 10);
+                    goToDomIndex(targetReal + 1);
+                    startAutoPlay();
+                });
+            });
+
+            // Touch Swipe
+            bannerTrack.addEventListener('touchstart', (e) => {
+                if (isTransitioning) return;
+                touchStartX = e.touches[0].clientX;
+                isSwiping = true;
+                bannerTrack.style.transition = 'none';
+                stopAutoPlay();
+            }, { passive: true });
+
+            bannerTrack.addEventListener('touchmove', (e) => {
+                if (!isSwiping) return;
+                touchDeltaX = e.touches[0].clientX - touchStartX;
+                const trackWidth = bannerTrack.offsetWidth || 1;
+                const offset = -(domIndex * 100) + (touchDeltaX / trackWidth * 100);
+                setTrackTransform(offset);
+            }, { passive: true });
+
+            bannerTrack.addEventListener('touchend', () => {
+                if (!isSwiping) return;
+                isSwiping = false;
+                bannerTrack.style.transition = transitionStyle;
+                const trackWidth = bannerTrack.offsetWidth || 1;
+                const threshold = trackWidth * 0.15;
+
+                if (touchDeltaX < -threshold) {
+                    nextSlide();
+                } else if (touchDeltaX > threshold) {
+                    prevSlide();
+                } else {
+                    goToDomIndex(domIndex);
+                }
+                touchDeltaX = 0;
+                startAutoPlay();
+            });
+
+            // Pause on hover
+            bannerCarousel.addEventListener('mouseenter', stopAutoPlay);
+            bannerCarousel.addEventListener('mouseleave', startAutoPlay);
+
+            // Start auto play
+            startAutoPlay();
+        }
     }
 });
