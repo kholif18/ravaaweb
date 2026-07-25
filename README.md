@@ -1,6 +1,6 @@
 # RavaaWeb — Ravaa Creative Website
 
-Website company profile + e-commerce untuk **Ravaa Creative**, dibangun dengan Laravel 11.
+Website company profile + e-commerce untuk **Ravaa Creative**, dibangun dengan Laravel 13.
 
 ---
 
@@ -13,6 +13,9 @@ Website company profile + e-commerce untuk **Ravaa Creative**, dibangun dengan L
 - [Seed Data Awal](#seed-data-awal)
 - [Penggunaan Sehari-hari](#penggunaan-sehari-hari)
 - [Struktur Direktori](#struktur-direktori)
+- [Arsitektur Aset CSS](#arsitektur-aset-css)
+- [Catatan Developer Docker](#catatan-developer-docker)
+- [Teknologi](#teknologi)
 
 ---
 
@@ -364,19 +367,121 @@ php artisan test
 
 ```
 RavaaWeb/
-├─ .docker/               # Konfigurasi Docker (php.ini, vhost, entrypoint)
+├─ .docker/               # Konfigurasi Docker (php.ini, vhost, entrypoint.sh)
 ├─ app/                   # Kode aplikasi (Controllers, Models, Services)
 ├─ bootstrap/             # Bootstrapping & cache
 ├─ config/                # Konfigurasi Laravel
 ├─ database/              # Migrations, seeders, factories
-├─ public/                # Document root (index.php, assets)
+├─ public/
+│  ├─ admin/
+│  │  └─ css/             # Aset CSS admin panel (modular)
+│  └─ frontend/
+│     └─ css/             # Aset CSS halaman publik (modular)
 ├─ resources/             # Views (Blade), bahasa
 ├─ routes/                # Route definitions (web.php)
 ├─ storage/               # Log, cache, uploads, session
 ├─ tests/                 # Unit & Feature tests
 ├─ Dockerfile             # Production Docker image
-├─ docker-compose.yml     # Production stack (app + redis + mariadb)
+├─ docker-compose.yml     # Production stack
 └─ .env.example           # Template environment variables
+```
+
+---
+
+## Arsitektur Aset CSS
+
+CSS diorganisir secara **modular** — tiap file punya satu tanggung jawab agar mudah di-maintain. Tidak ada build tool (no Vite/Webpack); file CSS di-serve langsung oleh Apache dengan GZIP (`mod_deflate`).
+
+### Admin Panel — `public/admin/css/`
+
+```
+admin/css/
+├─ admin-glass.css          ← Entrypoint utama (hanya berisi @import)
+├─ base/
+│  ├─ _variables.css        ← Design tokens (warna, radius, ukuran)
+│  ├─ _reset.css            ← Body, font, scrollbar
+│  └─ _animations.css       ← Keyframe animations
+├─ layout/
+│  ├─ _sidebar.css          ← Navigasi sidebar
+│  ├─ _header.css           ← Navbar atas & breadcrumb
+│  ├─ _wrapper.css          ← Main content wrapper
+│  └─ _footer.css           ← Footer admin
+├─ components/
+│  ├─ _button.css           ← Semua varian tombol
+│  ├─ _form.css             ← Input, select, checkbox
+│  ├─ _card.css             ← Glass card & card standar
+│  ├─ _table.css            ← Tabel, toolbar, filter
+│  ├─ _modal.css            ← Modal overlay
+│  ├─ _alert.css            ← Alert status
+│  ├─ _badge.css            ← Badge & pills
+│  ├─ _pagination.css       ← Navigasi halaman
+│  ├─ _dropdown.css         ← Dropdown menu, notifikasi, user menu
+│  ├─ _dialog.css           ← Dialog konfirmasi kustom
+│  └─ _toast.css            ← Pop-up toast notifikasi
+├─ pages/
+│  └─ _dashboard.css        ← Stat cards khusus dashboard
+└─ utilities/
+   ├─ _grid.css             ← Grid 12 kolom & layout 80/20
+   ├─ _typography.css       ← Font size, weight, alignment
+   ├─ _spacing.css          ← Margin, padding, gap
+   ├─ _colors.css           ← Background & text color
+   └─ _helpers.css          ← Border, width, overflow, tabs, dll
+```
+
+> **Cara edit:** Ingin ubah tampilan tombol? Edit `components/_button.css`. Ingin ubah warna tema? Edit `base/_variables.css`. Tidak perlu membuka `admin-glass.css`.
+
+### Frontend Publik — `public/frontend/css/`
+
+```
+frontend/css/
+├─ app.css                  ← Entrypoint utama (hanya berisi @import)
+├─ base/                    ← Variables, reset, typography
+├─ components/              ← Navbar, card, banner, produk, dll
+├─ layout/                  ← Footer
+├─ pages/                   ← Home, catalog, detail produk, dll
+└─ utilities/               ← Grid, spacing
+```
+
+---
+
+## Catatan Developer Docker
+
+### Edit file langsung dari VS Code (tanpa sudo)
+
+Proyek menggunakan **bind mount** (`./src/RavaaWeb:/var/www/html`). Semua file proyek dimiliki oleh user host (`seira`, UID 1000) sehingga dapat diedit langsung dari VS Code tanpa akses root. Perubahan yang disimpan **langsung aktif di container** secara real-time tanpa perlu restart.
+
+> ⚠️ **Jangan jalankan** `chown -R www-data:www-data /var/www/html` di dalam container karena akan mengunci semua file dari user host.
+
+### Permission yang benar
+
+| Direktori | Pemilik | Keterangan |
+|---|---|---|
+| `app/`, `resources/`, `routes/`, dll | `seira` (user host) | Bisa diedit bebas dari VS Code |
+| `storage/framework/` | `www-data` | Dikelola oleh `entrypoint.sh` otomatis |
+| `storage/` & `bootstrap/cache/` | `chmod 777` | PHP bisa menulis log & cache |
+
+### Error umum & solusi
+
+**`touch(): Utime failed: Operation not permitted`**
+```bash
+# Solusi: bersihkan cache view & kembalikan ownership storage/framework
+docker exec RavaaWeb php artisan view:clear
+docker exec RavaaWeb chown -R www-data:www-data /var/www/html/storage/framework
+```
+
+**File tidak bisa disimpan dari VS Code (require sudo)**
+```bash
+# Solusi: kembalikan ownership seluruh proyek ke user host
+docker exec RavaaWeb chown -R 1000:1000 /var/www/html
+docker exec RavaaWeb chown -R www-data:www-data /var/www/html/storage/framework
+```
+
+### Build & deploy ulang
+
+```bash
+# Bersihkan container lama & build ulang dari awal
+docker compose down
+docker compose up -d --build
 ```
 
 ---
@@ -385,10 +490,10 @@ RavaaWeb/
 
 | Stack | Teknologi |
 |---|---|
-| **Backend** | Laravel 11 (PHP 8.4) |
+| **Backend** | Laravel 13 (PHP 8.4) |
 | **Database** | MariaDB 11 |
 | **Cache & Session** | Redis 7 |
-| **Web Server** | Apache 2.4 |
-| **Frontend** | Blade + CSS/JS (Vite) |
-| **Container** | Docker + Docker Compose |
+| **Web Server** | Apache 2.4 (mod_deflate, mod_rewrite) |
+| **Frontend** | Blade + Vanilla CSS/JS (no build tool) |
+| **Container** | Docker + Docker Compose V2 |
 | **Auth** | Spatie Laravel Permission |
