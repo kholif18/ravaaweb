@@ -70,16 +70,10 @@
         <div class="detail-stock" id="detailStockContainer">
           @if($inStock)
             <span class="stock-dot" style="background:#22c55e;" id="detailStockDot" data-default="#22c55e"></span>
-            <span id="detailStockStatus" data-default="Stok tersedia">Stok tersedia</span>
-            @if($product->is_service)
-              <span class="dimm" id="detailStockInfo" data-default="— Layanan digital">— Layanan digital</span>
-            @else
-              <span class="dimm" id="detailStockInfo" data-default="— {{ $totalStock }} item tersisa">— {{ $totalStock }} item tersisa</span>
-            @endif
+            <span id="detailStockStatus" data-default="Tersedia">Tersedia</span>
           @else
             <span class="stock-dot" style="background:#ef4444;" id="detailStockDot" data-default="#ef4444"></span>
             <span style="color:#ef4444;" id="detailStockStatus" data-default="Stok habis">Stok habis</span>
-            <span class="dimm d-none" id="detailStockInfo" data-default=""></span>
           @endif
         </div>
 
@@ -132,6 +126,16 @@
           <div class="info-item">
             <span class="info-label">SKU</span>
             <span class="info-value">{{ $product->sku }}</span>
+          </div>
+          @endif
+          @php
+            $dimArr = array_filter([$product->length, $product->width, $product->height]);
+            $dimensions = count($dimArr) > 0 ? implode(' × ', $dimArr) . (preg_match('/[a-zA-Z]/', implode('', $dimArr)) ? '' : ' cm') : null;
+          @endphp
+          @if($dimensions)
+          <div class="info-item">
+            <span class="info-label">Ukuran</span>
+            <span class="info-value">{{ $dimensions }}</span>
           </div>
           @endif
           @if($product->weight)
@@ -424,27 +428,14 @@ function updateSelectedVariant() {
         if (isAvailable) {
             if (stockDot) stockDot.style.background = '#22c55e';
             if (stockStatus) {
-                stockStatus.textContent = 'Stok tersedia';
+                stockStatus.textContent = 'Tersedia';
                 stockStatus.style.color = '';
-            }
-            if (stockInfo) {
-                if (matchedVariant.is_service) {
-                    stockInfo.textContent = '— Layanan digital';
-                    stockInfo.classList.remove('d-none');
-                } else {
-                    stockInfo.textContent = `— ${matchedVariant.stock} item tersisa`;
-                    stockInfo.classList.remove('d-none');
-                }
             }
         } else {
             if (stockDot) stockDot.style.background = '#ef4444';
             if (stockStatus) {
                 stockStatus.textContent = 'Stok habis';
                 stockStatus.style.color = '#ef4444';
-            }
-            if (stockInfo) {
-                stockInfo.classList.add('d-none');
-                stockInfo.textContent = '';
             }
         }
         
