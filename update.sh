@@ -3,11 +3,11 @@ set -e
 
 BRANCH="main"
 
-# Deteksi versi Docker Compose — support V1 (docker-compose) dan V2 (docker compose)
-if docker compose version &>/dev/null 2>&1; then
-    DC="docker compose"
-elif command -v docker-compose &>/dev/null; then
+# Deteksi versi Docker Compose — cek binary V1 dulu, fallback ke plugin V2
+if command -v docker-compose &>/dev/null; then
     DC="docker-compose"
+elif docker compose version &>/dev/null 2>&1; then
+    DC="docker compose"
 else
     echo "[ERROR] Docker Compose tidak ditemukan. Install dulu: https://docs.docker.com/compose/install/"
     exit 1
