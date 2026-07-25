@@ -55,7 +55,9 @@ sleep 3
 echo ""
 echo "==> [5/5] Fixing file permissions..."
 # Ownership proyek ke user host agar bisa diedit via VS Code / SSH
-sudo chown -R ravaa:ravaa /var/www/RavaaWeb
+# Gunakan $SUDO_USER (user asli di balik sudo) atau fallback ke $USER
+OWNER="${SUDO_USER:-$USER}"
+sudo chown -R "$OWNER:$OWNER" /var/www/RavaaWeb
 # storage/framework harus dimiliki www-data agar Laravel bisa write cache view
 # Tanpa ini: touch(): Utime failed: Operation not permitted (500 error)
 $DC exec -T app chown -R www-data:www-data /var/www/html/storage/framework
