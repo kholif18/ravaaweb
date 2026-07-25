@@ -10,15 +10,16 @@
   margin-bottom: 12px;
 }
 
-/* Mobile: pills di atas, search di bawah — full width */
-@media (max-width: 639px) {
+/* Mobile: search di atas, pills di bawah — full width */
+@media (max-width: 767px) {
   .catalog-toolbar {
-    flex-direction: column-reverse;
+    flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 10px;
   }
   .search-wrap { width: 100%; }
-  .type-pills { justify-content: center; }
+  .type-pills { justify-content: center; width: 100%; }
+  .type-pills .filter-pill { flex: 1; text-align: center; }
 }
 
 
