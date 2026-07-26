@@ -133,40 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ---- Hero Slider (legacy) ---- */
-    const slides = document.querySelectorAll('.hero-slide');
-    const dots = document.querySelectorAll('.hero-dot');
-    if (slides.length > 0) {
-        let currentSlide = 0;
-        let slideInterval;
-
-        window.goToSlide = function(index) {
-            if (index < 0 || index >= slides.length) return;
-            slides[currentSlide].classList.remove('active');
-            if (dots.length > currentSlide) dots[currentSlide].classList.remove('active');
-            currentSlide = index;
-            slides[currentSlide].classList.add('active');
-            if (dots.length > currentSlide) dots[currentSlide].classList.add('active');
-            resetInterval();
-        };
-
-        window.changeSlide = function(dir) {
-            let next = currentSlide + dir;
-            if (next >= slides.length) next = 0;
-            if (next < 0) next = slides.length - 1;
-            window.goToSlide(next);
-        };
-
-        function resetInterval() {
-            clearInterval(slideInterval);
-            slideInterval = setInterval(() => window.changeSlide(1), 5000);
-        }
-
-        if (slides.length > 1) {
-            resetInterval();
-        }
-    }
-
     /* ---- Banner Carousel (Seamless Infinite Clone Loop) ---- */
     const bannerCarousel = document.getElementById('bannerCarousel');
     const bannerTrack = document.getElementById('bannerTrack');
