@@ -525,7 +525,6 @@ ul { list-style: none; }
   display: flex;
   width: 100%;
   will-change: transform;
-  contain: layout style;
   transition: transform .55s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -2658,6 +2657,7 @@ ul { list-style: none; }
   .home-categories { padding: 64px 0 32px; }
   .home-products { padding: 48px 0 64px; }
   .home-product-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .product-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .home-prod-body { padding: 12px 14px; }
   .home-prod-name { font-size: 0.86rem; }
   .home-prod-price { font-size: 0.98rem; }
