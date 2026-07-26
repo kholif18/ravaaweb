@@ -35,29 +35,34 @@ document.addEventListener('DOMContentLoaded', () => {
         fadeElements.forEach(el => observer.observe(el));
     }
 
-    /* ---- Smooth parallax on hero visual ---- */
+    /* ---- Smooth parallax on hero visual (throttled via rAF) ---- */
     const heroVisual = document.querySelector('.hero-visual-img');
     if (heroVisual) {
+        let heroRafId = null;
         window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            heroVisual.style.transform = `translateY(${scrolled * 0.08}px)`;
+            if (heroRafId) return;
+            heroRafId = requestAnimationFrame(() => {
+                heroVisual.style.transform = `translateY(${window.scrollY * 0.08}px)`;
+                heroRafId = null;
+            });
         }, { passive: true });
     }
 
-    /* ---- Navbar blur enhancement on scroll ---- */
+    /* ---- Navbar scrolled state via CSS class (no inline style repaint) ---- */
     const navbar = document.querySelector('.navbar');
     if (navbar) {
+        let navRafId = null;
         const updateNav = () => {
-            if (window.scrollY > 20) {
-                navbar.style.background = 'rgba(255, 255, 255, 0.75)';
-                navbar.style.backdropFilter = 'blur(60px) saturate(200%)';
-            } else {
-                navbar.style.background = 'rgba(255, 255, 255, 0.55)';
-                navbar.style.backdropFilter = 'blur(40px) saturate(180%)';
-            }
+            navbar.classList.toggle('scrolled', window.scrollY > 20);
         };
         updateNav();
-        window.addEventListener('scroll', updateNav, { passive: true });
+        window.addEventListener('scroll', () => {
+            if (navRafId) return;
+            navRafId = requestAnimationFrame(() => {
+                updateNav();
+                navRafId = null;
+            });
+        }, { passive: true });
     }
 
     /* ---- Gallery Thumbnail Switcher ---- */
