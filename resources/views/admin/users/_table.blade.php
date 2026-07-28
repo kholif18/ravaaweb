@@ -26,9 +26,9 @@
             </td>
             <td>
                 <div class="d-flex align-items-center gap-2">
-                    <div class="td-symbol d-flex align-items-center justify-content-center"
-                         style="background: rgba(var(--accent-rgb, 0,113,227),0.08); width: 32px; height: 32px; border-radius: 8px;">
-                        <i class="bi bi-person-fill" style="font-size: 0.9rem; color: var(--accent);"></i>
+                    <div class="d-flex align-items-center justify-content-center"
+                         style="background: rgba(0,113,227,0.08); width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;">
+                        <i class="bi bi-person-fill" style="font-size: 0.9rem; color: #0071e3;"></i>
                     </div>
                     <div>
                         <a href="#" class="fw-semibold text-hover-primary" style="color: var(--text-primary); text-decoration: none;"
