@@ -96,3 +96,7 @@
 /* Action column: keep buttons inline in all admin tables */
 .table td.text-center { white-space: nowrap; }
 .table td.text-center .d-flex { flex-wrap: nowrap; }
+
+/* Fix inline forms in action column (Users page) */
+.table td.text-center .d-flex > form { display: inline-flex; margin: 0; }
+.table td.text-center .d-flex > form > button { display: inline-flex; }
