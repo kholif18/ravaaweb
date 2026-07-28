@@ -92,3 +92,7 @@
     font-weight: 600; color: var(--text-muted);
   }
 }
+
+/* Action column: keep buttons inline in all admin tables */
+.table td.text-center { white-space: nowrap; }
+.table td.text-center .d-flex { flex-wrap: nowrap; }
