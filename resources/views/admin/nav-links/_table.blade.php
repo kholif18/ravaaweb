@@ -45,7 +45,7 @@
                         <span class="badge" style="background:rgba(239,68,68,0.1);color:#b91c1c;font-size:0.7rem;">Nonaktif</span>
                     @endif
                 </td>
-                <td class="text-center">
+                <td class="text-center" style="white-space:nowrap;">
                     <div class="d-flex justify-content-center gap-1">
                         <button type="button" class="btn btn-icon btn-sm"
                                 onclick="addChildToParent({{ $link->id }}, '{{ addslashes($link->label) }}')"
@@ -106,7 +106,7 @@
                         <span class="badge" style="background:rgba(239,68,68,0.1);color:#b91c1c;font-size:0.7rem;">Nonaktif</span>
                     @endif
                 </td>
-                <td class="text-center">
+                <td class="text-center" style="white-space:nowrap;">
                     <div class="d-flex justify-content-center gap-1">
                         <button type="button" class="btn btn-icon btn-sm"
                                 onclick="editNavLink({{ $child->id }})"
