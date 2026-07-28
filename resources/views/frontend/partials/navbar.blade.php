@@ -1,3 +1,16 @@
+@php
+    $desktopLinks = $navLinks->filter(fn($link) => in_array($link->position, ['navbar', 'both']))->values();
+
+    // Active check: root '/' only active on exact match, others use wildcard
+    function isNavLinkActive($url) {
+        $slug = ltrim($url, '/');
+        if ($slug === '' || $slug === '/') {
+            return request()->is('/');
+        }
+        return request()->is($slug) || request()->is($slug . '/*');
+    }
+@endphp
+
 <nav class="navbar">
     <div class="navbar-inner">
         <a href="{{ url('/') }}" class="navbar-logo" style="display: flex; align-items: center; gap: 8px;">
@@ -6,21 +19,43 @@
         </a>
 
         <ul class="navbar-links">
-            <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a></li>
-            <li><a href="{{ url('/product') }}" class="{{ request()->is('product*') ? 'active' : '' }}">Katalog</a></li>
-            <li><a href="{{ url('/layanan') }}" class="{{ request()->is('layanan') ? 'active' : '' }}">Layanan</a></li>
-            <li><a href="{{ url('/portofolio') }}" class="{{ request()->is('portofolio') ? 'active' : '' }}">Portfolio</a></li>
-            <li><a href="{{ url('/software-house') }}" class="{{ request()->is('software-house') ? 'active' : '' }}">Software House</a></li>
-            <li><a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Kontak</a></li>
-            <li class="navbar-search-li">
-                <a href="{{ route('search') }}" class="navbar-search-btn" aria-label="Cari">
-                    <i class="fas fa-search"></i>
-                </a>
-            </li>
+            @foreach($desktopLinks as $link)
+                @if($link->children->count())
+                    {{-- Dropdown parent --}}
+                    <li class="navbar-dropdown">
+                        <a href="#" class="navbar-dropdown-toggle {{ isNavLinkActive($link->url) ? 'active' : '' }}">
+                            {{ $link->label }}
+                            <i class="fas fa-chevron-down navbar-dropdown-arrow"></i>
+                        </a>
+                        <ul class="navbar-dropdown-menu">
+                            <li>
+                                <a href="{{ $link->url }}" target="{{ $link->target }}">
+                                    Semua {{ $link->label }}
+                                </a>
+                            </li>
+                            <li class="navbar-dropdown-divider"></li>
+                            @foreach($link->children as $child)
+                                <li>
+                                    <a href="{{ $child->url }}" target="{{ $child->target }}">
+                                        {{ $child->label }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @else
+                    {{-- Single link --}}
+                    <li>
+                        <a href="{{ $link->url }}" target="{{ $link->target }}" class="{{ isNavLinkActive($link->url) ? 'active' : '' }}">
+                            {{ $link->label }}
+                        </a>
+                    </li>
+                @endif
+            @endforeach
         </ul>
 
         <div style="display: flex; align-items: center; gap: 6px;">
-            <a href="{{ route('search') }}" class="navbar-search-icon-mobile" aria-label="Cari">
+            <a href="{{ route('search') }}" class="navbar-search-btn" aria-label="Cari">
                 <i class="fas fa-search"></i>
             </a>
             <button class="navbar-toggle" id="menuToggle" aria-label="Buka menu">

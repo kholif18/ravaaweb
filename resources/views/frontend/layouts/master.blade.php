@@ -43,12 +43,36 @@
             </button>
         </div>
         <nav>
-            <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
-            <a href="{{ url('/product') }}" class="{{ request()->is('product*') ? 'active' : '' }}">Katalog</a>
-            <a href="{{ url('/layanan') }}" class="{{ request()->is('layanan') ? 'active' : '' }}">Layanan</a>
-            <a href="{{ url('/portofolio') }}" class="{{ request()->is('portofolio') ? 'active' : '' }}">Portfolio</a>
-            <a href="{{ url('/software-house') }}" class="{{ request()->is('software-house') ? 'active' : '' }}">Software House</a>
-            <a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Kontak</a>
+            @php
+                $mobileLinks = $navLinks->filter(fn($link) => in_array($link->position, ['mobile', 'both']));
+            @endphp
+
+            @foreach($mobileLinks as $link)
+                @if($link->children->count())
+                    {{-- Collapsible parent --}}
+                    <div class="mobile-nav-parent">
+                        <a href="#" class="mobile-nav-toggle" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');">
+                            {{ $link->label }}
+                            <i class="fas fa-chevron-down mobile-nav-arrow"></i>
+                        </a>
+                        <div class="mobile-nav-children">
+                            <a href="{{ $link->url }}" target="{{ $link->target }}" class="mobile-nav-child-link">
+                                Semua {{ $link->label }}
+                            </a>
+                            @foreach($link->children as $child)
+                                <a href="{{ $child->url }}" target="{{ $child->target }}" class="mobile-nav-child-link">
+                                    {{ $child->label }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ $link->url }}" target="{{ $link->target }}" class="{{ (ltrim($link->url, '/') === '' || ltrim($link->url, '/') === '/') ? (request()->is('/') ? 'active' : '') : (request()->is(ltrim($link->url, '/')) || request()->is(ltrim($link->url, '/') . '/*') ? 'active' : '') }}">
+                        {{ $link->label }}
+                    </a>
+                @endif
+            @endforeach
+
             <a href="{{ route('search') }}" class="{{ request()->is('search') ? 'active' : '' }}" style="margin-top: 8px; border-top: 1px solid var(--glass-border); padding-top: 12px;">
                 <i class="fas fa-search"></i> Cari
             </a>

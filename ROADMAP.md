@@ -138,7 +138,22 @@
 3. **Test Browser** — Laravel Dusk ✅ (8 browser test: home, catalog, product detail, search, admin login, admin pages)
 4. **CI Pipeline** — GitHub Actions ✅ (3 jobs: static analysis, unit/feature tests, browser tests)
 
-## Fase 10: Optimasi & Deployment ⏳ BELUM
+## Fase 10: Dynamic Navigation & CMS Features ✅ SELESAI
+
+1. **Dynamic Navbar** ✅
+   - `nav_links` table — label, parent_id, url, position (navbar/mobile/both), target, sort_order, is_active
+   - `NavLink` model — parent/children relationships, scopes (active, ordered, topLevel, forNavbar, forMobile)
+   - `NavLinkController` — full CRUD + reorder + status toggle + bulk delete
+   - Admin panel — `admin/nav-links/` (index, _table partial)
+     - Nested display: parent dengan badge jumlah children
+     - "Tambah Child" button pada setiap parent
+     - Drag & drop reorder (SortableJS)
+     - Filter by search & position
+   - Frontend desktop — dropdown menu (hover) dengan invisible bridge untuk CSS
+   - Frontend mobile — collapsible accordion submenu
+   - Active state — root `/` hanya aktif di halaman depan, wildcard untuk halaman lain
+
+## Fase 11: Optimasi & Deployment ⏳ BELUM
 
 1. **Asset Build** — minify, versioning
 2. **Cache Header** — static assets
@@ -149,15 +164,10 @@
 
 ---
 
-*Terakhir diperbarui: 15 Juli 2026 — Fase 9 → Browser Test (Dusk) ✅ & CI Pipeline ✅*
+*Terakhir diperbarui: 28 Juli 2026 — Fase 10 → Dynamic Navigation ✅*
 
 ## Prioritas Selanjutnya (Ringkasan)
 
-- ~~**Variant UI**: Implementasi dinamis untuk menambah/​menghapus varian pada form produk.~~ ✅
-- ~~**Gallery reorder UI**: Drag‑and‑drop atau tombol up/down untuk mengatur urutan gambar produk.~~ ✅
-- ~~**Integrasi Backend → Frontend**: Ganti data statis di `FrontendController` dengan query Eloquent, buat route `/catalog` & `/product/{slug}`, tampilkan gambar utama, varian, badge.~~ ✅
-- ~~**Responsive UI/UX**: Media query breakpoints, lazy‑load, pagination UI glass‑style, filter pill, CTA WhatsApp.~~ ✅
-- ~~**Pengujian & CI**: Unit & feature test untuk model & route (68 test passing).~~ ✅
-- ~~**Halaman Admin Tambahan**: CRUD Banner, Home Builder, Settings (termasuk upload logo), Users, Role & Permission, Reports, System Logs.~~ ✅
-- ~~**Browser Test & CI Pipeline**: Laravel Dusk, GitHub Actions.~~ ✅
+- ~~**Dynamic Navbar**: Navbar link dikelola dari admin panel, support parent/child (dropdown).~~ ✅
+- **Form Builder**: Halaman admin untuk membuat form fleksibel (Google Forms style) — field types: text, email, select, checkbox, date, file upload, dll.
 - **Optimasi & Deployment**: Asset build (minify, versioning), cache header, query caching, SEO (meta tags, sitemap), Docker production (config & route cache), monitoring (logs, alerts).

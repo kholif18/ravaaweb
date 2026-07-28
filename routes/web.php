@@ -147,6 +147,12 @@ Route::prefix('admin')
         Route::put('contact-submissions/{contactSubmission}/mark-as-unread', [App\Http\Controllers\Admin\ContactSubmissionController::class, 'markAsUnread'])->name('contact-submissions.mark-as-unread');
         Route::resource('contact-submissions', App\Http\Controllers\Admin\ContactSubmissionController::class)->only(['index', 'show', 'destroy']);
 
+        // Navbar Links
+        Route::delete('nav-links/bulk-delete', [App\Http\Controllers\Admin\NavLinkController::class, 'bulkDestroy'])->name('nav-links.bulk.destroy');
+        Route::put('nav-links/{navLink}/status', [App\Http\Controllers\Admin\NavLinkController::class, 'updateStatus'])->name('nav-links.status.update');
+        Route::post('nav-links/reorder', [App\Http\Controllers\Admin\NavLinkController::class, 'reorder'])->name('nav-links.reorder');
+        Route::resource('nav-links', App\Http\Controllers\Admin\NavLinkController::class);
+
         // Footer Links
         Route::delete('footer-links/bulk-delete', [App\Http\Controllers\Admin\FooterLinkController::class, 'bulkDestroy'])->name('footer-links.bulk.destroy');
         Route::put('footer-links/{footerLink}/status', [App\Http\Controllers\Admin\FooterLinkController::class, 'updateStatus'])->name('footer-links.status.update');

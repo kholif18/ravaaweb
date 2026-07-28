@@ -19,6 +19,7 @@
 
         // Pengaturan
         ['icon' => 'bi-gear', 'label' => 'Pengaturan Umum', 'route' => 'admin.settings.index', 'section' => 'Pengaturan'],
+        ['icon' => 'bi-list-nested', 'label' => 'Navbar Links', 'route' => 'admin.nav-links.index', 'section' => ''],
         ['icon' => 'bi-link-45deg', 'label' => 'Footer Links', 'route' => 'admin.footer-links.index', 'section' => ''],
         ['icon' => 'bi-people', 'label' => 'Users', 'route' => 'admin.users.index', 'section' => ''],
         ['icon' => 'bi-shield-check', 'label' => 'Role & Permission', 'route' => 'admin.roles.index', 'section' => ''],
