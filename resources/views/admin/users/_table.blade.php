@@ -64,20 +64,22 @@
             <td>
                 <span style="color: var(--text-muted); font-size: 0.82rem;">{{ $user->created_at->format('d M Y H:i') }}</span>
             </td>
-            <td class="text-center">
+            <td class="text-center" style="white-space:nowrap;">
                 <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-sm btn-light-primary" 
+                    <button type="button" class="btn btn-icon btn-sm"
                             onclick="editUser({{ $user->id }})"
                             data-bs-toggle="modal" data-bs-target="#kt_modal_edit_user"
-                            title="Edit">
-                        <i class="bi bi-pencil"></i>
+                            title="Edit"
+                            style="width:28px;height:28px;border-radius:6px;background:rgba(var(--accent-rgb,79,110,247),0.1);color:var(--accent);">
+                        <i class="bi bi-pencil-square" style="font-size:0.75rem;"></i>
                     </button>
                     @if($user->locked_until && $user->locked_until->isFuture())
                     <form method="POST" action="{{ route('admin.users.unlock', $user) }}" class="d-inline">
                         @csrf
                         @method('PUT')
-                        <button type="submit" class="btn btn-sm btn-light-success" title="Buka Kunci">
-                            <i class="bi bi-unlock-fill"></i>
+                        <button type="submit" class="btn btn-icon btn-sm" title="Buka Kunci"
+                                style="width:28px;height:28px;border-radius:6px;background:rgba(34,197,94,0.1);color:#15803d;">
+                            <i class="bi bi-unlock-fill" style="font-size:0.75rem;"></i>
                         </button>
                     </form>
                     @endif
@@ -86,19 +88,22 @@
                         @csrf
                         @method('PUT')
                         @if($user->is_active)
-                        <button type="submit" name="is_active" value="0" class="btn btn-sm btn-light-warning" title="Nonaktifkan">
-                            <i class="bi bi-pause-circle"></i>
+                        <button type="submit" name="is_active" value="0" class="btn btn-icon btn-sm" title="Nonaktifkan"
+                                style="width:28px;height:28px;border-radius:6px;background:rgba(234,179,8,0.1);color:#a16207;">
+                            <i class="bi bi-pause-circle" style="font-size:0.75rem;"></i>
                         </button>
                         @else
-                        <button type="submit" name="is_active" value="1" class="btn btn-sm btn-light-success" title="Aktifkan">
-                            <i class="bi bi-play-circle"></i>
+                        <button type="submit" name="is_active" value="1" class="btn btn-icon btn-sm" title="Aktifkan"
+                                style="width:28px;height:28px;border-radius:6px;background:rgba(34,197,94,0.1);color:#15803d;">
+                            <i class="bi bi-play-circle" style="font-size:0.75rem;"></i>
                         </button>
                         @endif
                     </form>
-                    <button type="button" class="btn btn-sm btn-light-danger" 
+                    <button type="button" class="btn btn-icon btn-sm"
                             onclick="confirmDelete({{ $user->id }}, '{{ addslashes($user->name) }}')"
-                            title="Hapus">
-                        <i class="bi bi-trash"></i>
+                            title="Hapus"
+                            style="width:28px;height:28px;border-radius:6px;background:rgba(239,68,68,0.1);color:#ef4444;">
+                        <i class="bi bi-trash" style="font-size:0.75rem;"></i>
                     </button>
                     @endif
                 </div>
