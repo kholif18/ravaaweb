@@ -36,5 +36,5 @@
     @stack('styles')
 
     {{-- Global Admin Styles --}}
-    <link href="{{ asset('admin/css/admin-glass.css') }}" rel="stylesheet" />
+    <link href="{{ asset('admin/css/admin.css') }}" rel="stylesheet" />
 </head>

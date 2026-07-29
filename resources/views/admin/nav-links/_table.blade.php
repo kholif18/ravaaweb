@@ -13,6 +13,7 @@
                 <th style="width:32px;">
                     <div class="form-check" style="margin:0;"><input class="form-check-input" type="checkbox" id="select-all"></div>
                 </th>
+                <th style="width:32px;"></th>
                 <th style="min-width:160px;">Label</th>
                 <th style="min-width:200px;">URL</th>
                 <th style="width:80px;">Posisi</th>
@@ -20,10 +21,13 @@
                 <th style="width:100px;" class="text-center">Aksi</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable-nav-links">
             @forelse($navLinks as $link)
             <tr data-id="{{ $link->id }}">
                 <td><div class="form-check" style="margin:0;"><input class="form-check-input select-item" type="checkbox" value="{{ $link->id }}"></div></td>
+                <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
+                    <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
+                </td>
                 <td style="font-size:0.82rem;font-weight:600;color:var(--text-primary);">
                     {{ $link->label }}
                     @if($link->children->count())
@@ -87,6 +91,9 @@
             @foreach($link->children as $child)
             <tr data-id="{{ $child->id }}" style="background:rgba(0,0,0,0.015);">
                 <td><div class="form-check" style="margin:0;"><input class="form-check-input select-item" type="checkbox" value="{{ $child->id }}"></div></td>
+                <td class="drag-handle" style="cursor:grab;color:var(--text-muted);user-select:none;" title="Drag untuk mengubah urutan">
+                    <i class="bi bi-grip-vertical" style="font-size:0.85rem;"></i>
+                </td>
                 <td style="font-size:0.82rem;color:var(--text-primary);padding-left:2rem;">
                     <span style="color:var(--accent);font-size:0.75rem;margin-right:4px;"><i class="bi bi-arrow-return-right"></i></span>
                     {{ $child->label }}
@@ -141,7 +148,7 @@
             @endforeach
             @empty
             <tr>
-                <td colspan="6" class="text-center" style="padding:40px 0;">
+                <td colspan="7" class="text-center" style="padding:40px 0;">
                     <div style="color:var(--text-muted);">
                         <i class="bi bi-link-45deg" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
                         <span style="font-size:0.82rem;">Tidak ada link ditemukan</span>

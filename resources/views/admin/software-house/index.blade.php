@@ -348,11 +348,6 @@
 
     <!-- TAB 3: PORTFOLIO PROYEK -->
     <div class="tab-pane fade" id="portfolio-pane" role="tabpanel" aria-labelledby="portfolio-tab">
-        <!-- Toast Container -->
-        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-            <div id="toastContainer"></div>
-        </div>
-
         <div class="glass-card">
             <div class="card-header">
                 <div class="card-title">Daftar Portofolio Proyek Software</div>
@@ -710,27 +705,6 @@
 </div>
 
 @endsection
-
-@push('styles')
-<style>
-    .bg-glass-element {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        transition: all 0.2s ease-in-out;
-    }
-    .bg-glass-element:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2) !important;
-    }
-    .sticky-lg-top {
-        position: -webkit-sticky;
-        position: sticky;
-    }
-    .cursor-move {
-        cursor: move;
-    }
-</style>
-@endpush
 
 @push('scripts')
 <script>

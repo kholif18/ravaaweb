@@ -364,14 +364,7 @@
 </form>
 @endsection
 
-@push('styles')
 <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
-<style>
-/* Holiday popup editor — smaller to match settings size */
-#holiday-content-editor .ql-editor { min-height: 160px; }
-#holiday-content-editor { border-radius: 8px; overflow: hidden; }
-</style>
-@endpush
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>

@@ -42,31 +42,25 @@
     </div>
 
     <div class="card-body">
-        <!-- Filters -->
-        <form method="GET" action="{{ route('admin.logs.index') }}" class="table-toolbar">
-            <div class="toolbar-group w-100">
-                <div class="row g-2 w-100">
-                    <div class="col-md-5">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" name="search" placeholder="Cari isi pesan log..." value="{{ $search }}">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="level" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="">Semua Level Log</option>
-                            @foreach($levels as $lvl)
-                                <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-flex gap-2 justify-content-md-end">
-                        <button type="submit" class="btn btn-primary btn-sm px-4">Filter</button>
-                        <a href="{{ route('admin.logs.index') }}" class="btn btn-light-secondary btn-sm px-3">Reset</a>
-                    </div>
-                </div>
+<!-- Filters -->
+<form method="GET" action="{{ route('admin.logs.index') }}" class="table-toolbar" style="display:block !important;">
+    <div class="toolbar-group w-100" style="display:block !important;">
+        <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
+            <div class="input-group input-group-sm" style="width:280px;flex-shrink:0;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" name="search" placeholder="Cari isi pesan log..." value="{{ $search }}">
             </div>
-        </form>
+            <select name="level" class="form-select form-select-sm" style="width:150px;flex-shrink:0;" onchange="this.form.submit()">
+                <option value="">Semua Level Log</option>
+                @foreach($levels as $lvl)
+                    <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm" style="flex-shrink:0;">Filter</button>
+            <a href="{{ route('admin.logs.index') }}" class="btn btn-light btn-sm" style="flex-shrink:0;">Reset</a>
+        </div>
+    </div>
+</form>
 
         <!-- Log List -->
         @if(count($logs) > 0)

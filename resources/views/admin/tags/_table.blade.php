@@ -1,7 +1,7 @@
 @if($tags->count() > 0)
 <!--begin::Table-->
 <div class="table-responsive">
-<table class="table" id="kt_tags_table">
+<table class="table align-middle mb-0" id="kt_tags_table">
     <thead>
         <tr>
             <th style="width: 32px;">

@@ -15,11 +15,6 @@
 @endsection
 
 @section('content')
-<!-- Toast Container -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastContainer"></div>
-</div>
-
 <!--begin::Card-->
 <div class="glass-card">
     <!--begin::Card header-->
@@ -34,39 +29,39 @@
     <!--end::Card header-->
 
     <div class="card-body">
-        <!-- Table toolbar with search + filter row -->
-        <div class="table-toolbar">
-            <div class="toolbar-group">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 200px;">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" 
-                               data-kt-category-table-filter="search" 
-                               placeholder="Cari Kategori..." 
-                               name="search"
-                               value="{{ $filters['search'] ?? '' }}">
-                    </div>
-                    <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
-                        <option value="">Semua Status</option>
-                        <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
-                        <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                    <select name="parent" class="form-select form-select-sm" style="min-width: 150px;">
-                        <option value="">Semua Parent</option>
-                        <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Root</option>
-                        @foreach($parentCategories as $parent)
-                            <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
-                                {{ $parent->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <button type="button" class="btn btn-light btn-sm" id="kt_category_reset_filter">
-                        <i class="bi bi-arrow-clockwise"></i> Reset
-                    </button>
-                </div>
+<!-- Table toolbar with search + filter row -->
+<div class="table-toolbar" style="display:block !important;">
+    <div class="toolbar-group" style="display:block !important;">
+        <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
+            <div class="input-group input-group-sm" style="width:200px;flex-shrink:0;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" 
+                       data-kt-category-table-filter="search" 
+                       placeholder="Cari Kategori..." 
+                       name="search"
+                       value="{{ $filters['search'] ?? '' }}">
             </div>
+            <select name="status" class="form-select form-select-sm" style="width:130px;flex-shrink:0;">
+                <option value="">Semua Status</option>
+                <option value="active" {{ ($filters['status'] ?? '') == 'active' ? 'selected' : '' }}>Aktif</option>
+                <option value="inactive" {{ ($filters['status'] ?? '') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+            </select>
+            <select name="parent" class="form-select form-select-sm" style="width:170px;flex-shrink:0;">
+                <option value="">Semua Parent</option>
+                <option value="null" {{ ($filters['parent'] ?? '') == 'null' ? 'selected' : '' }}>Root</option>
+                @foreach($parentCategories as $parent)
+                    <option value="{{ $parent->id }}" {{ ($filters['parent'] ?? '') == $parent->id ? 'selected' : '' }}>
+                        {{ $parent->name }}
+                    </option>
+                @endforeach
+            </select>
+            <button type="button" class="btn btn-light btn-sm" id="kt_category_reset_filter" style="flex-shrink:0;">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
         </div>
-        <!--end::Toolbar-->
+    </div>
+</div>
+<!--end::Toolbar-->
 
         <!--begin::Category Table Container-->
         <div id="kt_category_table_container">
@@ -405,34 +400,6 @@
     <input type="hidden" name="ids" id="bulk-delete-ids">
 </form>
 @endsection
-
-@push('styles')
-<style>
-    /* Search + action input group compact */
-    .input-group.input-group-sm .input-group-text {
-        background: transparent;
-        border-color: rgba(0, 0, 0, 0.1);
-        color: var(--text-muted);
-        padding: 0.2rem 0.5rem;
-    }
-    .input-group.input-group-sm .form-control {
-        border-left: 0;
-    }
-    .input-group.input-group-sm:focus-within .input-group-text,
-    .input-group.input-group-sm:focus-within .form-control {
-        border-color: var(--accent);
-    }
-    .input-group.input-group-sm:focus-within .form-control {
-        box-shadow: 0 0 0 2px var(--accent-light);
-    }
-    /* Card header buttons compact */
-    .card-header-btns {
-        display: flex; align-items: center; gap: 0.35rem;
-    }
-    /* Paginator compact */
-    .pagination { margin: 0 !important; }
-</style>
-@endpush
 
 @push('scripts')
 <script>

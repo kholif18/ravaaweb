@@ -28,12 +28,6 @@
                             <i class="fas fa-chevron-down navbar-dropdown-arrow"></i>
                         </a>
                         <ul class="navbar-dropdown-menu">
-                            <li>
-                                <a href="{{ $link->url }}" target="{{ $link->target }}">
-                                    Semua {{ $link->label }}
-                                </a>
-                            </li>
-                            <li class="navbar-dropdown-divider"></li>
                             @foreach($link->children as $child)
                                 <li>
                                     <a href="{{ $child->url }}" target="{{ $child->target }}">

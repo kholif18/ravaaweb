@@ -1,6 +1,6 @@
 @if($users->count() > 0)
 <div class="table-responsive">
-<table class="table" id="kt_users_table">
+<table class="table align-middle mb-0" id="kt_users_table">
     <thead>
         <tr>
             <th style="width: 32px;">

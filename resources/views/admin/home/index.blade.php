@@ -266,42 +266,7 @@
 </form>
 @endsection
 
-@push('styles')
-{{-- Quill Rich Text Editor CSS --}}
 <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
-<style>
-    /* Custom style overrides to fit the glassmorphism theme */
-    .bg-glass-element {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        transition: all 0.2s ease-in-out;
-    }
-    .bg-glass-element:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2) !important;
-    }
-    .ql-toolbar.ql-snow {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-    }
-    .ql-container.ql-snow {
-        background: rgba(255, 255, 255, 0.02) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        font-family: 'Inter', sans-serif !important;
-        color: var(--text-primary) !important;
-    }
-    .ql-editor {
-        font-size: 0.85rem !important;
-    }
-    .fs-9 {
-        font-size: 0.65rem !important;
-    }
-</style>
-@endpush
 
 @push('scripts')
 {{-- Quill Rich Text Editor JS --}}

@@ -18,7 +18,6 @@
     </li>
 @endsection
 
-
 @section('content')
 <form id="product-form" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
     @csrf
@@ -636,127 +635,7 @@
     </div>
 </div>
 
-@push('styles')
-{{-- Quill Rich Text Editor CSS --}}
 <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
-<style>
-    /* ===== Quill glass theme overrides ===== */
-    .ql-toolbar.ql-snow {
-        background: var(--bg-surface-hover) !important;
-        border: 1px solid var(--glass-border) !important;
-        border-radius: var(--r-md) var(--r-md) 0 0 !important;
-        padding: 6px 8px !important;
-        font-family: 'Inter', sans-serif;
-    }
-    .ql-container.ql-snow {
-        border: 1px solid var(--glass-border) !important;
-        border-top: none !important;
-        border-radius: 0 0 var(--r-md) var(--r-md) !important;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.8rem;
-    }
-    .ql-editor {
-        min-height: 100px;
-        color: var(--text-primary);
-        padding: 10px 12px;
-    }
-    .ql-editor.ql-blank::before {
-        color: var(--text-muted);
-        font-style: normal;
-        font-size: 0.8rem;
-    }
-    .ql-snow .ql-stroke { stroke: var(--text-secondary) !important; }
-    .ql-snow .ql-fill { fill: var(--text-secondary) !important; }
-    .ql-snow .ql-picker-label { color: var(--text-secondary) !important; }
-    .ql-snow .ql-picker-label::before { color: var(--text-secondary) !important; }
-    .ql-snow .ql-picker-options {
-        background: var(--bg-surface) !important;
-        border-color: var(--glass-border) !important;
-        border-radius: var(--r-sm) !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-        padding: 4px !important;
-    }
-    .ql-snow .ql-picker-item:hover { color: var(--accent) !important; }
-    .ql-snow .ql-active .ql-stroke { stroke: var(--accent) !important; }
-    .ql-snow .ql-active .ql-fill { fill: var(--accent) !important; }
-    .ql-snow .ql-active { color: var(--accent) !important; }
-    .ql-snow a { color: var(--accent) !important; }
-    .ql-toolbar.ql-snow .ql-formats { margin-right: 6px; }
-    .ql-snow .ql-tooltip {
-        background: var(--bg-surface) !important;
-        border-color: var(--glass-border) !important;
-        color: var(--text-primary) !important;
-        border-radius: var(--r-sm) !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-    }
-    .ql-snow .ql-tooltip input { color: var(--text-primary) !important; }
-    .ql-editor h1, .ql-editor h2, .ql-editor h3 { color: var(--text-primary); }
-    .ql-editor p, .ql-editor li { color: var(--text-primary); font-size: 0.8rem; line-height: 1.6; }
-    .ql-editor blockquote { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--text-secondary); }
-    .ql-editor code { background: var(--bg-surface-hover); padding: 2px 6px; border-radius: var(--r-sm); font-size: 0.78rem; }
-    .ql-editor pre { background: var(--bg-surface-hover); border-radius: var(--r-sm); padding: 10px; }
-
-    .variant-type-tag {
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 4px 12px; background: var(--accent-light); color: var(--accent);
-        border-radius: var(--r-full); font-size: 0.78rem; font-weight: 500;
-    }
-    .variant-type-tag .remove-type {
-        width: 18px; height: 18px; border-radius: 50%;
-        border: none; background: rgba(0,0,0,0.08); color: var(--text-muted);
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; font-size: 10px; transition: all 0.15s;
-    }
-    .variant-type-tag .remove-type:hover {
-        background: var(--danger); color: #fff;
-    }
-    .variant-type-values {
-        display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
-    }
-    .variant-type-values .value-chip {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 2px 8px; background: rgba(0,0,0,0.04); color: var(--text-secondary);
-        border-radius: var(--r-sm); font-size: 0.72rem;
-    }
-    .variant-card {
-        border: 1px solid var(--glass-border); border-radius: var(--r-md);
-        padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.01);
-    }
-    .variant-card-header {
-        display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 8px;
-    }
-    .variant-card-header .variant-label {
-        font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);
-        display: flex; align-items: center; gap: 6px;
-    }
-    .variant-card-header .variant-label .variant-badge {
-        padding: 1px 6px; background: var(--accent-light); color: var(--accent);
-        border-radius: var(--r-sm); font-size: 0.68rem;
-    }
-    .feature-row {
-        display: flex; gap: 8px; align-items: end; margin-bottom: 8px;
-    }
-    .feature-row .fv-row { margin-bottom: 0; }
-
-    .product-media-thumb {
-        position: relative; width: 60px; height: 60px;
-        border-radius: 8px; overflow: hidden;
-        border: 2px solid var(--glass-border);
-    }
-    .product-media-thumb.is-primary { border-color: var(--accent); }
-    .product-media-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .media-file-icon {
-        width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-        background: var(--bg-surface-hover); font-size: 24px; color: var(--text-muted);
-    }
-    .media-badge {
-        position: absolute; bottom: 2px; left: 2px; right: 2px;
-        text-align: center; font-size: 9px; font-weight: 600;
-        background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 2px;
-    }
-</style>
-@endpush
 
 @push('scripts')
 {{-- Quill Rich Text Editor JS --}}

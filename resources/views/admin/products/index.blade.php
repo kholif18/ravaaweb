@@ -56,33 +56,33 @@
             </li>
         </ul>
 
-        <!-- Table toolbar with search + filter row -->
-        <div class="table-toolbar">
-            <div class="toolbar-group">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 200px;">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control"
-                               id="product-search"
-                               placeholder="Cari Produk..."
-                               value="{{ request('search') }}">
-                    </div>
-                    @if($tab !== 'trash')
-                    <select id="product-category-filter" class="form-select form-select-sm" style="min-width: 150px;">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @endif
-                    <button type="button" class="btn btn-light btn-sm" id="product-reset-filter">
-                        <i class="bi bi-arrow-clockwise"></i> Reset
-                    </button>
-                </div>
+<!-- Table toolbar with search + filter row -->
+<div class="table-toolbar" style="display:block !important;">
+    <div class="toolbar-group" style="display:block !important;">
+        <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
+            <div class="input-group input-group-sm" style="width:200px;flex-shrink:0;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control"
+                       id="product-search"
+                       placeholder="Cari Produk..."
+                       value="{{ request('search') }}">
             </div>
+            @if($tab !== 'trash')
+            <select id="product-category-filter" class="form-select form-select-sm" style="width:170px;flex-shrink:0;">
+                <option value="">Semua Kategori</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                        {{ $cat->name }}
+                    </option>
+                @endforeach
+            </select>
+            @endif
+            <button type="button" class="btn btn-light btn-sm" id="product-reset-filter" style="flex-shrink:0;">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
         </div>
+    </div>
+</div>
 
         <!--begin::Product Table Container-->
         <div id="kt_product_table_container">
@@ -128,103 +128,6 @@
     @method('DELETE')
 </form>
 @endsection
-
-@push('styles')
-<style>
-    .card-header-btns { display: flex; align-items: center; gap: 0.35rem; }
-    .product-thumb {
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
-        object-fit: cover;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        flex-shrink: 0;
-    }
-    .product-thumb-placeholder {
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
-        background: #f5f6f8;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted, #9aa0a6);
-        font-size: 13px;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        flex-shrink: 0;
-    }
-    #kt_products_table tbody td {
-        padding: 8px 10px;
-    }
-    #kt_products_table thead th {
-        padding: 8px 10px;
-        font-size: 0.72rem;
-        color: var(--text-muted);
-        font-weight: 600;
-    }
-    #kt_products_table tbody tr:hover {
-        background: var(--bg-surface-hover);
-    }
-
-    /* Tabs styling - macOS style segmented control */
-    #product-tabs {
-        border-bottom: 1px solid rgba(0,0,0,0.06);
-        padding: 0;
-        margin-bottom: 1.25rem !important;
-        display: flex;
-        gap: 0;
-    }
-    #product-tabs .nav-item {
-        margin-bottom: -1px;
-        list-style: none;
-    }
-    #product-tabs .nav-link {
-        border: none;
-        background: none;
-        color: var(--text-muted, #9aa0a6);
-        padding: 0.55rem 1.25rem;
-        font-size: 0.8rem;
-        font-weight: 500;
-        position: relative;
-        transition: color 0.2s ease;
-        border-radius: 0;
-        white-space: nowrap;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-    }
-    #product-tabs .nav-link i {
-        font-size: 0.85rem;
-        margin-right: 0.35rem;
-    }
-    #product-tabs .nav-link:hover {
-        color: var(--text-primary, #1d1d1f);
-        background: rgba(0,113,227,0.04);
-    }
-    #product-tabs .nav-link.active {
-        color: var(--accent, #0071e3);
-        background: none;
-        font-weight: 600;
-    }
-    #product-tabs .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0.75rem;
-        right: 0.75rem;
-        height: 2.5px;
-        background: var(--accent, #0071e3);
-        border-radius: 3px 3px 0 0;
-    }
-    #product-tabs .nav-link .badge {
-        vertical-align: middle;
-        font-weight: 500;
-        font-size: 0.68rem;
-        padding: 0.15em 0.55em;
-        margin-left: 0.35rem;
-    }
-</style>
-@endpush
 
 @push('scripts')
 <script>

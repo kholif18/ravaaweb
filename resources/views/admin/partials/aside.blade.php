@@ -14,6 +14,7 @@
         ['icon' => 'bi-chat-quote', 'label' => 'Testimoni', 'route' => 'admin.testimonials.index', 'section' => ''],
         ['icon' => 'bi-images', 'label' => 'Banner / Hero', 'route' => 'admin.banners.index', 'section' => ''],
         ['icon' => 'bi-envelope', 'label' => 'Pesan Masuk', 'route' => 'admin.contact-submissions.index', 'section' => ''],
+        ['icon' => 'bi-cart-check', 'label' => 'Pesanan', 'route' => 'admin.orders.index', 'section' => ''],
         ['icon' => 'bi-layout-three-columns', 'label' => 'Home Builder', 'route' => 'admin.home.index', 'section' => ''],
         ['icon' => 'bi-laptop', 'label' => 'Software House', 'route' => 'admin.software-house.index', 'section' => ''],
 

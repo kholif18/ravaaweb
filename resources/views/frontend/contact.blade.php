@@ -153,27 +153,6 @@
     @endif
 @endsection
 
-@push('styles')
-<style>
-.toast-success {
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #15803d;
-    background: rgba(34,197,94,0.12);
-    border: 1px solid rgba(34,197,94,0.2);
-    margin-top: 16px;
-    text-align: center;
-    animation: toastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes toastIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
-@endpush
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {

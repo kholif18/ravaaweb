@@ -15,11 +15,6 @@
 @endsection
 
 @section('content')
-<!-- Toast Container -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastContainer"></div>
-</div>
-
 <!--begin::Card-->
 <div class="glass-card">
     <!--begin::Card header-->
@@ -35,10 +30,10 @@
 
     <div class="card-body">
         <!-- Table toolbar -->
-        <div class="table-toolbar">
-            <div class="toolbar-group">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 200px;">
+        <div class="table-toolbar" style="display:block !important;">
+            <div class="toolbar-group" style="display:block !important;">
+                <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
+                    <div class="input-group input-group-sm" style="width:200px;flex-shrink:0;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control"
                                data-kt-user-table-filter="search"
@@ -46,7 +41,7 @@
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
-                    <select name="status" class="form-select form-select-sm" style="min-width: 110px;">
+                    <select name="status" class="form-select form-select-sm" style="width:150px;flex-shrink:0;">
                         <option value="">Semua Status</option>
                         <option value="active" {{ ($filters['status'] ?? '') === 'active' ? 'selected' : '' }}>Aktif</option>
                         <option value="inactive" {{ ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
@@ -321,3 +316,4 @@ document.querySelectorAll('.modal form').forEach(form => {
 });
 </script>
 @endpush
+

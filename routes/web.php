@@ -19,6 +19,14 @@ Route::middleware(['track.visit', 'maintenance'])->group(function () {
     Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
     Route::post('/contact', [FrontendController::class, 'submitContact'])->name('contact.submit')->middleware('throttle:contact');
     Route::get('/search', [FrontendController::class, 'search'])->name('search');
+
+    // Order Forms
+    Route::get('/order/wedding', [\App\Http\Controllers\OrderController::class, 'weddingForm'])->name('order.wedding');
+    Route::get('/order/khitan', [\App\Http\Controllers\OrderController::class, 'khitanForm'])->name('order.khitan');
+    Route::get('/order/baby-name', [\App\Http\Controllers\OrderController::class, 'babyNameForm'])->name('order.baby-name');
+    Route::get('/order/birthday', [\App\Http\Controllers\OrderController::class, 'birthdayForm'])->name('order.birthday');
+    Route::post('/order/submit', [\App\Http\Controllers\OrderController::class, 'submit'])->name('order.submit')->middleware('throttle:contact');
+    Route::get('/order/thankyou/{type}', [\App\Http\Controllers\OrderController::class, 'thankyou'])->name('order.thankyou');
 });
 
 /*
@@ -147,10 +155,17 @@ Route::prefix('admin')
         Route::put('contact-submissions/{contactSubmission}/mark-as-unread', [App\Http\Controllers\Admin\ContactSubmissionController::class, 'markAsUnread'])->name('contact-submissions.mark-as-unread');
         Route::resource('contact-submissions', App\Http\Controllers\Admin\ContactSubmissionController::class)->only(['index', 'show', 'destroy']);
 
+        // Orders
+        Route::delete('orders/bulk-delete', [App\Http\Controllers\Admin\OrderController::class, 'bulkDestroy'])->name('orders.bulk.destroy');
+        Route::patch('orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.status.update');
+        Route::patch('orders/{order}/notes', [App\Http\Controllers\Admin\OrderController::class, 'updateNotes'])->name('orders.notes.update');
+        Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->except(['create', 'edit', 'update']);
+
         // Navbar Links
         Route::delete('nav-links/bulk-delete', [App\Http\Controllers\Admin\NavLinkController::class, 'bulkDestroy'])->name('nav-links.bulk.destroy');
         Route::put('nav-links/{navLink}/status', [App\Http\Controllers\Admin\NavLinkController::class, 'updateStatus'])->name('nav-links.status.update');
         Route::post('nav-links/reorder', [App\Http\Controllers\Admin\NavLinkController::class, 'reorder'])->name('nav-links.reorder');
+        Route::post('nav-links/reset', [App\Http\Controllers\Admin\NavLinkController::class, 'reset'])->name('nav-links.reset');
         Route::resource('nav-links', App\Http\Controllers\Admin\NavLinkController::class);
 
         // Footer Links

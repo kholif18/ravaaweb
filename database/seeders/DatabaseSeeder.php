@@ -43,5 +43,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed banner
         $this->call(BannerSeeder::class);
+
+        // Seed nav links for order forms
+        $this->call(NavLinkOrderSeeder::class);
     }
 }

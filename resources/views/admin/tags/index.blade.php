@@ -30,24 +30,24 @@
 
     <!--begin::Card body-->
     <div class="card-body">
-        {{-- Search & Filters --}}
-        <div class="table-toolbar">
-            <div class="toolbar-group">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width: 280px;">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control"
-                               data-kt-tag-table-filter="search"
-                               placeholder="Cari tag..."
-                               name="search"
-                               value="{{ $filters['search'] ?? '' }}">
-                    </div>
-                    <button type="button" class="btn btn-light btn-sm" id="kt_tag_reset_filter">
-                        <i class="bi bi-arrow-clockwise"></i> Reset
-                    </button>
-                </div>
+{{-- Search & Filters --}}
+<div class="table-toolbar" style="display:block !important;">
+    <div class="toolbar-group" style="display:block !important;">
+        <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
+            <div class="input-group input-group-sm" style="width:280px;flex-shrink:0;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control"
+                       data-kt-tag-table-filter="search"
+                       placeholder="Cari tag..."
+                       name="search"
+                       value="{{ $filters['search'] ?? '' }}">
             </div>
+            <button type="button" class="btn btn-light btn-sm" id="kt_tag_reset_filter" style="flex-shrink:0;">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
         </div>
+    </div>
+</div>
 
         {{-- Table --}}
         <div id="table-container">
@@ -198,26 +198,6 @@
     <input type="hidden" name="ids" id="bulk-delete-ids">
 </form>
 @endsection
-
-@push('styles')
-<style>
-    .td-symbol {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        flex-shrink: 0;
-    }
-    .card-header-btns {
-        display: flex; align-items: center; gap: 0.35rem;
-    }
-    .input-group.input-group-sm .input-group-text { background: transparent; border-color: rgba(0,0,0,0.1); color: var(--text-muted); padding: 0.2rem 0.5rem; }
-    .input-group.input-group-sm .form-control { border-left: 0; }
-    .input-group.input-group-sm:focus-within .input-group-text,
-    .input-group.input-group-sm:focus-within .form-control { border-color: var(--accent); }
-    .input-group.input-group-sm:focus-within .form-control { box-shadow: 0 0 0 2px var(--accent-light); }
-    .pagination { margin: 0 !important; }
-</style>
-@endpush
 
 @push('scripts')
 <script>

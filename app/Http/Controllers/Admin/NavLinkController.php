@@ -179,4 +179,75 @@ class NavLinkController extends Controller
 
         return response()->json($parents);
     }
+
+    /**
+     * Reset nav links to default state
+     */
+    public function reset()
+    {
+        $path = storage_path('app/nav-links-default.json');
+
+        // If no default saved yet, save current state as default
+        if (!file_exists($path)) {
+            $this->saveDefaultState();
+            return redirect()->back()
+                ->with('success', 'Posisi default berhasil disimpan! Klik Reset lagi untuk mengembalikan ke posisi ini.');
+        }
+
+        $default = json_decode(file_get_contents($path), true);
+
+        if (!is_array($default)) {
+            return redirect()->back()
+                ->with('error', 'File default corrupt!');
+        }
+
+        DB::transaction(function () use ($default) {
+            // Delete all existing nav links
+            NavLink::query()->delete();
+
+            // Restore from default
+            foreach ($default as $parentData) {
+                $children = $parentData['children'] ?? [];
+                unset($parentData['children']);
+
+                $parent = NavLink::create($parentData);
+
+                foreach ($children as $childData) {
+                    $childData['parent_id'] = $parent->id;
+                    NavLink::create($childData);
+                }
+            }
+        });
+
+        return redirect()->route('admin.nav-links.index')
+            ->with('success', 'Navbar berhasil dikembalikan ke posisi default!');
+    }
+
+    /**
+     * Save current state as default
+     */
+    private function saveDefaultState()
+    {
+        $links = NavLink::with('children')->topLevel()->ordered()->get();
+
+        $default = $links->map(fn ($link) => [
+            'label'      => $link->label,
+            'url'        => $link->url,
+            'position'   => $link->position,
+            'target'     => $link->target,
+            'sort_order' => $link->sort_order,
+            'is_active'  => $link->is_active,
+            'children'   => $link->children->map(fn ($child) => [
+                'label'      => $child->label,
+                'url'        => $child->url,
+                'position'   => $child->position,
+                'target'     => $child->target,
+                'sort_order' => $child->sort_order,
+                'is_active'  => $child->is_active,
+            ])->toArray(),
+        ])->toArray();
+
+        $path = storage_path('app/nav-links-default.json');
+        file_put_contents($path, json_encode($default, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
 }

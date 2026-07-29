@@ -56,9 +56,6 @@
                             <i class="fas fa-chevron-down mobile-nav-arrow"></i>
                         </a>
                         <div class="mobile-nav-children">
-                            <a href="{{ $link->url }}" target="{{ $link->target }}" class="mobile-nav-child-link">
-                                Semua {{ $link->label }}
-                            </a>
                             @foreach($link->children as $child)
                                 <a href="{{ $child->url }}" target="{{ $child->target }}" class="mobile-nav-child-link">
                                     {{ $child->label }}

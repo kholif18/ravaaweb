@@ -15,20 +15,16 @@
 @endsection
 
 @section('content')
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastContainer"></div>
-</div>
-
 <div class="glass-card">
     <div class="card-header">
         <div class="card-title">Daftar Pesan Masuk</div>
     </div>
 
     <div class="card-body">
-        <div class="table-toolbar">
-            <div class="toolbar-group">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="input-group input-group-sm" style="max-width:200px;">
+        <div class="table-toolbar" style="display:block !important;">
+            <div class="toolbar-group" style="display:block !important;">
+                <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
+                    <div class="input-group input-group-sm" style="width:200px;flex-shrink:0;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control"
                                data-kt-contact-table-filter="search"
@@ -36,12 +32,12 @@
                                name="search"
                                value="{{ $filters['search'] ?? '' }}">
                     </div>
-                    <select name="status" class="form-select form-select-sm" style="min-width:130px;">
+                    <select name="status" class="form-select form-select-sm" style="width:150px;flex-shrink:0;">
                         <option value="">Semua Status</option>
                         <option value="unread" {{ ($filters['status'] ?? '') == 'unread' ? 'selected' : '' }}>Belum Dibaca</option>
                         <option value="read" {{ ($filters['status'] ?? '') == 'read' ? 'selected' : '' }}>Sudah Dibaca</option>
                     </select>
-                    <button type="button" class="btn btn-light btn-sm" id="kt_contact_reset_filter">
+                    <button type="button" class="btn btn-light btn-sm" id="kt_contact_reset_filter" style="flex-shrink:0;">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
                 </div>
@@ -99,19 +95,6 @@
     <input type="hidden" name="ids" id="bulk-delete-ids">
 </form>
 @endsection
-
-@push('styles')
-<style>
-    .input-group.input-group-sm .input-group-text { background: transparent; border-color: rgba(0,0,0,0.1); color: var(--text-muted); padding: 0.2rem 0.5rem; }
-    .input-group.input-group-sm .form-control { border-left: 0; }
-    .input-group.input-group-sm:focus-within .input-group-text,
-    .input-group.input-group-sm:focus-within .form-control { border-color: var(--accent); }
-    .input-group.input-group-sm:focus-within .form-control { box-shadow: 0 0 0 2px var(--accent-light); }
-    .card-header-btns { display: flex; align-items: center; gap: 0.35rem; }
-    .pagination { margin: 0 !important; }
-    .form-control-static { padding: 0.5rem 0; margin: 0; color: var(--text-primary); }
-</style>
-@endpush
 
 @push('scripts')
 <script>
