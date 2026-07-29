@@ -15,14 +15,13 @@
 @endsection
 
 @section('content')
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
-    <div id="toastContainer"></div>
-</div>
-
 <div class="glass-card">
     <div class="card-header">
         <div class="card-title">Daftar Link Navbar</div>
         <div class="card-header-btns">
+            <button type="button" class="btn btn-icon btn-sm" onclick="resetNavLinks()" title="Reset ke Default" style="width:30px;height:30px;border-radius:8px;background:rgba(234,179,8,0.1);color:#a16207;">
+                <i class="bi bi-arrow-counterclockwise" style="font-size:0.8rem;"></i>
+            </button>
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#kt_modal_add_nav_link" onclick="resetAddForm()">
                 <i class="bi bi-plus-circle"></i> Tambah
             </button>
@@ -81,6 +80,35 @@
                         <input type="text" class="form-control form-control-sm" name="url" id="form_url" placeholder="/portofolio" required>
                         <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">
                             Internal: <code>/portofolio</code> | Eksternal: <code>https://forms.google.com/...</code>
+                        </div>
+                        <div style="margin-top:8px;">
+                            <button type="button" class="btn btn-light btn-sm" style="font-size:0.72rem;padding:2px 8px;" onclick="toggleRouteList()">
+                                <i class="bi bi-list-ul"></i> Lihat Route Tersedia
+                            </button>
+                            <div id="route-list-panel" style="display:none;margin-top:8px;padding:10px;border-radius:6px;background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.06);max-height:200px;overflow-y:auto;">
+                                <div style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">Frontend Routes:</div>
+                                @php
+                                    $frontendRoutes = [
+                                        ['uri' => '/', 'name' => 'Beranda'],
+                                        ['uri' => '/layanan', 'name' => 'Layanan'],
+                                        ['uri' => '/product', 'name' => 'Katalog Produk'],
+                                        ['uri' => '/portofolio', 'name' => 'Portofolio'],
+                                        ['uri' => '/software-house', 'name' => 'Software House'],
+                                        ['uri' => '/contact', 'name' => 'Kontak'],
+                                        ['uri' => '/search', 'name' => 'Pencarian'],
+                                        ['uri' => '/order/wedding', 'name' => 'Form Pernikahan'],
+                                        ['uri' => '/order/khitan', 'name' => 'Form Khitan'],
+                                        ['uri' => '/order/baby-name', 'name' => 'Form Nama Bayi'],
+                                        ['uri' => '/order/birthday', 'name' => 'Form Ulang Tahun'],
+                                    ];
+                                @endphp
+                                @foreach($frontendRoutes as $route)
+                                    <div style="display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;font-size:0.75rem;" onclick="fillRoute('{{ $route['uri'] }}')">
+                                        <code style="background:rgba(var(--accent-rgb,79,110,247),0.1);color:var(--accent);padding:1px 6px;border-radius:4px;font-size:0.7rem;">{{ $route['uri'] }}</code>
+                                        <span style="color:var(--text-muted);">{{ $route['name'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                     <div class="fv-row mb-3">
@@ -178,34 +206,6 @@
 </form>
 @endsection
 
-@push('styles')
-<style>
-    /* Override admin CSS flex-wrap for inline filter */
-    .table-toolbar { flex-wrap: nowrap !important; }
-    .table-toolbar .toolbar-group { flex-wrap: nowrap !important; }
-
-    /* Firefox fixes */
-    @-moz-document url-prefix() {
-        .table-toolbar { display: flex !important; }
-        .table-toolbar .toolbar-group { display: flex !important; }
-        .table td { padding: 0.4rem 0.55rem; }
-        .btn-icon { display: inline-flex; align-items: center; justify-content: center; }
-        .form-check-input { margin-top: 0; }
-    }
-
-    .input-group.input-group-sm .input-group-text { background: transparent; border-color: rgba(0,0,0,0.1); color: var(--text-muted); padding: 0.2rem 0.5rem; }
-    .input-group.input-group-sm .form-control { border-left: 0; }
-    .input-group.input-group-sm:focus-within .input-group-text,
-    .input-group.input-group-sm:focus-within .form-control { border-color: var(--accent); }
-    .input-group.input-group-sm:focus-within .form-control { box-shadow: 0 0 0 2px var(--accent-light); }
-    .card-header-btns { display: flex; align-items: center; gap: 0.35rem; }
-    .pagination { margin: 0 !important; }
-    .child-row { background: rgba(0,0,0,0.02); }
-    .child-row td:first-child { padding-left: 2.5rem !important; }
-    .child-indicator { color: var(--accent); font-size: 0.75rem; margin-right: 4px; }
-</style>
-@endpush
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -216,6 +216,52 @@ document.addEventListener('DOMContentLoaded', function() {
         Ravaa.toast('{{ session('error') }}', 'error');
     @endif
 
+    // ===== SORTABLE DRAG-AND-DROP =====
+    function initSortable() {
+        var tbody = document.getElementById('sortable-nav-links');
+        if (!tbody || tbody.children.length === 0) return;
+        if (tbody._sortable) tbody._sortable.destroy();
+        tbody._sortable = Sortable.create(tbody, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                var ids = Array.from(tbody.querySelectorAll('tr[data-id]'))
+                    .map(function(tr) { return parseInt(tr.dataset.id); });
+                fetch('{{ route("admin.nav-links.reorder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success) Ravaa.toast(data.message || 'Urutan berhasil diperbarui', 'success');
+                })
+                .catch(function() { Ravaa.toast('Gagal memperbarui urutan', 'error'); });
+            }
+        });
+    }
+    initSortable();
+
+    // ===== RESET NAVBAR =====
+    window.resetNavLinks = function() {
+        Ravaa.confirm('Reset Navbar?', 'Kembalikan navbar ke posisi default. Semua perubahan urutan akan dikembalikan.', 'warning').then(function(result) {
+            if (result.isConfirmed) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.nav-links.reset") }}';
+                form.innerHTML = '@csrf';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    };
+
     window.resetAddForm = function() {
         document.getElementById('form_parent_id').value = '';
         document.getElementById('modal-title').textContent = 'Tambah Link Navbar';
@@ -224,6 +270,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('form_position').value = 'both';
         document.getElementById('form_target').value = '_self';
         document.getElementById('form_is_active').value = '1';
+    };
+
+    window.toggleRouteList = function() {
+        var panel = document.getElementById('route-list-panel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    };
+
+    window.fillRoute = function(route) {
+        document.getElementById('form_url').value = route;
+        document.getElementById('route-list-panel').style.display = 'none';
     };
 
     window.addChildToParent = function(parentId, parentLabel) {
@@ -343,6 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             tableContainer.innerHTML = await response.text();
             window.history.pushState({}, '', url.toString());
+            initSortable();
             initializeTableEvents();
         } catch (e) { Ravaa.toast('Gagal memfilter', 'error'); }
         finally { tableContainer.style.opacity = '1'; }

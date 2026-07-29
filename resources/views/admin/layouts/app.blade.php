@@ -3,6 +3,8 @@
 @include('admin.partials.head')
 <body>
 
+<div id="toastContainer" style="position:fixed;top:1rem;right:1rem;z-index:2000;display:flex;flex-direction:column;gap:0.5rem;"></div>
+
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <aside class="admin-sidebar" id="adminSidebar">
