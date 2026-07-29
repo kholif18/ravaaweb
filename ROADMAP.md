@@ -164,7 +164,11 @@
 
 ---
 
-*Terakhir diperbarui: 28 Juli 2026 — Fase 10 → Dynamic Navigation ✅*
+*Terakhir diperbarui: 29 Juli 2026 — Fase 11: Sidebar Mobile Bug Fix 🔄
+
+## Known Issues
+
+1. **Sidebar tidak muncul di halaman tertentu (mobile)** — Home Builder, Software House, Pengaturan Umum, Laporan & Analisis. Overlay (blur) muncul tapi sidebar tidak. Diduga terkait GPU compositing/quill/apexcharts. Approach: sudah coba `.show` class, inline `transform`, inline `left` — masih belum work. Perlu investigasi lebih lanjut.
 
 ## Prioritas Selanjutnya (Ringkasan)
 
