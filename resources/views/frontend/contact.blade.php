@@ -120,7 +120,21 @@
                 <p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Kunjungi langsung kantor atau workshop kami.</p>
             </div>
             <div class="map-container" style="border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-top: 24px; width: 100%; min-height: 400px;">
-                {!! preg_replace('/width="[^"]+"/', 'width="100%"', preg_replace('/height="[^"]+"/', 'height="400"', $settings['map_embed'])) !!}
+                @php
+                    $mapHtml = $settings['map_embed'] ?? '';
+                    // Sanitize iframe: remove event handlers and dangerous attributes
+                    $mapHtml = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $mapHtml);
+                    $mapHtml = preg_replace('/on\w+\s*=\s*\S+/i', '', $mapHtml);
+                    $mapHtml = preg_replace('/javascript\s*:/i', '', $mapHtml);
+                    $mapHtml = preg_replace('/data\s*:/i', '', $mapHtml);
+                    $mapHtml = preg_replace('/vbscript\s*:/i', '', $mapHtml);
+                    // Force safe dimensions
+                    $mapHtml = preg_replace('/width="[^"]+"/', 'width="100%"', $mapHtml);
+                    $mapHtml = preg_replace('/height="[^"]+"/', 'height="400"', $mapHtml);
+                    // Only allow iframe tags
+                    $mapHtml = strip_tags($mapHtml, '<iframe>');
+                @endphp
+                {!! $mapHtml !!}
                 <style>
                     .map-container iframe { display: block; width: 100% !important; height: 400px !important; border: 0; }
                 </style>

@@ -56,17 +56,21 @@ class MediaController extends Controller
 
     /**
      * Create an optimized thumbnail for image uploads.
+     * Reads from stored path (after optimization) rather than UploadedFile.
      */
     private function createThumbnail($file, string $path): ?string
     {
-        $mime = $file->getMimeType();
+        // Check mime from stored file (after potential PNG→WebP conversion)
+        $fullPath = storage_path('app/public/' . $path);
+        $mime = file_exists($fullPath) ? mime_content_type($fullPath) : $file->getMimeType();
+
         if (!str_starts_with($mime, 'image/') || $mime === 'image/gif' || $mime === 'image/svg+xml') {
             return null;
         }
 
         try {
             $manager = new ImageManager(new Driver());
-            $image = $manager->read($file);
+            $image = $manager->read($fullPath);
             $image->scale(width: 300);
 
             $thumbPath = dirname($path) . '/thumb_' . basename($path);
@@ -79,10 +83,74 @@ class MediaController extends Controller
         }
     }
 
+    /**
+     * Optimize image for web: resize + compress.
+     * - JPEG: quality 85, overwrite in-place
+     * - WebP: quality 80, overwrite in-place
+     * - PNG: convert to WebP quality 85 (PNG encoder has no quality param)
+     *
+     * Returns [newPath, newMime] or null if unchanged.
+     */
+    private function optimizeImage(string $diskPath): ?array
+    {
+        $fullPath = storage_path('app/public/' . $diskPath);
+        if (!file_exists($fullPath)) {
+            \Log::warning('optimizeImage: file not found', ['path' => $fullPath]);
+            return null;
+        }
+
+        $mime = mime_content_type($fullPath);
+        \Log::info('optimizeImage: found', ['path' => $diskPath, 'mime' => $mime, 'size' => filesize($fullPath)]);
+
+        if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp'])) {
+            \Log::info('optimizeImage: skipped (not target mime)', ['mime' => $mime]);
+            return null;
+        }
+
+        try {
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($fullPath);
+            $width = $image->width();
+            \Log::info('optimizeImage: read ok', ['width' => $width]);
+
+            if ($width > 1920) {
+                $image->scale(width: 1920);
+            }
+
+            if ($mime === 'image/png') {
+                // Try PNG → WebP first
+                if (function_exists('imagewebp')) {
+                    $newPath = preg_replace('/\.png$/i', '.webp', $diskPath);
+                    $newFullPath = storage_path('app/public/' . $newPath);
+                    $image->toWebp(quality: 85)->save($newFullPath);
+                    \Log::info('optimizeImage: PNG→WebP done', ['newPath' => $newPath, 'newSize' => filesize($newFullPath)]);
+                    return ['path' => $newPath, 'mime' => 'image/webp'];
+                } else {
+                    // Fallback: PNG → JPEG (quality 85)
+                    $newPath = preg_replace('/\.png$/i', '.jpg', $diskPath);
+                    $newFullPath = storage_path('app/public/' . $newPath);
+                    $image->toJpeg(quality: 85)->save($newFullPath);
+                    \Log::info('optimizeImage: PNG→JPG done (WebP not available)', ['newPath' => $newPath, 'newSize' => filesize($newFullPath)]);
+                    return ['path' => $newPath, 'mime' => 'image/jpeg'];
+                }
+            } elseif ($mime === 'image/webp') {
+                $image->toWebp(quality: 80)->save($fullPath);
+            } else {
+                $image->toJpeg(quality: 85)->save($fullPath);
+            }
+
+            \Log::info('optimizeImage: compressed', ['newSize' => filesize($fullPath)]);
+        } catch (\Throwable $e) {
+            \Log::error('optimizeImage: exception', ['error' => $e->getMessage()]);
+        }
+
+        return null;
+    }
+
     public function store(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|max:10240', // 10MB
+            'file' => 'required|file|mimes:jpg,jpeg,png,gif,webp,svg,pdf,doc,docx,xls,xlsx,mp4,mp3,zip|max:10240', // 10MB
         ]);
 
         $file = $request->file('file');
@@ -90,13 +158,31 @@ class MediaController extends Controller
         $originalName = pathinfo($fileName, PATHINFO_FILENAME);
         $path = $file->store('media', 'public');
 
+        // Auto-optimize image for web (PNG → WebP, JPEG/WebP compress)
+        $optimized = $this->optimizeImage($path);
+
+        // If PNG was converted, delete original and use new path
+        if ($optimized && $optimized['path'] !== $path) {
+            $originalFullPath = storage_path('app/public/' . $path);
+            if (file_exists($originalFullPath)) {
+                unlink($originalFullPath);
+            }
+            $path = $optimized['path'];
+            $fileName = pathinfo($fileName, PATHINFO_FILENAME) . '.' . pathinfo($path, PATHINFO_EXTENSION);
+        }
+
         $thumbPath = $this->createThumbnail($file, $path);
+
+        // Get actual file size (after optimization)
+        $fullPath = storage_path('app/public/' . $path);
+        $finalSize = file_exists($fullPath) ? filesize($fullPath) : $file->getSize();
+        $finalMime = $optimized ? $optimized['mime'] : $file->getMimeType();
 
         $media = Media::create([
             'name' => $originalName,
             'file_name' => $fileName,
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
+            'mime_type' => $finalMime,
+            'size' => $finalSize,
             'path' => $path,
             'thumb_path' => $thumbPath,
             'disk' => 'public',
@@ -112,9 +198,11 @@ class MediaController extends Controller
 
     public function storeMultiple(Request $request)
     {
+        \Log::info('storeMultiple: called', ['files_count' => $request->file('files') ? count($request->file('files')) : 0]);
+
         $request->validate([
             'files' => 'required|array|max:20',
-            'files.*' => 'file|max:10240',
+            'files.*' => 'file|mimes:jpg,jpeg,png,gif,webp,svg,pdf,doc,docx,xls,xlsx,mp4,mp3,zip|max:10240',
         ]);
 
         $uploaded = [];
@@ -124,13 +212,33 @@ class MediaController extends Controller
             $originalName = pathinfo($fileName, PATHINFO_FILENAME);
             $path = $file->store('media', 'public');
 
+            \Log::info('storeMultiple: file stored', ['name' => $fileName, 'path' => $path]);
+
+            // Auto-optimize image for web (PNG → WebP, JPEG/WebP compress)
+            $optimized = $this->optimizeImage($path);
+
+            // If PNG was converted, delete original and use new path
+            if ($optimized && $optimized['path'] !== $path) {
+                $originalFullPath = storage_path('app/public/' . $path);
+                if (file_exists($originalFullPath)) {
+                    unlink($originalFullPath);
+                }
+                $path = $optimized['path'];
+                $fileName = pathinfo($fileName, PATHINFO_FILENAME) . '.' . pathinfo($path, PATHINFO_EXTENSION);
+            }
+
             $thumbPath = $this->createThumbnail($file, $path);
+
+            // Get actual file size (after optimization)
+            $fullPath = storage_path('app/public/' . $path);
+            $finalSize = file_exists($fullPath) ? filesize($fullPath) : $file->getSize();
+            $finalMime = $optimized ? $optimized['mime'] : $file->getMimeType();
 
             $media = Media::create([
                 'name' => $originalName,
                 'file_name' => $fileName,
-                'mime_type' => $file->getMimeType(),
-                'size' => $file->getSize(),
+                'mime_type' => $finalMime,
+                'size' => $finalSize,
                 'path' => $path,
                 'thumb_path' => $thumbPath,
                 'disk' => 'public',

@@ -15,7 +15,7 @@
             <div class="portfolio-grid">
                 @forelse($portfolioItems as $item)
                     <div class="port-card">
-                        <img class="port-card-img" src="{{ $item->image_url }}" alt="{{ $item->title }}">
+                        <img class="port-card-img" src="{{ $item->image_url }}" alt="{{ $item->title }}" loading="lazy">
                         <div class="port-card-body">
                             <div class="port-card-category">{{ $item->category }}</div>
                             <h3 class="port-card-title">{{ $item->title }}</h3>

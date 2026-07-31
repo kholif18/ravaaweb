@@ -1,4 +1,4 @@
-# Dependencies
+# Dependencies (installed in stages, not copied from host)
 /vendor
 /node_modules
 
@@ -39,7 +39,16 @@ tests/
 phpunit.xml
 phpunit.xml.dist
 
+# Docker (don't copy docker files into image)
+Dockerfile*
+docker-compose*
+.dockerignore
+
 # Node
 node_modules/
 package-lock.json
 yarn.lock
+
+# Documentation
+*.md
+LICENSE

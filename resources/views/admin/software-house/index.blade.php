@@ -279,15 +279,20 @@
                                         <td>
                                             <span class="drag-handle cursor-move text-muted"><i class="bi bi-grip-vertical fs-5"></i></span>
                                         </td>
-                                        <td>
+                                        <td data-label="Icon">
                                             <div class="rounded border bg-light d-flex align-items-center justify-content-center text-primary" style="height: 36px; width: 36px;">
                                                 <i class="{{ $shService->icon ?: 'fas fa-code' }} fs-6"></i>
                                             </div>
                                         </td>
-                                        <td>
-                                            <div class="fw-bold">{{ $shService->title }}</div>
+                                        <td data-label="Nama Layanan">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded border bg-light d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="height: 28px; width: 28px;">
+                                                    <i class="{{ $shService->icon ?: 'fas fa-code' }}" style="font-size: 0.7rem;"></i>
+                                                </div>
+                                                <div class="fw-bold">{{ $shService->title }}</div>
+                                            </div>
                                         </td>
-                                        <td>
+                                        <td data-label="Fitur Detil">
                                             @if(!empty($shService->steps) && is_array($shService->steps))
                                                 <div class="d-flex flex-wrap gap-1">
                                                     @foreach($shService->steps as $step)
@@ -298,7 +303,7 @@
                                                 <span class="text-muted fs-8">-</span>
                                             @endif
                                         </td>
-                                        <td class="text-center">
+                                        <td data-label="Aksi" class="text-center">
                                             <div class="d-flex justify-content-center gap-1">
                                                 <button type="button" class="btn btn-icon btn-sm" 
                                                         data-sh-service="{{ json_encode($shService->toArray()) }}"
@@ -380,33 +385,31 @@
                                 <td>
                                     <span class="drag-handle cursor-move text-muted"><i class="bi bi-grip-vertical fs-5"></i></span>
                                 </td>
-                                <td class="text-center">
-                                    @if($item->image_url)
-                                        <img src="{{ $item->image_url }}" alt="{{ $item->title }}" class="rounded mx-auto" style="height: 40px; width: 60px; object-fit: cover;">
-                                    @else
-                                        <div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted mx-auto" style="height: 40px; width: 60px;">
-                                            <i class="bi bi-image" style="font-size: 0.8rem;"></i>
+                                <td data-label="Judul Proyek">
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if($item->image_url)
+                                            <img src="{{ $item->image_url }}" alt="{{ $item->title }}" class="rounded flex-shrink-0" style="height: 32px; width: 44px; object-fit: cover;">
+                                        @endif
+                                        <div>
+                                            <div class="fw-bold">{{ $item->title }}</div>
+                                            @if($item->project_url)
+                                                <a href="{{ $item->project_url }}" target="_blank" class="fs-8 text-primary"><i class="bi bi-link-45deg"></i> Link</a>
+                                            @endif
                                         </div>
-                                    @endif
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="fw-bold">{{ $item->title }}</div>
-                                    @if($item->project_url)
-                                        <a href="{{ $item->project_url }}" target="_blank" class="fs-8 text-primary"><i class="bi bi-link-45deg"></i> Kunjungi Link</a>
-                                    @endif
-                                </td>
-                                <td>
+                                <td data-label="Kategori">
                                     <span class="badge bg-light text-dark">{{ $item->category }}</span>
                                 </td>
-                                <td>
+                                <td data-label="Klien">
                                     <span class="text-muted">{{ $item->client ?? '-' }}</span>
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     <span class="badge {{ $item->status == 'active' ? 'bg-success' : 'bg-secondary' }} fs-9">
                                         {{ $item->status == 'active' ? 'Aktif' : 'Non-aktif' }}
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Aksi" class="text-center">
                                     <div class="d-flex justify-content-center gap-1">
                                         <button type="button" class="btn btn-icon btn-sm" 
                                                 data-edit-url="{{ route('admin.portfolio.edit', $item->id) }}"

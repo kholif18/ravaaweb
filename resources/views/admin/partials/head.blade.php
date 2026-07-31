@@ -32,6 +32,9 @@
     {{-- Icons: Font Awesome 6 --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 
+    {{-- Quill Rich Text Editor --}}
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
+
     {{-- Page Vendor Styles --}}
     @stack('styles')
 

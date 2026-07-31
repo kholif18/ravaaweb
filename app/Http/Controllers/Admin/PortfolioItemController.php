@@ -79,8 +79,10 @@ class PortfolioItemController extends Controller
         }
 
         if ($request->has('redirect_to')) {
-            return redirect($request->input('redirect_to'))
-                ->with('success', 'Portfolio berhasil ditambahkan!');
+            $redirectTo = $request->input('redirect_to');
+            if (Str::startsWith($redirectTo, '/') && !Str::startsWith($redirectTo, '//')) {
+                return redirect($redirectTo)->with('success', 'Portfolio berhasil ditambahkan!');
+            }
         }
 
         return redirect()->route('admin.portfolio.index')
@@ -135,8 +137,10 @@ class PortfolioItemController extends Controller
         }
 
         if ($request->has('redirect_to')) {
-            return redirect($request->input('redirect_to'))
-                ->with('success', 'Portfolio berhasil diperbarui!');
+            $redirectTo = $request->input('redirect_to');
+            if (Str::startsWith($redirectTo, '/') && !Str::startsWith($redirectTo, '//')) {
+                return redirect($redirectTo)->with('success', 'Portfolio berhasil diperbarui!');
+            }
         }
 
         return redirect()->route('admin.portfolio.index')
@@ -148,8 +152,10 @@ class PortfolioItemController extends Controller
         $portfolioItem->delete();
 
         if (request()->has('redirect_to')) {
-            return redirect(request()->input('redirect_to'))
-                ->with('success', 'Portfolio berhasil dihapus!');
+            $redirectTo = request()->input('redirect_to');
+            if (Str::startsWith($redirectTo, '/') && !Str::startsWith($redirectTo, '//')) {
+                return redirect($redirectTo)->with('success', 'Portfolio berhasil dihapus!');
+            }
         }
 
         return redirect()->route('admin.portfolio.index')
@@ -170,8 +176,10 @@ class PortfolioItemController extends Controller
         PortfolioItem::whereIn('id', $ids)->delete();
 
         if ($request->has('redirect_to')) {
-            return redirect($request->input('redirect_to'))
-                ->with('success', count($ids) . ' portfolio berhasil dihapus!');
+            $redirectTo = $request->input('redirect_to');
+            if (Str::startsWith($redirectTo, '/') && !Str::startsWith($redirectTo, '//')) {
+                return redirect($redirectTo)->with('success', count($ids) . ' portfolio berhasil dihapus!');
+            }
         }
 
         return redirect()->route('admin.portfolio.index')

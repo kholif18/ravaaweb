@@ -266,8 +266,6 @@
 </form>
 @endsection
 
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
-
 @push('scripts')
 {{-- Quill Rich Text Editor JS --}}
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>

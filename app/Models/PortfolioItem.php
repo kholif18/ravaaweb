@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use App\Traits\CachesQueries;
 
 class PortfolioItem extends Model
 {
+    use CachesQueries;
     protected static function booted(): void
     {
         static::creating(function (PortfolioItem $item) {

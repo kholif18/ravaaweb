@@ -23,3 +23,12 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Protect sensitive files
+<Files ".env">
+    Deny from all
+</Files>
+
+<Files "docker-compose.yml">
+    Deny from all
+</Files>

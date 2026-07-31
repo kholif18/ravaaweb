@@ -4,6 +4,13 @@
 
 @section('meta_desc', strip_tags($product->short_description ?? $product->description ?? ''))
 
+@section('og_image')
+    @if($product->thumbnail?->url)
+    <meta property="og:image" content="{{ $product->thumbnail->url }}">
+    <meta name="twitter:image" content="{{ $product->thumbnail->url }}">
+    @endif
+@endsection
+
 @section('content')
 
 <section class="section catalog-section">
@@ -36,7 +43,7 @@
         <div class="detail-thumbs" id="galleryThumbs">
           @foreach($galleryImages as $index => $img)
           <div class="detail-thumb {{ $loop->first ? 'active' : '' }}" data-src="{{ $img['url'] }}" onclick="changeMainImage('{{ $img['url'] }}', this)">
-            <img src="{{ $img['url'] }}" alt="{{ $img['name'] }}">
+            <img src="{{ $img['url'] }}" alt="{{ $img['name'] }}" loading="lazy">
           </div>
           @endforeach
         </div>
@@ -181,7 +188,7 @@
         @endif
       </div>
       <div class="tab-panel active" id="tab-desc">
-        {!! $product->description !!}
+        {!! strip_tags($product->description ?? '', '<p><h1><h2><h3><h4><h5><h6><strong><em><u><ul><ol><li><a><img><br><blockquote><pre><code><table><thead><tbody><tr><th><td>') !!}
         @if(!$product->description && $product->short_description)
         <p>{{ $product->short_description }}</p>
         @endif

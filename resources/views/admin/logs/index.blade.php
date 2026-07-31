@@ -25,39 +25,43 @@
 <div class="glass-card">
     <div class="card-header">
         <div class="card-title">System Logs</div>
-        <div class="card-header-btns d-flex align-items-center gap-3">
-            <span class="badge" style="background: rgba(0,113,227,0.1); color: #0071e3; font-size: 0.8rem; padding: 6px 12px;">
-                Ukuran File: {{ number_format($fileSize / 1024 / 1024, 2) }} MB
-            </span>
-            @if($fileSize > 0)
-                <form action="{{ route('admin.logs.clear') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin mengosongkan seluruh isi file log?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-light-danger btn-sm">
-                        <i class="bi bi-trash"></i> Kosongkan Log
-                    </button>
-                </form>
-            @endif
+        <div class="card-header-btns">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="badge" style="background: rgba(0,113,227,0.1); color: #0071e3; font-size: 0.8rem; padding: 6px 12px;">
+                    Ukuran File: {{ number_format($fileSize / 1024 / 1024, 2) }} MB
+                </span>
+                @if($fileSize > 0)
+                    <form action="{{ route('admin.logs.clear') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin mengosongkan seluruh isi file log?')" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-light-danger btn-sm">
+                            <i class="bi bi-trash"></i> Kosongkan Log
+                        </button>
+                    </form>
+                @endif
+            </div>
         </div>
     </div>
 
     <div class="card-body">
 <!-- Filters -->
-<form method="GET" action="{{ route('admin.logs.index') }}" class="table-toolbar" style="display:block !important;">
-    <div class="toolbar-group w-100" style="display:block !important;">
-        <div style="display:flex !important; align-items:center; gap:8px; flex-wrap:nowrap !important; white-space:nowrap;">
-            <div class="input-group input-group-sm" style="width:280px;flex-shrink:0;">
+<form method="GET" action="{{ route('admin.logs.index') }}" class="table-toolbar">
+    <div class="toolbar-group w-100">
+        <div class="logs-filter-wrap">
+            <div class="input-group input-group-sm">
                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                 <input type="text" class="form-control" name="search" placeholder="Cari isi pesan log..." value="{{ $search }}">
             </div>
-            <select name="level" class="form-select form-select-sm" style="width:150px;flex-shrink:0;" onchange="this.form.submit()">
+            <select name="level" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">Semua Level Log</option>
                 @foreach($levels as $lvl)
                     <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="btn btn-primary btn-sm" style="flex-shrink:0;">Filter</button>
-            <a href="{{ route('admin.logs.index') }}" class="btn btn-light btn-sm" style="flex-shrink:0;">Reset</a>
+            <div class="logs-filter-actions">
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                <a href="{{ route('admin.logs.index') }}" class="btn btn-light btn-sm">Reset</a>
+            </div>
         </div>
     </div>
 </form>

@@ -28,7 +28,7 @@
             @endif
 
             <div class="holiday-popup-content">
-                {!! $settings['holiday_content'] ?? '' !!}
+                {!! strip_tags($settings['holiday_content'] ?? '', '<p><h1><h2><h3><h4><h5><h6><strong><em><u><ul><ol><li><a><img><br><blockquote><pre><code>') !!}
             </div>
 
             @if($startDate && $endDate)

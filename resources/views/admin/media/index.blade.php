@@ -186,8 +186,9 @@
             <x-pagination :paginator="$media" label="media" :perPage="$media->perPage()" />
         </div>
 </div>
+<!--end::Card-->
 
-<!-- Fullscreen Gallery Overlay -->
+<!-- Fullscreen Gallery Overlay (outside glass-card to avoid overflow clipping) -->
 <div class="gallery-overlay" id="galleryOverlay">
     <button type="button" class="gallery-close" id="galleryClose"><i class="bi bi-x-lg"></i></button>
     <button type="button" class="gallery-nav gallery-prev" id="galleryPrev"><i class="bi bi-chevron-left"></i></button>
@@ -199,9 +200,36 @@
     </div>
 </div>
 
+<!-- Upload Progress Modal (WordPress-style) -->
+<div class="upload-progress-wrap" id="uploadProgressWrap">
+    <div class="upload-progress-modal">
+        <div class="upload-progress-header">
+            <h4 id="uploadProgressTitle">Mengunggah 0 file...</h4>
+            <button type="button" class="upload-minimize-btn" id="uploadMinimizeBtn" title="Minimalkan">
+                <i class="bi bi-dash-lg"></i>
+            </button>
+        </div>
+        <div class="upload-progress-body" id="uploadProgressBody">
+            <!-- file items inserted by JS -->
+        </div>
+        <div class="upload-summary">
+            <span id="uploadProgressSummary">0 / 0 selesai</span>
+            <div class="overall-bar"><div class="overall-bar-fill" id="uploadOverallBar"></div></div>
+            <button type="button" class="btn btn-primary btn-sm" id="uploadDoneBtn" style="display:none;">Selesai</button>
+        </div>
+    </div>
+    <div class="upload-progress-pill" id="uploadProgressPill">
+        <div class="upload-pill-bar"><div class="upload-pill-bar-fill" id="uploadPillBar"></div></div>
+        <span class="upload-pill-text" id="uploadPillText">Mengunggah...</span>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Move gallery overlay to body so position:fixed works outside animated containers
+    const overlay = document.getElementById('galleryOverlay');
+    if (overlay) document.body.appendChild(overlay);
     const grid = document.getElementById('media-grid');
     const searchInput = document.getElementById('media-search');
     const typeFilter = document.getElementById('media-type-filter');
@@ -274,7 +302,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // File input change
     fileInput.addEventListener('change', function() {
-        if (this.files.length > 0) uploadFiles(this.files);
+        if (this.files.length > 0) startUpload(this.files);
+        this.value = ''; // reset so same file can be re-selected
     });
 
     // Drag & Drop
@@ -290,34 +319,200 @@ document.addEventListener('DOMContentLoaded', function() {
     dropZone.addEventListener('drop', function(e) {
         e.preventDefault();
         this.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
+        if (e.dataTransfer.files.length > 0) startUpload(e.dataTransfer.files);
     });
 
-    async function uploadFiles(files) {
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-            formData.append('files[]', files[i]);
+    // ==================== Upload Progress ====================
+    const progressWrap = document.getElementById('uploadProgressWrap');
+    const progressBody = document.getElementById('uploadProgressBody');
+    const progressTitle = document.getElementById('uploadProgressTitle');
+    const progressSummary = document.getElementById('uploadProgressSummary');
+    const overallBar = document.getElementById('uploadOverallBar');
+    const pillBar = document.getElementById('uploadPillBar');
+    const pillText = document.getElementById('uploadPillText');
+    const doneBtn = document.getElementById('uploadDoneBtn');
+    const minimizeBtn = document.getElementById('uploadMinimizeBtn');
+    const pill = document.getElementById('uploadProgressPill');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    let uploading = false;
+
+    minimizeBtn.addEventListener('click', function() {
+        progressWrap.classList.add('minimized');
+    });
+
+    pill.addEventListener('click', function() {
+        progressWrap.classList.remove('minimized');
+    });
+
+    doneBtn.addEventListener('click', function() {
+        window.location.reload();
+    });
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function startUpload(files) {
+        if (uploading) {
+            Ravaa.toast('Upload sedang berjalan, tunggu selesai.', 'warning');
+            return;
+        }
+        uploading = true;
+
+        const fileList = Array.from(files);
+        const total = fileList.length;
+        let completed = 0;
+        let errors = 0;
+
+        // Reset UI
+        progressBody.innerHTML = '';
+        doneBtn.style.display = 'none';
+        overallBar.style.width = '0%';
+        progressWrap.classList.add('active');
+        progressWrap.classList.remove('minimized');
+
+        // Create file items
+        const fileItems = fileList.map(function(file, i) {
+            const isImage = file.type.startsWith('image/');
+            const iconHtml = isImage
+                ? '<div class="upload-file-icon"><img src="' + URL.createObjectURL(file) + '" alt=""></div>'
+                : '<div class="upload-file-icon"><i class="bi bi-file-earmark"></i></div>';
+
+            const div = document.createElement('div');
+            div.className = 'upload-file-item';
+            div.innerHTML = iconHtml +
+                '<div class="upload-file-info">' +
+                    '<span class="upload-file-name" title="' + file.name + '">' + file.name + '</span>' +
+                    '<span class="upload-file-meta">' + formatSize(file.size) + '</span>' +
+                    '<div class="upload-file-progress"><div class="upload-file-progress-bar" id="upBar' + i + '"></div></div>' +
+                    '<span class="upload-file-status" id="upStatus' + i + '">Menunggu...</span>' +
+                '</div>';
+            progressBody.appendChild(div);
+            return div;
+        });
+
+        function updateSummary() {
+            progressTitle.textContent = 'Mengunggah ' + total + ' file...';
+            progressSummary.textContent = completed + ' / ' + total + ' selesai';
+            const pct = total > 0 ? ((completed / total) * 100) : 0;
+            overallBar.style.width = pct + '%';
+            pillBar.style.width = pct + '%';
+            pillText.textContent = completed + ' / ' + total;
         }
 
-        try {
-            const response = await fetch('{{ route("admin.media.store.multiple") }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
+        function uploadFile(file, index) {
+            return new Promise(function(resolve) {
+                const bar = document.getElementById('upBar' + index);
+                const status = document.getElementById('upStatus' + index);
+
+                bar.className = 'upload-file-progress-bar uploading';
+                status.className = 'upload-file-status uploading';
+                status.textContent = 'Mengunggah...';
+
+                const formData = new FormData();
+                formData.append('files[]', file);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '{{ route("admin.media.store.multiple") }}', true);
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+                xhr.setRequestHeader('Accept', 'application/json');
+
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const pct = Math.round((e.loaded / e.total) * 100);
+                        bar.style.width = pct + '%';
+                    }
+                };
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // Upload done, server is optimizing
+                        bar.className = 'upload-file-progress-bar optimizing';
+                        bar.style.width = '100%';
+                        status.className = 'upload-file-status optimizing';
+                        status.textContent = 'Memproses...';
+
+                        // After a short delay, mark as done
+                        // (server optimizes synchronously during upload response)
+                        setTimeout(function() {
+                            bar.className = 'upload-file-progress-bar done';
+                            status.className = 'upload-file-status done';
+                            status.textContent = 'Selesai';
+                            completed++;
+                            updateSummary();
+                            resolve();
+                        }, 200);
+                    } else {
+                        let msg = 'Gagal';
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            msg = data.message || 'Gagal';
+                        } catch(e) {}
+                        bar.className = 'upload-file-progress-bar error';
+                        bar.style.width = '100%';
+                        status.className = 'upload-file-status error';
+                        status.textContent = msg;
+                        errors++;
+                        completed++;
+                        updateSummary();
+                        resolve();
+                    }
+                };
+
+                xhr.onerror = function() {
+                    bar.className = 'upload-file-progress-bar error';
+                    bar.style.width = '100%';
+                    status.className = 'upload-file-status error';
+                    status.textContent = 'Gagal: network error';
+                    errors++;
+                    completed++;
+                    updateSummary();
+                    resolve();
+                };
+
+                xhr.send(formData);
             });
-
-            if (response.ok) {
-                window.location.reload();
-            } else {
-                const data = await response.json();
-                Ravaa.toast(data.message || 'Upload gagal', 'error');
-            }
-        } catch (err) {
-            Ravaa.toast('Upload gagal: ' + err.message, 'error');
         }
+
+        updateSummary();
+
+        // Upload files sequentially for accurate per-file progress
+        (async function() {
+            for (let i = 0; i < fileList.length; i++) {
+                await uploadFile(fileList[i], i);
+            }
+            uploading = false;
+            if (errors === 0) {
+                progressTitle.textContent = 'Upload selesai!';
+                pillText.textContent = total + ' file selesai';
+                // Auto-reload with countdown, click button to skip
+                doneBtn.textContent = 'Muat Ulang (3)';
+                doneBtn.style.display = '';
+                let countdown = 3;
+                var cdInterval = setInterval(function() {
+                    countdown--;
+                    if (countdown <= 0) {
+                        clearInterval(cdInterval);
+                        window.location.reload();
+                    } else {
+                        doneBtn.textContent = 'Muat Ulang (' + countdown + ')';
+                    }
+                }, 1000);
+                doneBtn.onclick = function() {
+                    clearInterval(cdInterval);
+                    window.location.reload();
+                };
+            } else {
+                progressTitle.textContent = 'Upload selesai (' + errors + ' gagal)';
+                pillText.textContent = errors + ' gagal';
+                doneBtn.textContent = 'Muat Ulang';
+                doneBtn.style.display = '';
+                doneBtn.onclick = function() { window.location.reload(); };
+            }
+        })();
     }
 
     // Select media (grid view)

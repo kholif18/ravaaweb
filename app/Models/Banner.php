@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\CachesQueries;
 
 class Banner extends Model
 {
+    use CachesQueries;
     protected $fillable = [
         'title',
         'subtitle',

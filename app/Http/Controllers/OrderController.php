@@ -55,7 +55,7 @@ class OrderController extends Controller
             'order_type' => 'required|in:wedding,khitan,baby_name,birthday',
             'notes' => 'nullable|string|max:1000',
             'file' => 'nullable|array|max:5', // max 5 files
-            'file.*' => 'file|max:5120', // each file max 5MB
+            'file.*' => 'file|mimes:jpg,jpeg,png,gif,webp,pdf|max:5120', // each file max 5MB
         ];
 
         // Type-specific validation

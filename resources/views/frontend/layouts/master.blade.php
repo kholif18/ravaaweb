@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') — {{ $settings['site_name'] ?? 'Ravaa Creative' }}</title>
     <meta name="description" content="@yield('meta_desc', $settings['meta_description'] ?? 'Solusi kreatif untuk desain, percetakan, ATK, dan software house.')">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open Graph --}}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title', $settings['site_name'] ?? 'Ravaa Creative') — {{ $settings['site_name'] ?? 'Ravaa Creative' }}">
+    <meta property="og:description" content="@yield('meta_desc', $settings['meta_description'] ?? '')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="{{ $settings['site_name'] ?? 'Ravaa Creative' }}">
+    @yield('og_image')
+    <meta property="og:locale" content="id_ID">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', $settings['site_name'] ?? 'Ravaa Creative') — {{ $settings['site_name'] ?? 'Ravaa Creative' }}">
+    <meta name="twitter:description" content="@yield('meta_desc', $settings['meta_description'] ?? '')">
+    @yield('twitter_image')
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ !empty($settings['site_logo']) ? $settings['site_logo'] : asset('favicon.ico') }}" />

@@ -131,21 +131,13 @@ class FrontendController extends Controller
         $page = \App\Models\Page::where('slug', 'home')->first();
         $content = array_replace_recursive($defaultContent, $page?->content ?? []);
 
-        // 1. Query Banners
-        $bannerQuery = Banner::active()->ordered();
-        if (!empty($content['hero']['banner_ids'])) {
-            $bannerQuery->whereIn('id', $content['hero']['banner_ids']);
-        }
-        $banners = $bannerQuery->get();
+        // 1. Query Banners (cached)
+        $banners = Banner::cachedActive();
 
-        // 2. Query Categories
-        $categoryQuery = Category::where('status', 'active')->orderBy('order');
-        if (!empty($content['categories']['category_ids'])) {
-            $categoryQuery->whereIn('id', $content['categories']['category_ids']);
-        }
-        $categories = $categoryQuery->get();
+        // 2. Query Categories (cached)
+        $categories = Category::cachedActiveOrdered();
 
-        // 3. Query Products
+        // 3. Query Products (cached featured)
         $limit = (int) ($content['products']['limit'] ?? 8);
         $productType = $content['products']['type'] ?? 'featured';
         
@@ -164,11 +156,11 @@ class FrontendController extends Controller
 
         $products = $productQuery->limit($limit)->get()->map(fn($p) => $this->productDisplayData($p));
 
-        // 4. Query Services (for homepage section)
-        $services = Service::active()->ordered()
-            ->where('name', '!=', 'Software House')
-            ->limit(6)
-            ->get();
+        // 4. Query Services (cached)
+        $services = Service::cachedActiveOrdered()
+            ->filter(fn($s) => $s->name !== 'Software House')
+            ->take(6)
+            ->values();
 
         $settings = $this->getSettings();
 
@@ -177,14 +169,16 @@ class FrontendController extends Controller
 
     public function layanan()
     {
-        $services = Service::active()->ordered()->where('name', '!=', 'Software House')->get();
+        $services = Service::cachedActiveOrdered()
+            ->filter(fn($s) => $s->name !== 'Software House')
+            ->values();
         $settings = $this->getSettings();
         return view('frontend.layanan', compact('services', 'settings'));
     }
 
     public function product(Request $request)
     {
-        $categories = Category::where('status', 'active')->orderBy('order')->get();
+        $categories = Category::cachedActiveOrdered();
 
         $query = Product::where('status', 'active')
             ->with(['category', 'thumbnail', 'media', 'variants']);
@@ -322,14 +316,14 @@ class FrontendController extends Controller
 
     public function portofolio()
     {
-        $portfolioItems = PortfolioItem::active()->ordered()->with('imageMedia')->get();
+        $portfolioItems = PortfolioItem::cachedActiveOrdered();
         $settings = $this->getSettings();
         return view('frontend.portofolio', compact('portfolioItems', 'settings'));
     }
 
     public function softwareHouse()
     {
-        $portfolioItems = PortfolioItem::active()->ordered()->with('imageMedia')->get();
+        $portfolioItems = PortfolioItem::cachedActiveOrdered();
         $softwareServices = SoftwareHouseService::active()->ordered()->get();
         
         $defaultContent = [

@@ -82,7 +82,7 @@
                         @foreach($filteredItems as $item)
                             <div class="port-card">
                                 @if(!empty($item->image_url))
-                                    <img src="{{ $item->image_url }}" alt="{{ $item->title }}" class="port-card-img">
+                                    <img src="{{ $item->image_url }}" alt="{{ $item->title }}" class="port-card-img" loading="lazy">
                                 @endif
                                 <div class="port-card-body">
                                     <span class="port-card-category">{{ $item->category }}</span>

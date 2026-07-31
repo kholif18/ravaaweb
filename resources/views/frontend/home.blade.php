@@ -28,7 +28,7 @@
                                 <span class="banner-badge"><i class="fas fa-tag"></i> {{ $banner->badge }}</span>
                                 @endif
                                 @if($banner->title)
-                                <h2 class="banner-title">{!! $banner->title !!}</h2>
+                                <h2 class="banner-title">{!! strip_tags($banner->title, '<br><strong><em><b><i>') !!}</h2>
                                 @endif
                                 @if($banner->subtitle)
                                 <p class="banner-subtitle">{{ $banner->subtitle }}</p>
@@ -58,7 +58,7 @@
             <div class="container">
                 <div class="banner-static-content">
                     <span class="banner-badge"><i class="fas fa-sparkle"></i> {{ $settings['site_name'] ?? 'Ravaa Creative' }}</span>
-                    <h1 class="banner-title">{!! $settings['hero_title'] ?? 'Solusi Kreatif untuk<br>Bisnis &amp; Kebutuhan Anda' !!}</h1>
+                    <h1 class="banner-title">{!! strip_tags($settings['hero_title'] ?? 'Solusi Kreatif untuk<br>Bisnis &amp; Kebutuhan Anda', '<br><strong><em><b><i>') !!}</h1>
                     <p class="banner-subtitle">{{ $settings['hero_subtitle'] ?? $settings['site_description'] ?? 'Desain grafis modern, cetak berkualitas, dan perlengkapan ATK lengkap.' }}</p>
                     <div class="banner-actions">
                         <a href="{{ $settings['hero_cta_url'] ?? url('/product') }}" class="btn btn-primary btn-lg">{{ $settings['hero_cta_text'] ?? 'Lihat Katalog' }}</a>
@@ -197,7 +197,7 @@
                         <h2 class="promo-title">{{ $content['rich_text']['title'] }}</h2>
                     @endif
                     <div class="promo-content">
-                        {!! $content['rich_text']['content'] !!}
+                        {!! strip_tags($content['rich_text']['content'] ?? '', '<p><h1><h2><h3><h4><h5><h6><strong><em><u><ul><ol><li><a><img><br><blockquote><pre><code><table><thead><tbody><tr><th><td>') !!}
                     </div>
                 </div>
             </div>
