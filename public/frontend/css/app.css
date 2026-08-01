@@ -2171,6 +2171,7 @@ ul { list-style: none; }
 
 .variant-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin-bottom: 10px;
@@ -2187,6 +2188,7 @@ ul { list-style: none; }
 
 .variant-options {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
