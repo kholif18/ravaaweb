@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: Dockerfile.arm
     ports:
-      - "192.168.40.10:8050:80"    # LAN only — akses via http://192.168.40.10:8050
+      - "8050:80"    # Akses via http://192.168.40.10:8050 & tunnel Cloudflare
     restart: unless-stopped
     environment:
       # — Application
