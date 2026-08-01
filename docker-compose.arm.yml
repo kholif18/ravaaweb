@@ -1,5 +1,5 @@
 # ============================================================
-# RavaaWeb — ARM64 Stack for Odroid N2 (Armbian 26.5.1)
+# RavaaWeb — ARM64 Stack for HG680P (HiSilicon Hi3798M, Armbian)
 # Use: docker compose -f docker-compose.arm.yml up -d
 # ============================================================
 
