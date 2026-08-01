@@ -14,13 +14,13 @@ services:
       context: .
       dockerfile: Dockerfile.arm
     ports:
-      - "192.168.40.10:8020:80"    # LAN only — akses via http://192.168.40.10:8020
+      - "192.168.40.10:8050:80"    # LAN only — akses via http://192.168.40.10:8050
     restart: unless-stopped
     environment:
       # — Application
       APP_ENV: production
       APP_DEBUG: false
-      APP_URL: "http://192.168.40.10:8020"
+      APP_URL: "http://192.168.40.10:8050"
       APP_KEY: "${APP_KEY}"
 
       # — Database (MariaDB ARM64)
