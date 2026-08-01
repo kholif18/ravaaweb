@@ -28,3 +28,6 @@ Thumbs.db
 .agentwork/
 /web
 /webservice
+
+# Backup database & storage
+/backups
