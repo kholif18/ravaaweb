@@ -49,7 +49,7 @@ FROM php:8.4-apache AS production
 
 # System deps (runtime only — no dev headers)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev libicu-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev libwebp-dev libzip-dev libicu-dev \
     curl unzip \
     && rm -rf /var/lib/apt/lists/*
 

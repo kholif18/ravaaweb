@@ -11,13 +11,18 @@ return new class extends Migration
         Schema::create('nav_links', function (Blueprint $table) {
             $table->id();
             $table->string('label', 255);
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('url', 500);
-            $table->string('icon', 100)->nullable()->comment('Font Awesome class, e.g. fa-solid fa-star');
             $table->enum('position', ['navbar', 'mobile', 'both'])->default('both')->comment('Where to display this link');
             $table->enum('target', ['_self', '_blank'])->default('_self');
             $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->foreign('parent_id')->references('id')->on('nav_links')->onDelete('cascade');
+            $table->index('is_active');
+            $table->index('sort_order');
+            $table->index('position');
         });
     }
 
