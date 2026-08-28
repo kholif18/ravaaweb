@@ -47,6 +47,9 @@
                     <button type="button" class="btn btn-light btn-sm" id="kt_order_reset_filter" style="flex-shrink:0;">
                         <i class="bi bi-arrow-clockwise"></i> Reset
                     </button>
+                    <a href="{{ route('admin.orders.export-ods') }}" class="btn btn-primary btn-sm" style="flex-shrink:0;text-decoration:none;">
+                        <i class="bi bi-download"></i> Export ODS
+                    </a>
                 </div>
             </div>
         </div>
@@ -99,6 +102,9 @@
 <form id="bulk-delete-form" method="POST" action="{{ route('admin.orders.bulk.destroy') }}" style="display:none;">
     @csrf @method('DELETE')
     <input type="hidden" name="ids" id="bulk-delete-ids">
+</form>
+<form id="bulk-export-form" method="GET" action="{{ route('admin.orders.export-ods') }}" style="display:none;">
+    <input type="hidden" name="ids" id="bulk-export-ids">
 </form>
 @endsection
 
@@ -260,14 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateBulkDeleteButton() {
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
-        if (!bulkDeleteBtn) return;
+        const bulkExportBtn = document.getElementById('bulk-export-ods-btn');
         const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
         const selectedIds = Array.from(selectedItems).map(item => item.value);
         if (selectedIds.length > 0) {
             bulkDeleteBtn.style.display = 'inline-block';
             bulkDeleteBtn.innerHTML = '<i class="bi bi-trash"></i> Hapus Terpilih (' + selectedIds.length + ')';
+            bulkExportBtn.style.display = 'inline-block';
+            bulkExportBtn.innerHTML = '<i class="bi bi-download"></i> Export Terpilih (ODS) (' + selectedIds.length + ')';
         } else {
             bulkDeleteBtn.style.display = 'none';
+            bulkExportBtn.style.display = 'none';
         }
     }
 
@@ -289,20 +298,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('click', function(e) {
         const bulkDeleteBtn = e.target.closest('#bulk-delete-btn');
-        if (!bulkDeleteBtn) return;
-        const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
-        const selectedIds = Array.from(selectedItems).map(item => item.value);
-        if (selectedIds.length === 0) {
-            Ravaa.toast('Silakan pilih pesanan yang akan dihapus', 'warning');
+        if (bulkDeleteBtn) {
+            const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+            const selectedIds = Array.from(selectedItems).map(item => item.value);
+            if (selectedIds.length === 0) {
+                Ravaa.toast('Silakan pilih pesanan yang akan dihapus', 'warning');
+                return;
+            }
+            Ravaa.confirm('Hapus Pesanan Terpilih?', 'Anda akan menghapus <strong>' + selectedIds.length + '</strong> pesanan. Tindakan ini tidak dapat dibatalkan!', 'warning')
+            .then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
+                    document.getElementById('bulk-delete-form').submit();
+                }
+            });
             return;
         }
-        Ravaa.confirm('Hapus Pesanan Terpilih?', 'Anda akan menghapus <strong>' + selectedIds.length + '</strong> pesanan. Tindakan ini tidak dapat dibatalkan!', 'warning')
-        .then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('bulk-delete-ids').value = JSON.stringify(selectedIds);
-                document.getElementById('bulk-delete-form').submit();
+
+        const bulkExportBtn = e.target.closest('#bulk-export-ods-btn');
+        if (bulkExportBtn) {
+            const selectedItems = tableContainer.querySelectorAll('.select-item:checked');
+            const selectedIds = Array.from(selectedItems).map(item => item.value);
+            if (selectedIds.length === 0) {
+                Ravaa.toast('Silakan pilih pesanan yang akan di-export', 'warning');
+                return;
             }
-        });
+            document.getElementById('bulk-export-ids').value = selectedIds.join(',');
+            document.getElementById('bulk-export-form').submit();
+        }
     });
 
     // Filters

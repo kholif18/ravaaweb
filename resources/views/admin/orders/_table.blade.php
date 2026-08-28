@@ -67,6 +67,12 @@
                                 style="width:28px;height:28px;border-radius:6px;background:rgba(var(--accent-rgb,79,110,247),0.1);color:var(--accent);">
                             <i class="bi bi-eye" style="font-size:0.75rem;"></i>
                         </button>
+                        <a href="{{ route('admin.orders.download-odt', $order->id) }}"
+                           class="btn btn-icon btn-sm"
+                           title="Download ODT"
+                           style="width:28px;height:28px;border-radius:6px;background:rgba(34,197,94,0.1);color:#15803d;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">
+                            <i class="bi bi-file-earmark-word" style="font-size:0.75rem;"></i>
+                        </a>
                         <button type="button" class="btn btn-icon btn-sm"
                                 onclick="deleteOrder({{ $order->id }}, '{{ addslashes($order->customer_name) }}')"
                                 title="Hapus"
@@ -91,9 +97,12 @@
 </div>
 
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
-    <div>
+    <div class="d-flex gap-2">
         <button type="button" class="btn btn-sm btn-light-danger" id="bulk-delete-btn" style="display:none;">
             <i class="bi bi-trash"></i> Hapus Terpilih
+        </button>
+        <button type="button" class="btn btn-sm btn-primary" id="bulk-export-ods-btn" style="display:none;">
+            <i class="bi bi-download"></i> Export Terpilih (ODS)
         </button>
     </div>
     <x-pagination :paginator="$orders" label="pesanan" :perPage="$perPage" />

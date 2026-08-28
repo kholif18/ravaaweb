@@ -636,6 +636,19 @@
 </div>
 
 <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+<style>
+    #short-description-editor,
+    #description-editor {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    #short-description-editor .ql-editor,
+    #description-editor .ql-editor {
+        min-height: 80px;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+</style>
 
 @push('scripts')
 {{-- Quill Rich Text Editor JS --}}

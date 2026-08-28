@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\OrdersExport;
 use App\Http\Controllers\Controller;
 use App\Models\OrderSubmission;
+use App\Services\OrderOdtService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpWord\IOFactory;
 
 class OrderController extends Controller
 {
@@ -125,5 +129,57 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')
             ->with('success', count($ids) . ' pesanan berhasil dihapus!');
+    }
+
+    /**
+     * Export orders to ODS spreadsheet
+     */
+    public function exportOds(Request $request)
+    {
+        $query = OrderSubmission::query();
+
+        // Handle bulk export with selected IDs
+        if ($ids = $request->input('ids')) {
+            $idArray = is_string($ids) ? explode(',', $ids) : $ids;
+            $query->whereIn('id', $idArray);
+        } else {
+            // Apply filters if no specific IDs
+            if ($search = $request->input('search')) {
+                $query->search($search);
+            }
+
+            if ($type = $request->input('type')) {
+                $query->ofType($type);
+            }
+
+            if ($status = $request->input('status')) {
+                $query->ofStatus($status);
+            }
+        }
+
+        $orders = $query->latest()->get();
+
+        $filename = 'pesanan_' . now()->format('Y-m-d_His') . '.ods';
+
+        return Excel::download(new OrdersExport($orders), $filename, \Maatwebsite\Excel\Excel::ODS);
+    }
+
+    /**
+     * Download single order as ODT document
+     */
+    public function downloadOdt(OrderSubmission $order)
+    {
+        $service = new OrderOdtService($order);
+
+        $phpWord = $service->generate();
+
+        $filename = 'pesanan_' . $order->id . '_' . $order->customer_name . '.odt';
+
+        // Save to temp file and return as download
+        $tempPath = storage_path('app/' . $filename);
+        $writer = IOFactory::createWriter($phpWord, 'ODText');
+        $writer->save($tempPath);
+
+        return response()->download($tempPath, $filename)->deleteFileAfterSend(true);
     }
 }

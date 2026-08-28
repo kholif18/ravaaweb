@@ -159,6 +159,8 @@ Route::prefix('admin')
         Route::delete('orders/bulk-delete', [App\Http\Controllers\Admin\OrderController::class, 'bulkDestroy'])->name('orders.bulk.destroy');
         Route::patch('orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.status.update');
         Route::patch('orders/{order}/notes', [App\Http\Controllers\Admin\OrderController::class, 'updateNotes'])->name('orders.notes.update');
+        Route::get('orders/export-ods', [App\Http\Controllers\Admin\OrderController::class, 'exportOds'])->name('orders.export-ods');
+        Route::get('orders/{order}/download-odt', [App\Http\Controllers\Admin\OrderController::class, 'downloadOdt'])->name('orders.download-odt');
         Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->except(['create', 'edit', 'update']);
 
         // Navbar Links
