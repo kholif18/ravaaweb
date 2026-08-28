@@ -15,4 +15,25 @@
 
 @include('admin.partials.ravaa-js')
 
+{{-- Fix: Prevent modal close on drag-from-content-to-backdrop --}}
+<script>
+document.addEventListener('mousedown', function(e) {
+    const modalContent = e.target.closest('.modal-content');
+    if (modalContent) {
+        modalContent._mouseDownInside = true;
+    }
+});
+document.addEventListener('mouseup', function(e) {
+    document.querySelectorAll('.modal-content').forEach(function(el) {
+        el._mouseDownInside = false;
+    });
+});
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal') && e.target._mouseDownInside) {
+        e.stopPropagation();
+        e.target._mouseDownInside = false;
+    }
+}, true);
+</script>
+
 @stack('scripts')

@@ -22,6 +22,7 @@ services:
       APP_DEBUG: false
       APP_URL: "${APP_URL:-https://ravaa.my.id}"
       APP_KEY: "${APP_KEY}"
+      APP_SKIP_DB: "${APP_SKIP_DB:-}"
 
       # — Database (MariaDB ARM64)
       DB_CONNECTION: mariadb

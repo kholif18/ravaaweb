@@ -56,7 +56,7 @@ $DC -f "$DC_FILE" build app
 # ── 4. Restart container ──────────────────────
 echo ""
 echo "==> [4/5] Restarting container (skip DB migrate/seed)..."
-APP_SKIP_DB=true $DC -f "$DC_FILE" up -d
+$DC -f "$DC_FILE" up -d
 
 # Tunggu sebentar agar container fully up
 sleep 3
